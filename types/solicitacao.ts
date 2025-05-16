@@ -1,4 +1,4 @@
-export type TipoSolicitacao = "preferencia_posto" | "dia_indisponivel" | "colega_nao_preferido"
+export type TipoSolicitacao = "preferencia_posto" | "dia_indisponivel"
 export type StatusSolicitacao = "pendente" | "aprovada" | "rejeitada"
 
 export interface Solicitacao {

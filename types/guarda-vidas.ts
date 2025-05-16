@@ -4,14 +4,9 @@ export interface PreferenciaPosto {
     prioridade: number
 }
 
-export interface ColaboradorNaoPreferido {
-    guardaVidasId: number
-    motivo: string
-}
-
 export interface DiaIndisponivel {
     data: Date
-    motivo: string
+    motivo?: string
 }
 
 interface Estatisticas {
@@ -27,7 +22,6 @@ export interface GuardaVidas {
     dataAdmissao: Date
     preferenciasPostos: PreferenciaPosto[]
     diasIndisponiveis: DiaIndisponivel[]
-    colaboradoresNaoPreferidos: ColaboradorNaoPreferido[]
     estatisticas: Estatisticas
 }
 

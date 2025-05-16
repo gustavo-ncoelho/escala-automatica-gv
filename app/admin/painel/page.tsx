@@ -9,8 +9,10 @@ export default function PainelPage() {
                 <p className="text-muted-foreground">Análise de dados e métricas.</p>
             </div>
 
-            <EstatisticasGuardaVidas />
-            <EstatisticasPostos />
+            <div className={"flex flex-col items-center justify-cente pt-10 space-y-6"}>
+                <EstatisticasGuardaVidas />
+                <EstatisticasPostos />
+            </div>
         </div>
     )
 }
