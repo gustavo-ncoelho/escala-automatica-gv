@@ -1,0 +1,97 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model guarda_vidas {
+  id                   Int                  @id @default(autoincrement())
+  nome                 String
+  email                String               @unique
+  telefone             String?
+  data_admissao        DateTime             @default(now())
+  dias_trabalhados     Int                  @default(0)
+  dias_restantes       Int                  @default(0)
+  preferencias_postos  preferencia_posto[]
+  dias_indisponiveis   dia_indisponivel[]
+  alocacoes_diarias    alocacao_diaria[]
+  solicitacoes         solicitacao[]
+}
+
+model posto {
+  id                  Int                 @id @default(autoincrement())
+  nome                String              @unique
+  localizacao         String?
+  preferencias_postos preferencia_posto[]
+  alocacoes_diarias   alocacao_diaria[]
+}
+
+model preferencia_posto {
+  id              Int          @id @default(autoincrement())
+  guarda_vidas_id Int
+  guarda_vidas    guarda_vidas @relation(fields: [guarda_vidas_id], references: [id])
+  posto_id        Int
+  posto           posto        @relation(fields: [posto_id], references: [id])
+  justificativa   String?
+  prioridade      Int
+}
+
+model dia_indisponivel {
+  id              Int          @id @default(autoincrement())
+  guarda_vidas_id Int
+  guarda_vidas    guarda_vidas @relation(fields: [guarda_vidas_id], references: [id])
+  data            DateTime     @db.Date
+  motivo          String?
+}
+
+model alocacao_diaria {
+  id               Int           @id @default(autoincrement())
+  data             DateTime      @db.Date
+  guarda_vidas_id  Int
+  guarda_vidas     guarda_vidas  @relation(fields: [guarda_vidas_id], references: [id])
+  posto_id         Int
+  posto            posto         @relation(fields: [posto_id], references: [id])
+  escala_mensal_id Int?
+  escala_mensal    escala_mensal? @relation(fields: [escala_mensal_id], references: [id])
+
+  @@unique([data, guarda_vidas_id])
+}
+
+model escala_mensal {
+  id        Int               @id @default(autoincrement())
+  mes       Int
+  ano       Int
+  alocacoes alocacao_diaria[]
+  @@unique([mes, ano])
+}
+
+model solicitacao {
+  id                    Int                @id @default(autoincrement())
+  guarda_vidas_id       Int
+  guarda_vidas          guarda_vidas       @relation(fields: [guarda_vidas_id], references: [id])
+  tipo                  tipo_solicitacao
+  data_original         DateTime?          @db.Date
+  posto_original        Int?
+  data_solicitada       DateTime?          @db.Date
+  posto_solicitado      Int?
+  colega_nao_preferido  Int?
+  motivo                String?
+  status                status_solicitacao @default(PENDENTE)
+  data_criacao          DateTime           @default(now())
+  data_atualizacao      DateTime           @updatedAt
+}
+
+enum tipo_solicitacao {
+  PREFERENCIA_POSTO
+  DIA_INDISPONIVEL
+  TROCA_ESCALA
+}
+
+enum status_solicitacao {
+  PENDENTE
+  APROVADA
+  REJEITADA
+}

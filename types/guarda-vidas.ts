@@ -25,6 +25,8 @@ export interface GuardaVidas {
     estatisticas: Estatisticas
 }
 
+export type GuardaVidasCriacao = Omit<GuardaVidas, "id" | "estatisticas">
+
 export interface Posto {
     id: number
     nome: string
