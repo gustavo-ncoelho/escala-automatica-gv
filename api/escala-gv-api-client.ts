@@ -3,7 +3,6 @@ import axiosRetry from "axios-retry";
 import {isServer} from "@/lib/utils";
 import {redirect} from "next/navigation";
 import {HttpError, UnauthenticatedError} from "@/lib/errors/errors";
-import {formatarDataComFusoHorario} from "@/utils/formatar-data-com-fuso-horario";
 import {obterSessao} from "@/actions/session-actions/obter-sessao";
 
 export const Api = {
@@ -25,9 +24,7 @@ function axiosInstance({withoutRetry = false, headers = {}}: {
         timeout: 35000,
         headers: {
             'Content-Type': 'application/json',
-            ...headers,
-            'IsCatalogoOnline': 'true',
-            'X-Client-Utc': formatarDataComFusoHorario(new Date().toISOString())
+            ...headers
         }
     })
 
