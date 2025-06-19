@@ -9,15 +9,10 @@ const inter = Inter({subsets: ["latin"]})
 
 export const metadata: Metadata = {
     title: "Sistema de Escala Automática - Guarda-Vidas",
-    description: "Sistema de gerenciamento de escala para guarda-vidas",
-    generator: 'v0.dev'
+    description: "Sistema de gerenciamento de escala para guarda-vidas"
 }
 
-export default function RootLayout({
-                                       children,
-                                   }: Readonly<{
-    children: React.ReactNode
-}>) {
+export default function RootLayout({children,}: Readonly<{ children: React.ReactNode }>) {
     return (
         <html lang="pt-BR" suppressHydrationWarning>
         <body className={inter.className}>

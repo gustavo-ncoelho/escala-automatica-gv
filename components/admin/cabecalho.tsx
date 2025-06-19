@@ -5,15 +5,23 @@ import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import {Menu, Bell, User} from "lucide-react"
 import {Sheet, SheetContent, SheetTrigger} from "@/components/ui/sheet"
 import {BarraLateral} from "./barra-lateral"
+import {useLogout} from "@/hooks/api/auth/logout";
 
 export function Cabecalho() {
+
+    const {mutate} = useLogout();
+
+
+    const handleLogout = () => {
+        mutate();
+    }
+
+
     return (
         <header className="sticky top-0 z-10 flex h-16 items-center gap-4 border-b bg-background px-4 lg:h-[60px]">
             <Sheet>
@@ -37,7 +45,7 @@ export function Cabecalho() {
                         </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                        <DropdownMenuItem>Sair</DropdownMenuItem>
+                        <DropdownMenuItem onClick={handleLogout}>Sair</DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
             </div>

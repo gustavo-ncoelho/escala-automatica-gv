@@ -1,12 +1,18 @@
 import type React from "react"
 import {BarraLateral} from "@/components/admin/barra-lateral"
 import {Cabecalho} from "@/components/admin/cabecalho"
+import {getUser} from "@/lib/session/session";
+import {redirect} from "next/navigation";
 
-export default function AdminLayout({
-                                        children,
-                                    }: Readonly<{
-    children: React.ReactNode
-}>) {
+export default async function AdminLayout({children,}: Readonly<{ children: React.ReactNode }>) {
+
+    const user = await getUser();
+
+    if (!user || user.cargo !== 'COMANDANTE') {
+        console.log(user?.cargo);
+        redirect('/');
+    }
+
     return (
         <div className="flex h-screen">
             <BarraLateral/>

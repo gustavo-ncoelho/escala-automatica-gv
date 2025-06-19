@@ -27,6 +27,11 @@ const itensMenu = [
         titulo: "Solicitações",
         href: "/admin/solicitacoes",
         icone: ClipboardList,
+    },
+    {
+        titulo: "Configurações",
+        href: "/admin/config",
+        icone: Settings
     }
 ]
 

@@ -5,14 +5,20 @@ import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import {Bell, User, LifeBuoy} from "lucide-react"
+import {User, LifeBuoy} from "lucide-react"
 import Link from "next/link"
+import {useLogout} from "@/hooks/api/auth/logout";
 
 export function Cabecalho() {
+
+    const {mutate} = useLogout();
+
+    const handleLogout = () => {
+        mutate();
+    }
+
     return (
         <header className="sticky top-0 z-10 flex h-14 items-center gap-4 border-b bg-background px-4 sm:h-16">
             <Link href="/user" className="flex items-center gap-2 font-semibold">
@@ -29,7 +35,7 @@ export function Cabecalho() {
                         </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                        <DropdownMenuItem>Sair</DropdownMenuItem>
+                        <DropdownMenuItem onClick={handleLogout}>Sair</DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
             </div>

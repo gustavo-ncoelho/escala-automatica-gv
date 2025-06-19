@@ -70,9 +70,9 @@ function axiosInstance({withoutRetry = false, headers = {}}: {
                     console.error('Erro ao tentar refrescar o token:', refreshError);
 
                     /*if (isServer()) {
-                        redirect('/login');
+                        redirect('/');
                     } else {
-                        window.location.href = "/login";
+                        window.location.href = "/";
                     }
                     return Promise.reject(new UnauthenticatedError());*/
                 }
