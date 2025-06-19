@@ -8,15 +8,17 @@ import { jwtDecode } from "jwt-decode";
 import { isServer } from "@/lib/utils";
 import {Usuario} from "@/types/auth/usuario";
 import {GuardaVidas} from "@/types/guarda-vidas";
+import {usuario} from "@prisma/client";
 
 const secretKey = process.env.SESSION_SECRET
 const encodedKey = new TextEncoder().encode(secretKey)
 
-export async function generateTokens(user: Pick<GuardaVidas, 'id' | 'email' | 'nome'>) {
+export async function generateTokens(user: Pick<usuario, 'id' | 'email' | 'nome' | 'cargo'>) {
     const authorizationToken = await new SignJWT({
         id: user.id,
         email: user.email,
-        nome: user.nome
+        nome: user.nome,
+        cargo: user.cargo // <-- IMPORTANTE: O cargo agora é incluído no token!
     })
         .setProtectedHeader({ alg: 'HS256' })
         .setIssuedAt()

@@ -7,18 +7,29 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model usuario {
+  id                  String        @id @default(cuid())
+  email               String        @unique
+  nome                String
+  telefone            String?
+  senha_hash          String
+  cargo               Cargo         @default(GUARDA_VIDAS)
+  guarda_vidas        guarda_vidas?
+  data_criacao        DateTime      @default(now())
+  data_atualizacao    DateTime      @updatedAt
+}
+
 model guarda_vidas {
-  id                   Int                  @id @default(autoincrement())
-  nome                 String
-  email                String               @unique
-  telefone             String?
-  data_admissao        DateTime             @default(now())
-  dias_trabalhados     Int                  @default(0)
-  dias_restantes       Int                  @default(0)
-  preferencias_postos  preferencia_posto[]
-  dias_indisponiveis   dia_indisponivel[]
-  alocacoes_diarias    alocacao_diaria[]
-  solicitacoes         solicitacao[]
+  id                  Int           @id @default(autoincrement())
+  usuario_id          String        @unique
+  usuario             usuario       @relation(fields: [usuario_id], references: [id])
+  data_admissao       DateTime      @default(now())
+  dias_trabalhados    Int           @default(0)
+  dias_restantes      Int           @default(0)
+  preferencias_postos preferencia_posto[]
+  dias_indisponiveis  dia_indisponivel[]
+  alocacoes_diarias   alocacao_diaria[]
+  solicitacoes        solicitacao[]
 }
 
 model posto {
@@ -30,21 +41,21 @@ model posto {
 }
 
 model preferencia_posto {
-  id              Int          @id @default(autoincrement())
-  guarda_vidas_id Int
-  guarda_vidas    guarda_vidas @relation(fields: [guarda_vidas_id], references: [id])
-  posto_id        Int
-  posto           posto        @relation(fields: [posto_id], references: [id])
-  justificativa   String?
-  prioridade      Int
+  id               Int           @id @default(autoincrement())
+  guarda_vidas_id  Int
+  guarda_vidas     guarda_vidas  @relation(fields: [guarda_vidas_id], references: [id])
+  posto_id         Int
+  posto            posto         @relation(fields: [posto_id], references: [id])
+  justificativa    String?
+  prioridade       Int
 }
 
 model dia_indisponivel {
-  id              Int          @id @default(autoincrement())
-  guarda_vidas_id Int
-  guarda_vidas    guarda_vidas @relation(fields: [guarda_vidas_id], references: [id])
-  data            DateTime     @db.Date
-  motivo          String?
+  id               Int           @id @default(autoincrement())
+  guarda_vidas_id  Int
+  guarda_vidas     guarda_vidas  @relation(fields: [guarda_vidas_id], references: [id])
+  data             DateTime      @db.Date
+  motivo           String?
 }
 
 model alocacao_diaria {
@@ -58,14 +69,6 @@ model alocacao_diaria {
   escala_mensal    escala_mensal? @relation(fields: [escala_mensal_id], references: [id])
 
   @@unique([data, guarda_vidas_id])
-}
-
-model escala_mensal {
-  id        Int               @id @default(autoincrement())
-  mes       Int
-  ano       Int
-  alocacoes alocacao_diaria[]
-  @@unique([mes, ano])
 }
 
 model solicitacao {
@@ -82,6 +85,19 @@ model solicitacao {
   status                status_solicitacao @default(PENDENTE)
   data_criacao          DateTime           @default(now())
   data_atualizacao      DateTime           @updatedAt
+}
+
+model escala_mensal {
+  id        Int               @id @default(autoincrement())
+  mes       Int
+  ano       Int
+  alocacoes alocacao_diaria[]
+  @@unique([mes, ano])
+}
+
+enum Cargo {
+  GUARDA_VIDAS
+  COMANDANTE
 }
 
 enum tipo_solicitacao {

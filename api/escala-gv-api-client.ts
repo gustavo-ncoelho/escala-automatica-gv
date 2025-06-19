@@ -46,7 +46,9 @@ function axiosInstance({withoutRetry = false, headers = {}}: {
         async (error: AxiosError) => {
             const originalRequest = error.config;
 
-            if (error.response?.status === 401 && originalRequest && !(originalRequest as any)._retry) {
+            const isLoginAttempt = originalRequest?.url?.endsWith('/api/auth/login');
+
+            if (error.response?.status === 401 && originalRequest && !isLoginAttempt && !(originalRequest as any)._retry) {
                 (originalRequest as any)._retry = true;
 
                 try {
@@ -67,12 +69,12 @@ function axiosInstance({withoutRetry = false, headers = {}}: {
 
                     console.error('Erro ao tentar refrescar o token:', refreshError);
 
-                    if (isServer()) {
+                    /*if (isServer()) {
                         redirect('/login');
                     } else {
                         window.location.href = "/login";
                     }
-                    return Promise.reject(new UnauthenticatedError());
+                    return Promise.reject(new UnauthenticatedError());*/
                 }
             }
 

@@ -1,6 +1,7 @@
+export type Cargo = "GUARDA_VIDAS" | "COMANDANTE"
+
 export type Usuario = {
     id: string;
-    nome: string;
-    senha: string;
-    isAdmin: boolean;
+    login: string;
+    cargo: Cargo;
 }

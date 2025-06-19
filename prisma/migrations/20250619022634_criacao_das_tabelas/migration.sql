@@ -1,15 +1,30 @@
 -- CreateEnum
+CREATE TYPE "Cargo" AS ENUM ('GUARDA_VIDAS', 'COMANDANTE');
+
+-- CreateEnum
 CREATE TYPE "tipo_solicitacao" AS ENUM ('PREFERENCIA_POSTO', 'DIA_INDISPONIVEL', 'TROCA_ESCALA');
 
 -- CreateEnum
 CREATE TYPE "status_solicitacao" AS ENUM ('PENDENTE', 'APROVADA', 'REJEITADA');
 
 -- CreateTable
+CREATE TABLE "usuario" (
+    "id" TEXT NOT NULL,
+    "email" TEXT NOT NULL,
+    "nome" TEXT NOT NULL,
+    "telefone" TEXT,
+    "senha_hash" TEXT NOT NULL,
+    "cargo" "Cargo" NOT NULL DEFAULT 'GUARDA_VIDAS',
+    "data_criacao" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "data_atualizacao" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "usuario_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "guarda_vidas" (
     "id" SERIAL NOT NULL,
-    "nome" TEXT NOT NULL,
-    "email" TEXT NOT NULL,
-    "telefone" TEXT,
+    "usuario_id" TEXT NOT NULL,
     "data_admissao" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "dias_trabalhados" INTEGER NOT NULL DEFAULT 0,
     "dias_restantes" INTEGER NOT NULL DEFAULT 0,
@@ -59,15 +74,6 @@ CREATE TABLE "alocacao_diaria" (
 );
 
 -- CreateTable
-CREATE TABLE "escala_mensal" (
-    "id" SERIAL NOT NULL,
-    "mes" INTEGER NOT NULL,
-    "ano" INTEGER NOT NULL,
-
-    CONSTRAINT "escala_mensal_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
 CREATE TABLE "solicitacao" (
     "id" SERIAL NOT NULL,
     "guarda_vidas_id" INTEGER NOT NULL,
@@ -85,8 +91,20 @@ CREATE TABLE "solicitacao" (
     CONSTRAINT "solicitacao_pkey" PRIMARY KEY ("id")
 );
 
+-- CreateTable
+CREATE TABLE "escala_mensal" (
+    "id" SERIAL NOT NULL,
+    "mes" INTEGER NOT NULL,
+    "ano" INTEGER NOT NULL,
+
+    CONSTRAINT "escala_mensal_pkey" PRIMARY KEY ("id")
+);
+
 -- CreateIndex
-CREATE UNIQUE INDEX "guarda_vidas_email_key" ON "guarda_vidas"("email");
+CREATE UNIQUE INDEX "usuario_email_key" ON "usuario"("email");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "guarda_vidas_usuario_id_key" ON "guarda_vidas"("usuario_id");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "posto_nome_key" ON "posto"("nome");
@@ -96,6 +114,9 @@ CREATE UNIQUE INDEX "alocacao_diaria_data_guarda_vidas_id_key" ON "alocacao_diar
 
 -- CreateIndex
 CREATE UNIQUE INDEX "escala_mensal_mes_ano_key" ON "escala_mensal"("mes", "ano");
+
+-- AddForeignKey
+ALTER TABLE "guarda_vidas" ADD CONSTRAINT "guarda_vidas_usuario_id_fkey" FOREIGN KEY ("usuario_id") REFERENCES "usuario"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "preferencia_posto" ADD CONSTRAINT "preferencia_posto_guarda_vidas_id_fkey" FOREIGN KEY ("guarda_vidas_id") REFERENCES "guarda_vidas"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
