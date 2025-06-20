@@ -11,6 +11,7 @@ import {ArrowLeft, Calendar, Plus, Trash} from "lucide-react"
 import Link from "next/link"
 import {useRouter, useParams} from "next/navigation"
 import {useState, useEffect} from "react"
+import BackButton from "@/components/utils/back-button";
 
 export default function EditarGuardaVidas() {
     const params = useParams();
@@ -20,8 +21,7 @@ export default function EditarGuardaVidas() {
 
     const [isLoading, setIsLoading] = useState(true)
     const [preferencias, setPreferencias] = useState({} as Record<number, number>)
-    const [diasIndisponiveis, setDiasIndisponiveis] = useState([] as { data: string; motivo: string }[])
-    const [colegasNaoPreferidos, setColegasNaoPreferidos] = useState([] as { id: number; motivo: string }[])
+    const [diasIndisponiveis, setDiasIndisponiveis] = useState([] as { data: string; motivo?: string }[])
 
     useEffect(() => {
         if (!guardaVida) {
@@ -42,14 +42,7 @@ export default function EditarGuardaVidas() {
                     data: dia.data.toISOString().split("T")[0],
                     motivo: dia.motivo,
                 })),
-            )
-
-            setColegasNaoPreferidos(
-                guardaVida.colaboradoresNaoPreferidos.map((col) => ({
-                    id: col.guardaVidasId,
-                    motivo: col.motivo || "",
-                })),
-            )
+            );
             setIsLoading(false)
         }
     }, [guardaVida, router])
@@ -75,23 +68,10 @@ export default function EditarGuardaVidas() {
         setDiasIndisponiveis(diasIndisponiveis.filter((_, i) => i !== index))
     }
 
-    const adicionarColegaNaoPreferido = () => {
-        setColegasNaoPreferidos([...colegasNaoPreferidos, {id: 0, motivo: ""}])
-    }
-
-    const removerColegaNaoPreferido = (index: number) => {
-        setColegasNaoPreferidos(colegasNaoPreferidos.filter((_, i) => i !== index))
-    }
-
     return (
         <div className="space-y-6">
             <div className="flex items-center gap-4">
-                <Button variant="outline" size="icon" asChild>
-                    <Link href={`/admin/guarda-vidas/${id}`}>
-                        <ArrowLeft className="h-4 w-4"/>
-                        <span className="sr-only">Voltar</span>
-                    </Link>
-                </Button>
+                <BackButton href={"/admin/guarda-vidas"}/>
                 <div>
                     <h1 className="text-3xl font-bold tracking-tight">Editar {guardaVida.nome}</h1>
                     <p className="text-muted-foreground">Atualize as preferências e configurações do guarda-vidas.</p>

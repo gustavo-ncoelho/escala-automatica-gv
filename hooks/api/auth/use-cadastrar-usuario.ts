@@ -5,10 +5,10 @@ import { Usuario } from '@/types/auth/usuario';
 import { RegisterData } from '@/types/auth/register-data';
 
 const registerUser = async (registerData: RegisterData): Promise<Usuario> => {
-    return await Api.post<Usuario>('/api/auth/register', registerData);
+    return await Api.post<Usuario>('/api/auth/cadastrar', registerData);
 };
 
-export const useRegister = (): UseMutationResult<Usuario, HttpError, RegisterData> => {
+export const useCadastrarUsuario = (): UseMutationResult<Usuario, HttpError, RegisterData> => {
     return useMutation<Usuario, HttpError, RegisterData>({
         mutationFn: registerUser
     });

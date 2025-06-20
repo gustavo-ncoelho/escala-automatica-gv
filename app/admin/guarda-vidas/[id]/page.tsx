@@ -6,6 +6,7 @@ import {guardaVidas, obterNomeGuardaVidas, obterNomePosto} from "@/utils/dados-s
 import {ArrowLeft, Calendar, Edit, User} from "lucide-react"
 import Link from "next/link"
 import {notFound} from "next/navigation"
+import BackButton from "@/components/utils/back-button";
 
 export default function DetalhesGuardaVidas({params}: { params: { id: string } }) {
     const id = Number.parseInt(params.id)
@@ -18,12 +19,7 @@ export default function DetalhesGuardaVidas({params}: { params: { id: string } }
     return (
         <div className="space-y-6">
             <div className="flex items-center gap-4">
-                <Button variant="outline" size="icon" asChild>
-                    <Link href="/admin/guarda-vidas">
-                        <ArrowLeft className="h-4 w-4"/>
-                        <span className="sr-only">Voltar</span>
-                    </Link>
-                </Button>
+                <BackButton href={"/admin/guarda-vidas"}/>
                 <div>
                     <h1 className="text-3xl font-bold tracking-tight">{guardaVida.nome}</h1>
                     <p className="text-muted-foreground">Detalhes e preferências do guarda-vidas.</p>

@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import {User, LifeBuoy} from "lucide-react"
 import Link from "next/link"
-import {useLogout} from "@/hooks/api/auth/logout";
+import {useLogout} from "@/hooks/api/auth/use-logout";
 
 export function Cabecalho() {
 

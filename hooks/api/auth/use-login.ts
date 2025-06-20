@@ -16,10 +16,13 @@ export const useLogin = (): UseMutationResult<Usuario, HttpError, LoginData> => 
 
     return useMutation<Usuario, HttpError, LoginData>({
         mutationFn: loginUser,
-        onSuccess: (user) => {
-            queryClient.invalidateQueries({ queryKey: ['currentUser'] });
+        onSuccess: async (user) => {
+            await queryClient.invalidateQueries({ queryKey: ['currentUser'] });
 
-            if (user.cargo === 'COMANDANTE') {
+            console.log(user.cargo);
+            console.log(user);
+
+            if (user.cargo === "COMANDANTE") {
                 router.push('/admin');
             } else {
                 router.push('/user');

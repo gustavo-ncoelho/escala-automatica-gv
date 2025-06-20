@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import {useLogin} from "@/hooks/api/auth/login";
+import {useLogin} from "@/hooks/api/auth/use-login";
 
 const loginSchema = z.object({
     email: z.string().min(1, { message: "Email é obrigatório" }).email({ message: "Email inválido" }),
@@ -36,7 +36,7 @@ export default function LoginForm() {
     }
 
     return (
-        <div className="flex min-h-screen items-center justify-center bg-gray-50 p-4">
+        <div>
             <Card className="w-full max-w-md">
                 <CardHeader className="space-y-1">
                     <CardTitle className="text-2xl font-bold text-center">Login</CardTitle>

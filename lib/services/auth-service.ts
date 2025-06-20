@@ -65,5 +65,7 @@ export async function loginUser(data: LoginUserData) {
     }
 
     const tokens = await generateTokens(user);
-    return tokens;
+
+    const { senha_hash, ...userWithoutPassword } = user;
+    return { user: userWithoutPassword, tokens };
 }

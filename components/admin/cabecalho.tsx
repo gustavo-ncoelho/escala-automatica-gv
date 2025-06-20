@@ -10,7 +10,7 @@ import {
 import {Menu, Bell, User} from "lucide-react"
 import {Sheet, SheetContent, SheetTrigger} from "@/components/ui/sheet"
 import {BarraLateral} from "./barra-lateral"
-import {useLogout} from "@/hooks/api/auth/logout";
+import {useLogout} from "@/hooks/api/auth/use-logout";
 
 export function Cabecalho() {
 

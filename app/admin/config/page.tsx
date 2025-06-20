@@ -6,8 +6,11 @@ import { Button } from "@/components/ui/button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { UserPlus, Palette, Check, Sun, Moon, Laptop } from "lucide-react"
 import {useTheme} from "next-themes";
+import {useRouter} from "next/navigation";
 
 export default function ConfigPage() {
+
+    const router = useRouter();
 
     const {systemTheme, setTheme} = useTheme();
     const [selectedTheme, setSelectedTheme] = useState<string | undefined>(systemTheme);
@@ -19,8 +22,7 @@ export default function ConfigPage() {
     ]
 
     const handleNewCommander = () => {
-        console.log("Cadastrar novo comandante clicado")
-
+        router.push("/admin/config/cadastrar-comandante")
     }
 
     const handleThemeSelect = (theme: string) => {
@@ -32,8 +34,8 @@ export default function ConfigPage() {
     const CurrentIcon = currentThemeObject?.icon
 
     return (
-        <div className="min-h-screen bg-background p-6">
-            <div className="max-w-4xl mx-auto">
+        <div className="min-h-screen">
+            <section>
                 <div className="mb-8">
                     <h1 className="text-3xl font-bold text-foreground mb-2">Painel de Controle</h1>
                     <p className="text-muted-foreground">Gerencie comandantes e personalize a aparência do sistema</p>
@@ -71,7 +73,7 @@ export default function ConfigPage() {
                         </DropdownMenuContent>
                     </DropdownMenu>
                 </div>
-            </div>
+            </section>
         </div>
     )
 }

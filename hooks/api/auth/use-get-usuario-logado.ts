@@ -9,7 +9,7 @@ const fetchUsuarioLogado = async (): Promise<Usuario> => {
     return await Api.get<Usuario>('/api/auth/me');
 };
 
-export const useCurrentUser = () => {
+export const useGetUsuarioLogado = () => {
     const { data: user, isError } = useQuery<Usuario, HttpError>({
         queryKey: ['usuarioLogado'],
         queryFn: fetchUsuarioLogado,

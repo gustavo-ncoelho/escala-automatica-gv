@@ -2,10 +2,9 @@
 
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm, useFieldArray } from "react-hook-form"
-import { z } from "zod"
+import {undefined, z} from "zod"
 import { CalendarIcon, Plus, Trash2 } from "lucide-react"
 import { format } from "date-fns"
-
 import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
@@ -16,43 +15,52 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import { cn } from "@/lib/utils"
+import BackButton from "@/components/utils/back-button";
+import {useCadastrarUsuario} from "@/hooks/api/auth/use-cadastrar-usuario";
 import {useRouter} from "next/navigation";
-
-const preferenciaPostoSchema = z.object({
-    postoId: z.number().min(1, "Posto é obrigatório"),
-    justificativa: z.string().min(1, "Justificativa é obrigatória"),
-    prioridade: z.number().min(1).max(10, "Prioridade deve ser entre 1 e 10"),
-})
-
-const diaIndisponivelSchema = z.object({
-    data: z.date({
-        required_error: "Data é obrigatória",
-    }),
-    motivo: z.string().optional(),
-})
-
-const guardaVidasSchema = z.object({
-    nome: z.string().min(2, "Nome deve ter pelo menos 2 caracteres"),
-    email: z.string().email("Email inválido"),
-    telefone: z.string().min(10, "Telefone deve ter pelo menos 10 dígitos"),
-    dataAdmissao: z.date({
-        required_error: "Data de admissão é obrigatória",
-    }),
-    preferenciasPostos: z.array(preferenciaPostoSchema).min(1, "Pelo menos uma preferência de posto é obrigatória"),
-    diasIndisponiveis: z.array(diaIndisponivelSchema),
-})
-
-type GuardaVidasFormValues = z.infer<typeof guardaVidasSchema>
-
-const postos = [
-    { id: 1, nome: "Posto 1 - Praia Central" },
-    { id: 2, nome: "Posto 2 - Praia Norte" },
-    { id: 3, nome: "Posto 3 - Praia Sul" },
-    { id: 4, nome: "Posto 4 - Lagoa" },
-    { id: 5, nome: "Posto 5 - Pier" },
-]
+import {useToast} from "@/hooks/use-toast";
 
 export default function LifeguardForm() {
+
+    const {mutateAsync} = useCadastrarUsuario();
+    const {toast} = useToast();
+    const router = useRouter();
+
+    const preferenciaPostoSchema = z.object({
+        postoId: z.number().optional(),
+        justificativa: z.string().optional(),
+        prioridade: z.number().min(1).max(10, "Prioridade deve ser entre 1 e 10")
+    })
+
+    const diaIndisponivelSchema = z.object({
+        data: z.date({
+            required_error: "Data é obrigatória",
+        }),
+        motivo: z.string().optional(),
+    })
+
+    const guardaVidasSchema = z.object({
+        nome: z.string().min(2, "Nome deve ter pelo menos 2 caracteres"),
+        email: z.string().email("Email inválido"),
+        telefone: z.string().optional(),
+        senha: z.string().min(6, "Senha deve ter pelo menos 6 caracteres"),
+        dataAdmissao: z.date({
+            required_error: "Data de admissão é obrigatória",
+        }),
+        preferenciasPostos: z.array(preferenciaPostoSchema).optional(),
+        diasIndisponiveis: z.array(diaIndisponivelSchema).optional()
+    })
+
+    type GuardaVidasFormValues = z.infer<typeof guardaVidasSchema>
+
+    const postos = [
+        { id: 1, nome: "Posto 1 - Praia Central" },
+        { id: 2, nome: "Posto 2 - Praia Norte" },
+        { id: 3, nome: "Posto 3 - Praia Sul" },
+        { id: 4, nome: "Posto 4 - Lagoa" },
+        { id: 5, nome: "Posto 5 - Pier" },
+    ]
+
 
     const form = useForm<GuardaVidasFormValues>({
         resolver: zodResolver(guardaVidasSchema),
@@ -61,13 +69,7 @@ export default function LifeguardForm() {
             email: "",
             telefone: "",
             dataAdmissao: new Date(),
-            preferenciasPostos: [
-                {
-                    postoId: 0,
-                    justificativa: "",
-                    prioridade: 1,
-                },
-            ],
+            preferenciasPostos: [],
             diasIndisponiveis: [],
         },
     })
@@ -90,17 +92,31 @@ export default function LifeguardForm() {
         name: "diasIndisponiveis",
     })
 
-    function onSubmit(data: GuardaVidasFormValues) {
-
+    async function onSubmit(data: GuardaVidasFormValues) {
+        try {
+            await mutateAsync({
+                ...data,
+                cargo: "GUARDA_VIDAS"
+            });
+        } catch (error) {
+            return toast.error(`Erro ao cadastrar guarda vidas ${error}`)
+        } finally {
+            toast.success("Guarda Vidas cadastrado com sucesso");
+            router.push("/admin/guarda-vidas")
+        }
     }
 
     return (
         <div className="container mx-auto py-8 max-w-4xl">
-            <div className="mb-8">
-                <h1 className="text-3xl font-bold">Cadastro de Guarda-Vidas</h1>
-                <p className="text-muted-foreground">
-                    Preencha as informações do guarda-vidas, suas preferências de postos e dias indisponíveis.
-                </p>
+            <div className={"flex items-center gap-4 mb-8"}>
+                <BackButton href={"/admin/guarda-vidas"}/>
+
+                <div>
+                    <h1 className="text-3xl font-bold">Cadastro de Guarda-Vidas</h1>
+                    <p className="text-muted-foreground">
+                        Preencha as informações do guarda-vidas, suas preferências de postos e dias indisponíveis.
+                    </p>
+                </div>
             </div>
 
             <Form {...form}>
@@ -156,6 +172,20 @@ export default function LifeguardForm() {
 
                                 <FormField
                                     control={form.control}
+                                    name="senha"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Senha</FormLabel>
+                                            <FormControl>
+                                                <Input placeholder="*********" {...field} />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+
+                                <FormField
+                                    control={form.control}
                                     name="dataAdmissao"
                                     render={({ field }) => (
                                         <FormItem className="flex flex-col">
@@ -193,7 +223,6 @@ export default function LifeguardForm() {
                         </CardContent>
                     </Card>
 
-                    {/* Post Preferences */}
                     <Card>
                         <CardHeader>
                             <CardTitle>Preferências de Postos</CardTitle>
@@ -292,7 +321,7 @@ export default function LifeguardForm() {
                                     appendPreferencia({
                                         postoId: 0,
                                         justificativa: "",
-                                        prioridade: preferenciaFields.length + 1,
+                                        prioridade: 0,
                                     })
                                 }
                             >
@@ -302,7 +331,6 @@ export default function LifeguardForm() {
                         </CardContent>
                     </Card>
 
-                    {/* Unavailable Days */}
                     <Card>
                         <CardHeader>
                             <CardTitle>Dias Indisponíveis</CardTitle>
