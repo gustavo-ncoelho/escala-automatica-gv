@@ -1,10 +1,10 @@
-export interface AlocacaoDiaria {
+export type AlocacaoDiaria = {
   data: Date
   guardaVidasId: number
   postoId: number
 }
 
-export interface EscalaMensal {
+export type EscalaMensal = {
   mes: number
   ano: number
   alocacoes: AlocacaoDiaria[]

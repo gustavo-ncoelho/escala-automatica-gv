@@ -1,34 +1,37 @@
-export interface PreferenciaPosto {
+export type PreferenciaPosto = {
     postoId: number
     justificativa: string
     prioridade: number
 }
 
-export interface DiaIndisponivel {
+export type DiaIndisponivel = {
     data: Date
     motivo?: string
 }
 
-interface Estatisticas {
+type Estatisticas = {
     diasTrabalhados: number
     diasRestantes: number
 }
 
-export interface GuardaVidas {
+export type GuardaVidas = {
     id: number
     nome: string
     email: string
-    telefone: string
+    telefone?: string;
     dataAdmissao: Date
-    preferenciasPostos: PreferenciaPosto[]
-    diasIndisponiveis: DiaIndisponivel[]
-    estatisticas: Estatisticas
+    preferenciasPostos?: PreferenciaPosto[]
+    diasIndisponiveis?: DiaIndisponivel[]
+    estatisticas?: Estatisticas
 }
 
 export type GuardaVidasCriacao = Omit<GuardaVidas, "id" | "estatisticas">
+export type GuardaVidasEscala = Omit<GuardaVidas, "dataAdmissao" | "email" | "telefone">
 
-export interface Posto {
+export type Posto = {
     id: number
     nome: string
+    numero: number;
+    alocacaoMaxima: number;
     localizacao: string
 }

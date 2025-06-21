@@ -1,7 +1,7 @@
 export type TipoSolicitacao = "preferencia_posto" | "dia_indisponivel"
 export type StatusSolicitacao = "pendente" | "aprovada" | "rejeitada"
 
-export interface Solicitacao {
+export type Solicitacao = {
   id: number
   guardaVidasId: number
   tipo: TipoSolicitacao
