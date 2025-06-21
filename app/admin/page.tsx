@@ -1,7 +1,7 @@
 "use client"
 
 import {useState} from "react"
-import {GuardaVidas, GuardaVidasEscala, Posto} from "@/types/guarda-vidas"
+import {GuardaVidasEscala, Posto} from "@/types/guarda-vidas"
 import {AlocacaoDiaria} from "@/types/escala";
 import EscalaMensal from "@/components/admin/escala/escala-mensal";
 import {Calendar, Eye, Grid3X3} from "lucide-react";
@@ -81,12 +81,19 @@ export default function EscalaPage() {
 
     const [modoAtual, setModoAtual] = useState<ModoVisualizacao>("mensal")
 
-    const getDiasNoMes = (mes: number, ano: number) => {
-        return new Date(ano, mes, 0).getDate()
-    }
+    const gerarArrayDeDatasDoMes = (mes: number, ano: number): Date[] => {
+        const diasNoMes = new Date(ano, mes, 0).getDate();
 
-    const diasNoMes = getDiasNoMes(mes, ano)
-    const diasArray = Array.from({ length: diasNoMes }, (_, i) => i + 1)
+        return Array.from({length: diasNoMes}, (_, i) => {
+            const dia = i + 1;
+            return new Date(ano, mes - 1, dia);
+        });
+    };
+
+    const mesAtual = 3;
+    const anoAtual = 2025;
+
+    const diasArray = gerarArrayDeDatasDoMes(mesAtual, anoAtual);
 
     return (
         <>

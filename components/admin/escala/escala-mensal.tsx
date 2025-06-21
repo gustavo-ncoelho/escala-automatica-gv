@@ -1,9 +1,10 @@
 "use client"
 
-import {useEffect, useState} from "react"
+import {useEffect} from "react"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import {AlocacaoDiaria} from "@/types/escala";
 import {GuardaVidasEscala} from "@/types/guarda-vidas";
+import {cn} from "@/lib/utils";
 
 interface EscalaMensalProps {
     mes: number
@@ -13,10 +14,7 @@ interface EscalaMensalProps {
     onDayClick?: (dia: number) => void
 }
 
-type ModoVisualizacao = "mensal" | "geral"
-
-export default function EscalaMensal({ mes, ano, alocacoes, guardaVidas, onDayClick }: EscalaMensalProps) {
-    const [modoAtual, setModoAtual] = useState<ModoVisualizacao>("mensal")
+export default function EscalaMensal({ mes, ano, alocacoes, guardaVidas }: EscalaMensalProps) {
 
     const getDiasNoMes = (mes: number, ano: number) => {
         return new Date(ano, mes, 0).getDate()
@@ -48,7 +46,7 @@ export default function EscalaMensal({ mes, ano, alocacoes, guardaVidas, onDayCl
             <Table className="min-w-full">
                 <TableHeader>
                     <TableRow>
-                        <TableHead className="sticky left-0 z-10 min-w-[200px] border-r-2">Guarda-Vidas</TableHead>
+                        <TableHead className="sticky left-0 z-10 bg-background min-w-[200px] border-r-2">Guarda-Vidas</TableHead>
                         {diasArray.map((dia) => (
                             <TableHead key={dia} className="text-center min-w-[40px] p-2">
                                 {dia}
@@ -59,16 +57,16 @@ export default function EscalaMensal({ mes, ano, alocacoes, guardaVidas, onDayCl
                 <TableBody>
                     {guardaVidas.map((guardaVida) => (
                         <TableRow key={guardaVida.id}>
-                            <TableCell className="sticky left-0 z-10 font-medium border-r-2">{guardaVida.nome}</TableCell>
+                            <TableCell className="sticky left-0 z-10 font-medium border-r-2 bg-background">{guardaVida.nome}</TableCell>
                             {diasArray.map((dia) => {
                                 const trabalha = guardaVidaTrabalhaEm(guardaVida.id, dia)
                                 return (
-                                    <TableCell key={dia} className="text-center p-1">
-                                        {trabalha && (
-                                            <div className="w-6 h-6 bg-blue-500 rounded-full mx-auto flex items-center justify-center">
+                                    <TableCell key={dia} className="text-center p-1 border">
+                                            <div className={cn("w-6 h-6 bg-blue-500 rounded-full mx-auto flex items-center justify-center",
+                                                !trabalha && "invisible")}
+                                            >
                                                 <div className="w-3 h-3 bg-white rounded-full"></div>
                                             </div>
-                                        )}
                                     </TableCell>
                                 )
                             })}
