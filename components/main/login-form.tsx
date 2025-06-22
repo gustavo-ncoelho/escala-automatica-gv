@@ -27,7 +27,6 @@ export default function LoginForm() {
     })
 
     const onSubmit = (data: z.infer<typeof loginSchema>) => {
-        console.log("CADHSIAGFIYSDGFLKASDHGFLA")
         const loginPayload = {
             email: data.email,
             senha: data.senha
@@ -46,7 +45,7 @@ export default function LoginForm() {
                     <Form {...form}>
                         <form onSubmit={form.handleSubmit(onSubmit,
                             (errors) => {
-                                console.log("Erros de Validação do Zod:", errors);
+                                console.error("Erros de Validação do Zod:", errors);
                             })} className="space-y-4">
                             <FormField
                                 control={form.control}

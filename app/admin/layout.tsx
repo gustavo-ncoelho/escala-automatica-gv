@@ -9,7 +9,6 @@ export default async function AdminLayout({children,}: Readonly<{ children: Reac
     const user = await getUser();
 
     if (!user || user.cargo !== 'COMANDANTE') {
-        console.log(user?.cargo);
         redirect('/');
     }
 

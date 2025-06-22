@@ -19,9 +19,6 @@ export const useLogin = (): UseMutationResult<Usuario, HttpError, LoginData> => 
         onSuccess: async (user) => {
             await queryClient.invalidateQueries({ queryKey: ['currentUser'] });
 
-            console.log(user.cargo);
-            console.log(user);
-
             if (user.cargo === "COMANDANTE") {
                 router.push('/admin');
             } else {

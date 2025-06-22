@@ -1,72 +1,53 @@
 "use client"
 
-import {useEffect} from "react"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import {AlocacaoDiaria} from "@/types/escala";
-import {GuardaVidasEscala} from "@/types/guarda-vidas";
-import {cn} from "@/lib/utils";
+import {DiaDaSemana, GuardaVidasEscala} from "@/types/guarda-vidas"; // Ajuste o caminho se necessário
+import {cn, guardaVidaTrabalhaEm} from "@/lib/utils";
+import { isSameDay } from 'date-fns';
 
 interface EscalaMensalProps {
-    mes: number
-    ano: number
-    alocacoes: AlocacaoDiaria[]
-    guardaVidas: GuardaVidasEscala[]
-    onDayClick?: (dia: number) => void
+    diasDoMes: Date[];
+    guardaVidas: GuardaVidasEscala[];
+    onDayClick?: (data: Date, guardaVidasId: number) => void;
 }
 
-export default function EscalaMensal({ mes, ano, alocacoes, guardaVidas }: EscalaMensalProps) {
-
-    const getDiasNoMes = (mes: number, ano: number) => {
-        return new Date(ano, mes, 0).getDate()
-    }
-
-    const guardaVidaTrabalhaEm = (guardaVidasId: number, dia: number) => {
-        return alocacoes.some(
-            (alocacao) =>
-                alocacao.guardaVidasId === guardaVidasId &&
-                alocacao.data.getDate() === dia &&
-                alocacao.data.getMonth() === mes - 1 &&
-                alocacao.data.getFullYear() === ano,
-        )
-    }
-
-    const diasNoMes = getDiasNoMes(mes, ano)
-    const diasArray = Array.from({ length: diasNoMes }, (_, i) => i + 1)
-
-    useEffect(() => {
-        console.log('Alocações recebidas:', alocacoes)
-        console.log('Guarda-vidas recebidos:', guardaVidas)
-        console.log('Primeira alocação:', alocacoes[0])
-        console.log('Data da primeira alocação:', alocacoes[0]?.data)
-        console.log('Mês/Ano buscado:', mes, ano)
-    }, [])
-
+export default function EscalaMensal({ diasDoMes, guardaVidas, onDayClick }: EscalaMensalProps) {
     return (
-        <div className="overflow-x-auto border rounded-2xl">
+        <div className="overflow-x-auto border rounded-lg shadow-sm">
             <Table className="min-w-full">
                 <TableHeader>
                     <TableRow>
-                        <TableHead className="sticky left-0 z-10 bg-background min-w-[200px] border-r-2">Guarda-Vidas</TableHead>
-                        {diasArray.map((dia) => (
-                            <TableHead key={dia} className="text-center min-w-[40px] p-2">
-                                {dia}
-                            </TableHead>
-                        ))}
+                        <TableHead className="sticky left-0 z-10 bg-background min-w-[200px] border-r">Guarda-Vidas</TableHead>
+                        {diasDoMes.map((dataDoDia) => {
+                            const diaDaSemana = dataDoDia.toLocaleDateString('pt-BR', { weekday: 'short' });
+                            const isWeekend = dataDoDia.getDay() === 0 || dataDoDia.getDay() === 6;
+                            return (
+                                <TableHead key={dataDoDia.toISOString()} className={cn("text-center min-w-[55px] p-1 border-r last:border-r-0", isWeekend && "bg-muted/50")}>
+                                    <div className="flex flex-col items-center">
+                                        <span className="text-xs font-normal text-muted-foreground capitalize">{diaDaSemana.replace('.', '')}</span>
+                                        <span className="text-base font-bold">{dataDoDia.getDate()}</span>
+                                    </div>
+                                </TableHead>
+                            )
+                        })}
                     </TableRow>
                 </TableHeader>
                 <TableBody>
                     {guardaVidas.map((guardaVida) => (
                         <TableRow key={guardaVida.id}>
-                            <TableCell className="sticky left-0 z-10 font-medium border-r-2 bg-background">{guardaVida.nome}</TableCell>
-                            {diasArray.map((dia) => {
-                                const trabalha = guardaVidaTrabalhaEm(guardaVida.id, dia)
+                            <TableCell className="sticky left-0 z-10 font-medium border-r bg-background">{guardaVida.nome}</TableCell>
+                            {diasDoMes.map((dataDoDia) => {
+                                const isWeekend = dataDoDia.getDay() === 0 || dataDoDia.getDay() === 6;
+                                const trabalha = guardaVidaTrabalhaEm(guardaVida, dataDoDia);
+
                                 return (
-                                    <TableCell key={dia} className="text-center p-1 border">
-                                            <div className={cn("w-6 h-6 bg-blue-500 rounded-full mx-auto flex items-center justify-center",
-                                                !trabalha && "invisible")}
-                                            >
-                                                <div className="w-3 h-3 bg-white rounded-full"></div>
-                                            </div>
+                                    <TableCell
+                                        key={dataDoDia.toISOString()}
+                                        className={cn("text-center p-1 border-r last:border-r-0 cursor-pointer hover:bg-muted/80", isWeekend && "bg-muted/50")}
+                                        onClick={() => onDayClick?.(dataDoDia, guardaVida.id)}
+                                    >
+                                        <div className={cn("w-6 h-6 bg-green-800 rounded-full mx-auto", !trabalha && "invisible")}>
+                                        </div>
                                     </TableCell>
                                 )
                             })}

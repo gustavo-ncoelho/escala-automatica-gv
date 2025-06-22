@@ -1,33 +1,42 @@
+"use client"
+
 import React from "react";
-import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
-import {Badge} from "@/components/ui/badge";
-import {Users} from "lucide-react";
-import {AlocacaoDiaria} from "@/types/escala";
-import {contarGuardaVidasPorDia} from "@/lib/utils";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { GuardaVidasEscala } from "@/types/guarda-vidas";
+import {guardaVidaTrabalhaEm} from "@/lib/utils";
+import {format} from "date-fns";
+import {useRouter} from "next/navigation";
 
 interface VisaoGeralProps {
-    diasArray: Date[]
-    alocacoes: AlocacaoDiaria[];
+    diasDoMes: Date[];
+    guardaVidas: GuardaVidasEscala[];
 }
 
-export default function VisaoGeral ({diasArray, alocacoes}: VisaoGeralProps) {
+export default function VisaoGeral ({diasDoMes, guardaVidas}: VisaoGeralProps) {
 
-    const onDayClick = (dia: number) => {
+    const router = useRouter();
 
+    const contarTrabalhandoNoDia = (dataDoDia: Date): number => {
+        return guardaVidas.filter(gv => guardaVidaTrabalhaEm(gv, dataDoDia)).length;
+    };
+
+    const onDayClick = (dia: Date) => {
+        const dataFormatada = format(dia, 'yyyy-MM-dd');
+
+        router.push(`/admin/${dataFormatada}`);
     }
 
     return(
-        <div className="grid grid-cols-1 sm:grid-cols-10 gap-4">
-            {diasArray.map((dia) => {
-
-                const diaSemana = dia.toLocaleDateString("pt-BR", { weekday: "short" });
-                const quantidadeGuardaVidas = contarGuardaVidasPorDia(dia, alocacoes);
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 lg:grid-cols-10 gap-4">
+            {diasDoMes.map((dia) => {
+                const diaSemana = dia.toLocaleDateString("pt-BR", { weekday: "short" }).replace('.', '');
+                const quantidadeGuardaVidas = contarTrabalhandoNoDia(dia);
 
                 return (
                     <Card
                         key={dia.toISOString()}
                         className={`cursor-pointer transition-all hover:shadow-lg hover:scale-105 border`}
-                        onClick={() => onDayClick?.(dia.getDate())}
+                        onClick={() => onDayClick?.(dia)}
                     >
                         <CardHeader className="pb-2 pt-3">
                             <CardTitle className="text-center">

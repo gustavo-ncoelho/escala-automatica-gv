@@ -30,7 +30,7 @@ export default function EscalaDiaria({data, postos, alocacoes, guardaVidas}: Esc
 
         guardaVidasAlocados.forEach((nome) => {
             slots.push(
-                <div key={`${posto.id}-${nome}`} className="border-b border-gray-300 p-2 min-h-[40px] bg-blue-50">
+                <div key={`${posto.id}-${nome}`} className="border-b border-gray-300 p-2 min-h-[40px]">
                     <span className="text-sm font-medium text-blue-900">{nome}</span>
                 </div>,
             )
@@ -39,7 +39,7 @@ export default function EscalaDiaria({data, postos, alocacoes, guardaVidas}: Esc
         const slotsVazios = posto.alocacaoMaxima - guardaVidasAlocados.length
         for (let i = 0; i < slotsVazios; i++) {
             slots.push(
-                <div key={`${posto.id}-empty-${i}`} className="border-b border-gray-300 p-2 min-h-[40px] bg-gray-50">
+                <div key={`${posto.id}-empty-${i}`} className="border-b border-gray-300 p-2 min-h-[40px]">
                     <span className="text-gray-400 text-sm">Vago</span>
                 </div>,
             )
@@ -57,7 +57,7 @@ export default function EscalaDiaria({data, postos, alocacoes, guardaVidas}: Esc
     }
 
     return (
-        <div className="max-w-7xl mx-auto p-6 bg-white">
+        <div className="max-w-7xl mx-auto p-6">
             <div className="text-center mb-8 border-b-2 border-black pb-4">
                 <div className="flex items-center justify-center gap-2 mb-2">
                     <Calendar className="h-5 w-5" />
@@ -106,34 +106,6 @@ export default function EscalaDiaria({data, postos, alocacoes, guardaVidas}: Esc
                         </Card>
                     )
                 })}
-            </div>
-
-            {/* Resumo */}
-            <div className="mt-8 p-4 bg-gray-50 rounded-lg">
-                <h4 className="font-semibold mb-2">Resumo da Escala</h4>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-                    <div>
-                        <span className="font-medium">Total de Postos:</span>
-                        <span className="ml-2">{postos.length}</span>
-                    </div>
-                    <div>
-                        <span className="font-medium">Vagas Totais:</span>
-                        <span className="ml-2">{postos.reduce((acc, posto) => acc + posto.alocacaoMaxima, 0)}</span>
-                    </div>
-                    <div>
-                        <span className="font-medium">Guarda-vidas Alocados:</span>
-                        <span className="ml-2">
-              {alocacoes.filter((a) => a.data.toDateString() === data.toDateString()).length}
-            </span>
-                    </div>
-                    <div>
-                        <span className="font-medium">Vagas Disponíveis:</span>
-                        <span className="ml-2">
-              {postos.reduce((acc, posto) => acc + posto.alocacaoMaxima, 0) -
-                  alocacoes.filter((a) => a.data.toDateString() === data.toDateString()).length}
-            </span>
-                    </div>
-                </div>
             </div>
         </div>
     )

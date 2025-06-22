@@ -67,8 +67,6 @@ function axiosInstance({withoutRetry = false, headers = {}}: {
                     }
                 } catch (refreshError) {
 
-                    console.error('Erro ao tentar refrescar o token:', refreshError);
-
                     /*if (isServer()) {
                         redirect('/');
                     } else {

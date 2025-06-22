@@ -52,7 +52,7 @@ export async function decrypt(session: string | undefined = ''): Promise<Session
 
         return payload as SessionPayload
     } catch (error) {
-        console.log(`Failed to verify session: ${error}`)
+        console.error(`Failed to verify session: ${error}`)
     }
 }
 

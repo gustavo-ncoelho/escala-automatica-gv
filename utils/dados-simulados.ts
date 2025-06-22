@@ -1,109 +1,54 @@
-import type {GuardaVidas, Posto} from "@/types/guarda-vidas"
-import type {EscalaMensal} from "@/types/escala"
+import {GuardaVidas, Posto} from "@/types/guarda-vidas"
+import {AlocacaoDiaria} from "@/types/escala"
 import type {Solicitacao} from "@/types/solicitacao"
 
-export const dadosGuardaVidas: GuardaVidas = {
-    id: 1,
-    nome: "Carlos Silva",
-    email: "carlos.silva@email.com",
-    telefone: "(47) 99123-4567",
-    dataAdmissao: new Date("2020-01-15"),
-    preferenciasPostos: [
-        {postoId: 1, justificativa: "Próximo à minha residência, facilitando o deslocamento."},
-        {postoId: 3, justificativa: "Tenho experiência com as correntes desta praia."},
-        {postoId: 5, justificativa: "Ambiente mais tranquilo, ideal para dias de menor movimento."},
-    ],
-    diasIndisponiveis: [
-        {data: new Date("2023-07-10"), motivo: "Consulta médica"},
-        {data: new Date("2023-07-20"), motivo: "Compromisso familiar"},
-    ],
-    colaboradoresNaoPreferidos: [{guardaVidasId: 3, motivo: "Diferenças na abordagem de trabalho"}],
-    estatisticas: {
-        diasTrabalhados: 12,
-        diasRestantes: 8,
-    },
-}
-
-export const postos: Posto[] = [
-    {id: 1, nome: "Posto 1 - Praia Central", localizacao: "Praia Central"},
-    {id: 2, nome: "Posto 2 - Praia do Forte", localizacao: "Praia do Forte"},
-    {id: 3, nome: "Posto 3 - Praia dos Amores", localizacao: "Praia dos Amores"},
-    {id: 4, nome: "Posto 4 - Praia Brava", localizacao: "Praia Brava"},
-    {id: 5, nome: "Posto 5 - Praia Mansa", localizacao: "Praia Mansa"},
-]
-
-export const outrosGuardaVidas: GuardaVidas[] = [
-    {
-        id: 2,
-        nome: "Ana Oliveira",
-        email: "ana.oliveira@email.com",
-        telefone: "(47) 99234-5678",
-        dataAdmissao: new Date("2019-03-20"),
-        preferenciasPostos: [
-            {postoId: 2, justificativa: "Experiência prévia neste posto."},
-            {postoId: 3, justificativa: "Familiaridade com as condições do mar nesta praia."},
-        ],
+export const guardaVidasMock: GuardaVidas[] = [
+    { id: 1, nome: "Samuel Cruz", email: "samuel.cruz@emailficticio.com", telefone: "(51) 99123-4567", dataAdmissao: new Date("2022-11-15"), diasDeFolga: ["segunda", "quinta-feira"],
         diasIndisponiveis: [
-            {data: new Date("2023-07-05"), motivo: "Curso de primeiros socorros"},
-            {data: new Date("2023-07-15"), motivo: "Férias"},
-        ],
-        colaboradoresNaoPreferidos: [],
-        estatisticas: {
-            diasTrabalhados: 15,
-            diasRestantes: 5,
-        },
-    },
-    {
-        id: 3,
-        nome: "Pedro Santos",
-        email: "pedro.santos@email.com",
-        telefone: "(47) 99345-6789",
-        dataAdmissao: new Date("2021-05-10"),
-        preferenciasPostos: [
-            {postoId: 3, justificativa: "Proximidade da minha residência."},
-            {postoId: 4, justificativa: "Familiaridade com o local."},
-        ],
-        diasIndisponiveis: [{data: new Date("2023-07-25"), motivo: "Treinamento"}],
-        colaboradoresNaoPreferidos: [{guardaVidasId: 1, motivo: "Diferenças na abordagem de trabalho"}],
-        estatisticas: {
-            diasTrabalhados: 10,
-            diasRestantes: 10,
-        },
-    },
+            { data: new Date(2025, 2, 14), motivo: "Consulta médica" }
+        ] },
+    { id: 2, nome: "Samuel Felisberto", email: "samuel.felisberto@emailficticio.com", telefone: "(51) 99234-5678", dataAdmissao: new Date("2021-03-20"), diasDeFolga: ["terça-feira", "sexta-feira"] },
+    { id: 3, nome: "Luan Silva", email: "luan.silva@emailficticio.com", telefone: "(51) 99345-6789", dataAdmissao: new Date("2023-01-10"), diasDeFolga: ["quarta-feira", "sabado"] },
+    { id: 4, nome: "Luis Santos", email: "luis.santos@emailficticio.com", telefone: "(51) 99456-7890", dataAdmissao: new Date("2020-12-01"), diasDeFolga: ["quinta-feira", "domingo"] },
+    { id: 5, nome: "Lucio Oliveira", email: "lucio.oliveira@emailficticio.com", telefone: "(51) 99567-8901", dataAdmissao: new Date("2023-02-25"), diasDeFolga: ["sexta-feira", "segunda"] },
+    { id: 6, nome: "Emanoel Costa", email: "emanoel.costa@emailficticio.com", telefone: "(51) 99678-9012", dataAdmissao: new Date("2022-05-18"), diasDeFolga: ["sabado", "terça-feira"],
+        diasIndisponiveis: [
+            { data: new Date(2025, 2, 14), motivo: "Consulta médica" }
+        ] },
+    { id: 7, nome: "Gustavo Lopes", email: "gustavo.lopes@emailficticio.com", telefone: "(51) 99789-0123", dataAdmissao: new Date("2024-11-05"), diasDeFolga: ["domingo", "quarta-feira"] },
+    { id: 8, nome: "Thomas Almeida", email: "thomas.almeida@emailficticio.com", telefone: "(51) 99890-1234", dataAdmissao: new Date("2023-10-30"), diasDeFolga: ["segunda", "sexta-feira"] },
+    { id: 9, nome: "Lenoir Pereira", email: "lenoir.pereira@emailficticio.com", telefone: "(51) 99901-2345", dataAdmissao: new Date("2019-12-12"), diasDeFolga: ["terça-feira", "quinta-feira"] },
+    { id: 10, nome: "Moacir Souza", email: "moacir.souza@emailficticio.com", telefone: "(51) 98123-4567", dataAdmissao: new Date("2021-01-07"), diasDeFolga: ["quarta-feira", "domingo"] },
+    { id: 11, nome: "Juliano Ferreira", email: "juliano.ferreira@emailficticio.com", telefone: "(51) 98234-5678", dataAdmissao: new Date("2024-02-14"), diasDeFolga: ["sabado", "segunda"] },
+    { id: 12, nome: "Kaian Rodrigues", email: "kaian.rodrigues@emailficticio.com", telefone: "(51) 98345-6789", dataAdmissao: new Date("2025-01-20"), diasDeFolga: ["terça-feira", "quinta-feira"] },
 ]
 
-export const guardaVidas = [dadosGuardaVidas, ...outrosGuardaVidas]
+export const postosMock: Posto[] = [
+    { id: 1, nome: "Posto 1", alocacaoMaxima: 3, localizacao: "Praia Central", numero: 1 },
+    { id: 2, nome: "Posto 2", alocacaoMaxima: 3, localizacao: "Praia Norte", numero: 2 },
+    { id: 3, nome: "Posto 3", alocacaoMaxima: 4, localizacao: "Praia Sul", numero: 3 },
+    { id: 4, nome: "Posto 4", alocacaoMaxima: 3, localizacao: "Canto Direito", numero: 4 }
+]
 
-export const escalaMensal: EscalaMensal = {
-    mes: 7,
-    ano: 2023,
-    alocacoes: [
-        {data: new Date("2023-07-01"), guardaVidasId: 1, postoId: 1},
-        {data: new Date("2023-07-02"), guardaVidasId: 1, postoId: 1},
-        {data: new Date("2023-07-03"), guardaVidasId: 1, postoId: 3},
-        {data: new Date("2023-07-04"), guardaVidasId: 1, postoId: 3},
-        {data: new Date("2023-07-05"), guardaVidasId: 1, postoId: 1},
-        {data: new Date("2023-07-08"), guardaVidasId: 1, postoId: 5},
-        {data: new Date("2023-07-09"), guardaVidasId: 1, postoId: 5},
-        {data: new Date("2023-07-12"), guardaVidasId: 1, postoId: 1},
-        {data: new Date("2023-07-13"), guardaVidasId: 1, postoId: 1},
-        {data: new Date("2023-07-15"), guardaVidasId: 1, postoId: 3},
-        {data: new Date("2023-07-16"), guardaVidasId: 1, postoId: 3},
-        {data: new Date("2023-07-19"), guardaVidasId: 1, postoId: 5},
 
-        {data: new Date("2023-07-22"), guardaVidasId: 1, postoId: 1},
-        {data: new Date("2023-07-23"), guardaVidasId: 1, postoId: 1},
-        {data: new Date("2023-07-26"), guardaVidasId: 1, postoId: 3},
-        {data: new Date("2023-07-27"), guardaVidasId: 1, postoId: 3},
-        {data: new Date("2023-07-29"), guardaVidasId: 1, postoId: 5},
-        {data: new Date("2023-07-30"), guardaVidasId: 1, postoId: 5},
+export const alocacoesMock: AlocacaoDiaria[] = [
+    { data: new Date("2025-03-14"), guardaVidasId: 1, postoId: 2 },
+    { data: new Date("2025-03-14"), guardaVidasId: 2, postoId: 2 },
 
-        {data: new Date("2023-07-01"), guardaVidasId: 2, postoId: 2},
-        {data: new Date("2023-07-02"), guardaVidasId: 2, postoId: 2},
-        {data: new Date("2023-07-03"), guardaVidasId: 3, postoId: 4},
-        {data: new Date("2023-07-04"), guardaVidasId: 3, postoId: 4},
-    ],
-}
+    { data: new Date("2025-03-14"), guardaVidasId: 3, postoId: 4 },
+    { data: new Date("2025-03-14"), guardaVidasId: 4, postoId: 4 },
+
+    { data: new Date("2025-03-14"), guardaVidasId: 5, postoId: 1 },
+    { data: new Date("2025-03-14"), guardaVidasId: 6, postoId: 1 },
+    { data: new Date("2025-03-14"), guardaVidasId: 7, postoId: 1 },
+    { data: new Date("2025-03-14"), guardaVidasId: 8, postoId: 1 },
+
+    { data: new Date("2025-03-14"), guardaVidasId: 9, postoId: 3 },
+    { data: new Date("2025-03-14"), guardaVidasId: 10, postoId: 3 },
+    { data: new Date("2025-03-14"), guardaVidasId: 11, postoId: 3 },
+    { data: new Date("2025-03-14"), guardaVidasId: 12, postoId: 3 },
+]
+
 
 export const solicitacoes: Solicitacao[] = [
     {
@@ -129,16 +74,6 @@ export const solicitacoes: Solicitacao[] = [
         dataAtualizacao: new Date("2023-07-12"),
     },
     {
-        id: 3,
-        guardaVidasId: 1,
-        tipo: "colega_nao_preferido",
-        colegaNaoPreferido: 3,
-        motivo: "Diferenças na abordagem de trabalho",
-        status: "rejeitada",
-        dataCriacao: new Date("2023-07-08"),
-        dataAtualizacao: new Date("2023-07-09"),
-    },
-    {
         id: 4,
         guardaVidasId: 2,
         tipo: "dia_indisponivel",
@@ -151,7 +86,7 @@ export const solicitacoes: Solicitacao[] = [
     },
 ]
 
-export function obterNomeGuardaVidas(id: number): string {
+/*export function obterNomeGuardaVidas(id: number): string {
     if (id === dadosGuardaVidas.id) return dadosGuardaVidas.nome
 
     const gv = outrosGuardaVidas.find((g) => g.id === id)
@@ -161,7 +96,7 @@ export function obterNomeGuardaVidas(id: number): string {
 export function obterNomePosto(id: number): string {
     const posto = postos.find((p) => p.id === id)
     return posto ? posto.nome : "Desconhecido"
-}
+}*/
 
 export function formatarData(data: Date): string {
     return data.toLocaleDateString("pt-BR")
