@@ -2,7 +2,7 @@ export type DiaDaSemana = "segunda" | "terça-feira" | "quarta-feira" | "quinta-
 
 export type PreferenciaPosto = {
     postoId: number
-    justificativa: string
+    justificativa?: string
     prioridade: number
 }
 
@@ -12,8 +12,9 @@ export type DiaIndisponivel = {
 }
 
 type Estatisticas = {
-    diasTrabalhados: number
-    diasRestantes: number
+    diasTrabalhadosNaTemporada: number,
+    postoMaisTrabalhado: number,
+    diasDaSemanaMaisFolgado: DiaDaSemana | DiaDaSemana[]
 }
 
 export type GuardaVidasCriacao = Omit<GuardaVidas, "id" | "estatisticas">

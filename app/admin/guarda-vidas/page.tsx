@@ -2,7 +2,7 @@ import {Button} from "@/components/ui/button"
 import {Card, CardContent} from "@/components/ui/card"
 import {Input} from "@/components/ui/input"
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table"
-import {guardaVidas} from "@/utils/dados-simulados"
+import {guardaVidasMock} from "@/utils/dados-simulados"
 import {Plus, Search} from "lucide-react"
 import Link from "next/link"
 
@@ -65,7 +65,7 @@ export default function GuardaVidasPage() {
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {guardaVidas.map((gv) => (
+                            {guardaVidasMock.map((gv) => (
                                 <TableRow key={gv.id}>
                                     <TableCell className={"font-medium"}>
                                         <div className={layout}>
@@ -89,7 +89,7 @@ export default function GuardaVidasPage() {
                                     </TableCell>
                                     <TableCell>
                                         <div className={layout}>
-                                            {gv.estatisticas.diasTrabalhados}
+                                            {gv.estatisticas?.diasTrabalhadosNaTemporada}
                                         </div>
                                     </TableCell>
                                     <TableCell className="text-right">

@@ -3,6 +3,7 @@ import { Badge } from "@/components/ui/badge"
 import { Calendar, MapPin, Users } from "lucide-react"
 import {GuardaVidas, Posto} from "@/types/guarda-vidas";
 import {AlocacaoDiaria} from "@/types/escala";
+import { isSameDay } from "date-fns";
 
 interface EscalaDiariaProps {
     data: Date
@@ -15,13 +16,15 @@ export default function EscalaDiaria({data, postos, alocacoes, guardaVidas}: Esc
 
     const getGuardaVidasPorPosto = (postoId: number) => {
         const alocacoesPosto = alocacoes.filter(
-            (alocacao) => alocacao.postoId === postoId && alocacao.data.toDateString() === data.toDateString(),
-        )
+            (alocacao) => {
+                return alocacao.postoId === postoId && isSameDay(alocacao.data, data);
+            }
+        );
 
         return alocacoesPosto.map((alocacao) => {
-            const guardaVida = guardaVidas.find((gv) => gv.id === alocacao.guardaVidasId)
-            return guardaVida?.nome || "Não encontrado"
-        })
+            const guardaVida = guardaVidas.find((gv) => gv.id === alocacao.guardaVidasId);
+            return guardaVida?.nome || "Não encontrado";
+        });
     }
 
     const criarSlots = (posto: Posto) => {

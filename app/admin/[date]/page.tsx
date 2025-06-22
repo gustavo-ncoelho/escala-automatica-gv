@@ -4,14 +4,17 @@ import React from "react";
 import EscalaDiaria from "@/components/admin/escala/escala-diaria";
 import { alocacoesMock, guardaVidasMock, postosMock } from "@/utils/dados-simulados";
 import { useParams } from "next/navigation";
-import { parseISO } from 'date-fns';
+import {parseDateStringLocal} from "@/lib/utils";
 
 export default function EscalaDiariaPage () {
     const params = useParams();
-
     const dateParam = params.date as string | undefined;
 
-    const dataObjeto = parseISO(dateParam ?? "");
+    if (!dateParam) {
+        return <div>Carregando...</div>;
+    }
+
+    const dataObjeto = parseDateStringLocal(dateParam);
 
     return (
         <EscalaDiaria
