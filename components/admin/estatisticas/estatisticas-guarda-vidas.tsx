@@ -1,17 +1,17 @@
 import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card"
 import {Progress} from "@/components/ui/progress"
-import {guardaVidas} from "@/utils/dados-simulados"
+import {guardaVidasMock} from "@/utils/dados-simulados"
 
 export function EstatisticasGuardaVidas() {
-    const guardaVidasMaisAtivos = [...guardaVidas]
-        .sort((a, b) => b.estatisticas.diasTrabalhados - a.estatisticas.diasTrabalhados)
+    const guardaVidasMaisAtivos = [...guardaVidasMock]
+        .sort((a, b) => b.estatisticas?.diasTrabalhadosNaTemporada - a.estatisticas?.diasTrabalhadosNaTemporada)
         .slice(0, 5)
 
-    const guardaVidasMenosAtivos = [...guardaVidas]
-        .sort((a, b) => a.estatisticas.diasTrabalhados - b.estatisticas.diasTrabalhados)
+    const guardaVidasMenosAtivos = [...guardaVidasMock]
+        .sort((a, b) => a.estatisticas?.diasTrabalhadosNaTemporada - b.estatisticas?.diasTrabalhadosNaTemporada)
         .slice(0, 5)
 
-    const maxDiasTrabalhados = Math.max(...guardaVidas.map((gv) => gv.estatisticas.diasTrabalhados))
+    const maxDiasTrabalhados = Math.max(...guardaVidasMock.map((gv) => gv.estatisticas?.diasTrabalhadosNaTemporada))
 
     return (
         <div className="w-3/5 gap-6">

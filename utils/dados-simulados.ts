@@ -69,7 +69,7 @@ export const guardaVidasMock: GuardaVidas[] = [
         id: 9, nome: "Lenoir Pereira", email: "lenoir.pereira@emailficticio.com", telefone: "(51) 99901-2345", dataAdmissao: new Date("2019-12-12"), diasDeFolga: ["terça-feira", "quinta-feira"],
         preferenciasPostos: [
             { postoId: 4, prioridade: 7 },
-            { postoId: 1, prioridade: 10 }
+            { postoId: 2, prioridade: 10 }
         ]
     },
     {
@@ -103,21 +103,21 @@ export const postosMock: Posto[] = [
 ]
 
 export const alocacoesMock: AlocacaoDiaria[] = [
-    { data: new Date(2025, 2, 14), guardaVidasId: 1, postoId: 2 },
-    { data: new Date(2025, 2, 14), guardaVidasId: 2, postoId: 2 },
+    {id: "1", data: new Date(2025, 2, 14), guardaVidasId: 1, postoId: 2 },
+    {id: "2", data: new Date(2025, 2, 14), guardaVidasId: 2, postoId: 2 },
 
-    { data: new Date(2025, 2, 14), guardaVidasId: 3, postoId: 4 },
-    { data: new Date(2025, 2, 14), guardaVidasId: 4, postoId: 4 },
+    {id: "3", data: new Date(2025, 2, 14), guardaVidasId: 3, postoId: 4 },
+    {id: "4", data: new Date(2025, 2, 14), guardaVidasId: 4, postoId: 4 },
 
-    { data: new Date(2025, 2, 14), guardaVidasId: 5, postoId: 1 },
-    { data: new Date(2025, 2, 14), guardaVidasId: 6, postoId: 1 },
-    { data: new Date(2025, 2, 14), guardaVidasId: 7, postoId: 1 },
-    { data: new Date(2025, 2, 14), guardaVidasId: 8, postoId: 1 },
+    {id: "5", data: new Date(2025, 2, 14), guardaVidasId: 5, postoId: 1 },
+    {id: "6", data: new Date(2025, 2, 14), guardaVidasId: 6, postoId: 1 },
+    {id: "7", data: new Date(2025, 2, 14), guardaVidasId: 7, postoId: 1 },
+    {id: "8", data: new Date(2025, 2, 14), guardaVidasId: 8, postoId: 1 },
 
-    { data: new Date(2025, 2, 14), guardaVidasId: 9, postoId: 3 },
-    { data: new Date(2025, 2, 14), guardaVidasId: 10, postoId: 3 },
-    { data: new Date(2025, 2, 14), guardaVidasId: 11, postoId: 3 },
-    { data: new Date(2025, 2, 14), guardaVidasId: 12, postoId: 3 },
+    {id: "9", data: new Date(2025, 2, 14), guardaVidasId: 9, postoId: 3 },
+    {id: "10", data: new Date(2025, 2, 14), guardaVidasId: 10, postoId: 3 },
+    {id: "11", data: new Date(2025, 2, 14), guardaVidasId: 11, postoId: 3 },
+    {id: "12", data: new Date(2025, 2, 14), guardaVidasId: 12, postoId: 3 },
 ]
 
 export const solicitacoes: Solicitacao[] = [
