@@ -6,7 +6,7 @@ import {Input} from "@/components/ui/input"
 import {Label} from "@/components/ui/label"
 import {Slider} from "@/components/ui/slider"
 import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs"
-import {guardaVidas, postos} from "@/utils/dados-simulados"
+import {guardaVidasMock, postosMock} from "@/utils/dados-simulados"
 import {ArrowLeft, Calendar, Plus, Trash} from "lucide-react"
 import Link from "next/link"
 import {useRouter, useParams} from "next/navigation"
@@ -17,7 +17,7 @@ export default function EditarGuardaVidas() {
     const params = useParams();
     const router = useRouter()
     const id = Number(params.id);
-    const guardaVida = guardaVidas.find((gv) => gv.id === id)
+    const guardaVida = guardaVidasMock.find((gv) => gv.id === id)
 
     const [isLoading, setIsLoading] = useState(true)
     const [preferencias, setPreferencias] = useState({} as Record<number, number>)
@@ -27,22 +27,27 @@ export default function EditarGuardaVidas() {
         if (!guardaVida) {
             router.push("/admin/guarda-vidas")
         } else {
-            setPreferencias(
-                guardaVida.preferenciasPostos.reduce(
-                    (acc, pref) => {
-                        acc[pref.postoId] = pref.prioridade
-                        return acc
-                    },
-                    {} as Record<number, number>,
-                ),
-            )
+            if (guardaVida.preferenciasPostos) {
+                setPreferencias(
+                    guardaVida.preferenciasPostos.reduce(
+                        (acc, pref) => {
+                            acc[pref.postoId] = pref.prioridade
+                            return acc
+                        },
+                        {} as Record<number, number>,
+                    ),
+                )
+            }
 
-            setDiasIndisponiveis(
-                guardaVida.diasIndisponiveis.map((dia) => ({
-                    data: dia.data.toISOString().split("T")[0],
-                    motivo: dia.motivo,
-                })),
-            );
+            if (guardaVida.diasIndisponiveis) {
+                setDiasIndisponiveis(
+                    guardaVida.diasIndisponiveis.map((dia) => ({
+                        data: dia.data.toISOString().split("T")[0],
+                        motivo: dia.motivo,
+                    })),
+                );
+            }
+
             setIsLoading(false)
         }
     }, [guardaVida, router])
@@ -92,7 +97,7 @@ export default function EditarGuardaVidas() {
                         </CardHeader>
                         <CardContent>
                             <div className="space-y-6">
-                                {postos.map((posto) => (
+                                {postosMock.map((posto) => (
                                     <div key={posto.id} className="space-y-2">
                                         <div className="flex items-center justify-between">
                                             <Label htmlFor={`posto-${posto.id}`}>{posto.nome}</Label>

@@ -4,9 +4,10 @@ import {Badge} from "@/components/ui/badge"
 import {Button} from "@/components/ui/button"
 import {Card} from "@/components/ui/card"
 import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover"
-import {escalaMensal, obterNomePosto} from "@/utils/dados-simulados"
 import {ChevronLeft, ChevronRight, MapPin} from "lucide-react"
 import {useState} from "react"
+import {filtrarAlocacoesPorMes, obterNomePosto} from "@/lib/utils";
+import {alocacoesMock} from "@/utils/dados-simulados";
 
 interface CalendarioMensalProps {
     mes: number
@@ -30,12 +31,12 @@ export function CalendarioMensal({mes, ano}: CalendarioMensalProps) {
     const diasSemana = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"]
 
     const getAlocacaoDoDia = (data: Date) => {
-        return escalaMensal.alocacoes.find(
+        return filtrarAlocacoesPorMes(3, 2025, alocacoesMock).find(
             (a) =>
                 a.data.getDate() === data.getDate() &&
                 a.data.getMonth() === data.getMonth() &&
                 a.data.getFullYear() === data.getFullYear() &&
-                a.guardaVidasId === 1, // ID do guarda-vidas logado
+                a.guardaVidasId === 1,
         )
     }
 

@@ -5,6 +5,7 @@ import "./globals.css"
 import {ThemeProvider} from "@/components/theme-provider"
 import QueryProvider from "@/components/providers/query-provider";
 import {Toaster} from "@/components/ui/sonner";
+import {AuthProvider} from "@/contexts/auth-context";
 
 const inter = Inter({subsets: ["latin"]})
 
@@ -19,8 +20,10 @@ export default function RootLayout({children,}: Readonly<{ children: React.React
         <body className={inter.className}>
         <QueryProvider>
             <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
-                {children}
-                <Toaster/>
+                <AuthProvider>
+                    {children}
+                    <Toaster/>
+                </AuthProvider>
             </ThemeProvider>
         </QueryProvider>
         </body>

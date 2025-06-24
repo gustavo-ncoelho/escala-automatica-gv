@@ -1,11 +1,11 @@
 import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card"
 import {Progress} from "@/components/ui/progress"
-import {escalaMensal, postos} from "@/utils/dados-simulados"
+import {alocacoesMock, postosMock} from "@/utils/dados-simulados"
+import {filtrarAlocacoesPorMes} from "@/lib/utils";
 
 export function EstatisticasPostos() {
-    // Calcular a frequência de alocação por posto
-    const alocacoesPorPosto = postos.map((posto) => {
-        const alocacoes = escalaMensal.alocacoes.filter((a) => a.postoId === posto.id)
+    const alocacoesPorPosto = postosMock.map((posto) => {
+        const alocacoes = filtrarAlocacoesPorMes(3, 2025, alocacoesMock)
         return {
             posto,
             totalAlocacoes: alocacoes.length,
@@ -31,7 +31,7 @@ export function EstatisticasPostos() {
                             <div key={posto.id} className="space-y-2">
                                 <div className="flex items-center justify-between text-sm">
                                     <div className="font-medium">{posto.nome}</div>
-                                    <div className="text-muted-foreground">{totalAlocacoes} alocações</div>
+                                    <div className="text-muted-foreground">{totalAlocacoes ?? 0} alocações</div>
                                 </div>
                                 <Progress value={(totalAlocacoes / maxAlocacoes) * 100}/>
                             </div>

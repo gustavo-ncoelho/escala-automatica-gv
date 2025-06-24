@@ -4,6 +4,7 @@ import {AlocacaoDiaria} from "@/types/escala";
 import {isSameDay} from "date-fns";
 import {DiaDaSemana, GuardaVidas, GuardaVidasEscala, Posto} from "@/types/guarda-vidas";
 import {v4 as uuid} from "uuid";
+import {guardaVidasMock, postosMock} from "@/utils/dados-simulados";
 
 export function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs))
@@ -58,6 +59,28 @@ export const contarGuardaVidasPorDia = (targetDate: Date, alocacoes: AlocacaoDia
     );
 
     return alocacoesDoDia.length;
+}
+
+export const filtrarAlocacoesPorMes = (mes: number, ano: number, todasAsAlocacoes: AlocacaoDiaria[]): AlocacaoDiaria[] => {
+    return todasAsAlocacoes.filter(alocacao => {
+        const dataDaAlocacao = new Date(alocacao.data);
+
+        const mesmoAno = dataDaAlocacao.getFullYear() === ano;
+
+        const mesmoMes = dataDaAlocacao.getMonth() === mes - 1;
+
+        return mesmoAno && mesmoMes;
+    });
+};
+
+export function obterNomeGuardaVidas(id: number): string {
+    const gv = guardaVidasMock.find((g) => g.id === id)
+    return gv ? gv.nome : "Desconhecido"
+}
+
+export function obterNomePosto(id: number): string {
+    const posto = postosMock.find((p) => p.id === id)
+    return posto ? posto.nome : "Desconhecido"
 }
 
 export const existeAlocacaoNoDia = (dataAlvo: Date, alocacoes: AlocacaoDiaria[]): boolean => {

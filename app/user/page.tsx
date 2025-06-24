@@ -7,17 +7,19 @@ import {CalendarioMensal} from "@/components/user/calendario/calendario-mensal"
 import {ListaEscalas} from "@/components/user/calendario/lista-escalas"
 import {CalendarDays, List} from "lucide-react"
 import {useState} from "react"
-import {dadosGuardaVidas} from "@/utils/dados-simulados"
+import {useAuthContext} from "@/contexts/auth-context";
 
 export default function CalendarioPage() {
-    const [visualizacao, setVisualizacao] = useState<"calendario" | "lista">("calendario")
-    const [mes, setMes] = useState("7")
-    const [ano, setAno] = useState("2023")
+    const [visualizacao, setVisualizacao] = useState<"calendario" | "lista">("calendario");
+    const [mes, setMes] = useState("7");
+    const [ano, setAno] = useState("2023");
+
+    const {usuario} = useAuthContext();
 
     return (
         <div className="space-y-6">
             <div>
-                <h1 className="text-2xl font-bold tracking-tight md:text-3xl">Olá, {dadosGuardaVidas.nome}</h1>
+                <h1 className="text-2xl font-bold tracking-tight md:text-3xl">Olá, {usuario?.login}</h1>
                 <p className="text-muted-foreground">Visualize sua escala mensal de trabalho.</p>
             </div>
 
@@ -51,9 +53,9 @@ export default function CalendarioPage() {
                                         <SelectValue placeholder="Selecione o ano"/>
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="2022">2022</SelectItem>
-                                        <SelectItem value="2023">2023</SelectItem>
-                                        <SelectItem value="2024">2024</SelectItem>
+                                        <SelectItem value="2025">2025</SelectItem>
+                                        <SelectItem value="2026">2026</SelectItem>
+                                        <SelectItem value="2027">2027</SelectItem>
                                     </SelectContent>
                                 </Select>
                             </div>

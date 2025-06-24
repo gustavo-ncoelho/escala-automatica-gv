@@ -1,9 +1,9 @@
 import {Badge} from "@/components/ui/badge"
 import type {Solicitacao} from "@/types/solicitacao"
-import {formatarData, obterNomeGuardaVidas, obterNomePosto} from "@/utils/dados-simulados"
-import {Calendar, Check, Clock, MapPinHouse, User, X} from "lucide-react"
+import {formatarData} from "@/utils/dados-simulados"
+import {Check, Clock, X} from "lucide-react"
 import Link from "next/link"
-import {cn} from "@/lib/utils";
+import {cn, obterNomePosto} from "@/lib/utils";
 
 interface ListaSolicitacoesProps {
     solicitacoes: Solicitacao[]
@@ -42,8 +42,6 @@ export function ListaSolicitacoes({solicitacoes}: ListaSolicitacoesProps) {
                 return "Alteração de Posto"
             case "dia_indisponivel":
                 return "Dia Indisponível"
-            case "colega_nao_preferido":
-                return "Colega Não Preferido"
             default:
                 return "Solicitação"
         }
@@ -86,13 +84,6 @@ export function ListaSolicitacoes({solicitacoes}: ListaSolicitacoesProps) {
                                 <div className="flex items-start gap-2 mt-2">
                                     <span className={"font-semibold"}>Data: </span>
                                     <p>{formatarData(solicitacao.dataSolicitada)}</p>
-                                </div>
-                            )}
-
-                            {solicitacao.tipo === "colega_nao_preferido" && solicitacao.colegaNaoPreferido && (
-                                <div className="flex items-start gap-2 mt-2">
-                                    <span className={"font-semibold"}>Colega: </span>
-                                    <p>{obterNomeGuardaVidas(solicitacao.colegaNaoPreferido)}</p>
                                 </div>
                             )}
 

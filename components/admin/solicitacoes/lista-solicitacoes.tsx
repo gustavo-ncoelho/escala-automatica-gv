@@ -3,9 +3,10 @@
 import {Button} from "@/components/ui/button"
 import {Card, CardContent, CardFooter, CardHeader} from "@/components/ui/card"
 import type {Solicitacao} from "@/types/solicitacao"
-import {formatarData, obterNomeGuardaVidas, obterNomePosto} from "@/utils/dados-simulados"
-import {Calendar, Check, Clock, Edit, X} from "lucide-react"
+import {formatarData} from "@/utils/dados-simulados"
+import {Calendar, Check, Clock, X} from "lucide-react"
 import {useState} from "react"
+import {obterNomeGuardaVidas, obterNomePosto} from "@/lib/utils";
 
 interface ListaSolicitacoesProps {
     solicitacoes: Solicitacao[]

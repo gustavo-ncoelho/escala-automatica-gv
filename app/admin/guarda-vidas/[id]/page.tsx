@@ -2,15 +2,16 @@ import {Button} from "@/components/ui/button"
 import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card"
 import {Progress} from "@/components/ui/progress"
 import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs"
-import {guardaVidas, obterNomeGuardaVidas, obterNomePosto} from "@/utils/dados-simulados"
-import {ArrowLeft, Calendar, Edit, User} from "lucide-react"
+import {guardaVidasMock} from "@/utils/dados-simulados"
+import {Calendar, Edit} from "lucide-react"
 import Link from "next/link"
 import {notFound} from "next/navigation"
 import BackButton from "@/components/utils/back-button";
+import {obterNomePosto} from "@/lib/utils";
 
 export default function DetalhesGuardaVidas({params}: { params: { id: string } }) {
     const id = Number.parseInt(params.id)
-    const guardaVida = guardaVidas.find((gv) => gv.id === id)
+    const guardaVida = guardaVidasMock.find((gv) => gv.id === id)
 
     if (!guardaVida) {
         notFound()
@@ -80,7 +81,7 @@ export default function DetalhesGuardaVidas({params}: { params: { id: string } }
                         </CardHeader>
                         <CardContent>
                             <div className="space-y-4">
-                                {guardaVida.preferenciasPostos
+                                {guardaVida.preferenciasPostos && guardaVida.preferenciasPostos
                                     .sort((a, b) => b.prioridade - a.prioridade)
                                     .map((pref) => (
                                         <div key={pref.postoId} className="space-y-2">
@@ -92,7 +93,8 @@ export default function DetalhesGuardaVidas({params}: { params: { id: string } }
                                             </div>
                                             <Progress value={pref.prioridade * 10}/>
                                         </div>
-                                    ))}
+                                    ))
+                                }
                             </div>
                         </CardContent>
                     </Card>
@@ -105,7 +107,7 @@ export default function DetalhesGuardaVidas({params}: { params: { id: string } }
                             <CardDescription>Datas em que o guarda-vidas não pode trabalhar</CardDescription>
                         </CardHeader>
                         <CardContent>
-                            {guardaVida.diasIndisponiveis.length > 0 ? (
+                            {guardaVida.diasIndisponiveis && guardaVida.diasIndisponiveis.length > 0 ? (
                                 <div className="space-y-4">
                                     {guardaVida.diasIndisponiveis.map((dia, index) => (
                                         <div key={index}

@@ -4,14 +4,14 @@ import {guardaVidasMock} from "@/utils/dados-simulados"
 
 export function EstatisticasGuardaVidas() {
     const guardaVidasMaisAtivos = [...guardaVidasMock]
-        .sort((a, b) => b.estatisticas?.diasTrabalhadosNaTemporada - a.estatisticas?.diasTrabalhadosNaTemporada)
+        .sort((a, b) => b.estatisticas?.diasTrabalhadosNaTemporada ?? 0 - (a.estatisticas?.diasTrabalhadosNaTemporada ?? 0))
         .slice(0, 5)
 
     const guardaVidasMenosAtivos = [...guardaVidasMock]
-        .sort((a, b) => a.estatisticas?.diasTrabalhadosNaTemporada - b.estatisticas?.diasTrabalhadosNaTemporada)
+        .sort((a, b) => a.estatisticas?.diasTrabalhadosNaTemporada ?? 0 - (b.estatisticas?.diasTrabalhadosNaTemporada ?? 0))
         .slice(0, 5)
 
-    const maxDiasTrabalhados = Math.max(...guardaVidasMock.map((gv) => gv.estatisticas?.diasTrabalhadosNaTemporada))
+    const maxDiasTrabalhados = Math.max(...guardaVidasMock.map((gv) => (gv.estatisticas?.diasTrabalhadosNaTemporada ?? 0)))
 
     return (
         <div className="w-3/5 gap-6">
@@ -26,9 +26,9 @@ export function EstatisticasGuardaVidas() {
                             <div key={gv.id} className="space-y-2">
                                 <div className="flex items-center justify-between text-sm">
                                     <div className="font-medium">{gv.nome}</div>
-                                    <div className="text-muted-foreground">{gv.estatisticas.diasTrabalhados} dias</div>
+                                    <div className="text-muted-foreground">{gv.estatisticas?.diasTrabalhadosNaTemporada ?? 0} dias</div>
                                 </div>
-                                <Progress value={(gv.estatisticas.diasTrabalhados / maxDiasTrabalhados) * 100}/>
+                                <Progress value={(gv.estatisticas?.diasTrabalhadosNaTemporada ?? 0 / maxDiasTrabalhados) * 100}/>
                             </div>
                         ))}
                     </div>
