@@ -106,7 +106,7 @@ export default function LifeguardForm() {
     }
 
     return (
-        <div className="container mx-auto py-8 max-w-4xl">
+        <div className="container w-full py-8">
             <div className={"flex items-center gap-4 mb-8"}>
                 <BackButton href={"/admin/guarda-vidas"}/>
 

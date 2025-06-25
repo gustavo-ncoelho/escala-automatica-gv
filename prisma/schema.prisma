@@ -25,7 +25,7 @@ model guarda_vidas {
   diasDeFolga                 String[]
   estatisticas                Json?
   usuario_id                  String                @unique
-  usuario                     usuario               @relation(fields: [usuario_id], references: [id])
+  usuario                     usuario               @relation(fields: [usuario_id], references: [id], onDelete: Cascade)
   preferenciasPostos          preferencia_posto[]
   diasIndisponiveis           dia_indisponivel[]
   alocacoes                   alocacao_diaria[]
@@ -47,9 +47,9 @@ model alocacao_diaria {
   id             String        @id @default(uuid())
   data           DateTime      @db.Date
   guarda_vidas_id String
-  guarda_vidas   guarda_vidas  @relation(fields: [guarda_vidas_id], references: [id])
+  guarda_vidas   guarda_vidas  @relation(fields: [guarda_vidas_id], references: [id], onDelete: Cascade)
   posto_id       String
-  posto          posto         @relation(fields: [posto_id], references: [id])
+  posto          posto         @relation(fields: [posto_id], references: [id], onDelete: Cascade)
   @@unique([data, guarda_vidas_id])
 }
 
@@ -58,9 +58,9 @@ model preferencia_posto {
   prioridade      Int
   justificativa   String?
   posto_id        String
-  posto           posto         @relation(fields: [posto_id], references: [id])
+  posto           posto         @relation(fields: [posto_id], references: [id], onDelete: Cascade)
   guarda_vidas_id String
-  guarda_vidas    guarda_vidas  @relation(fields: [guarda_vidas_id], references: [id])
+  guarda_vidas    guarda_vidas  @relation(fields: [guarda_vidas_id], references: [id], onDelete: Cascade)
 }
 
 model dia_indisponivel {
@@ -68,14 +68,14 @@ model dia_indisponivel {
   data            DateTime      @db.Date
   motivo          String?
   guarda_vidas_id String
-  guarda_vidas    guarda_vidas  @relation(fields: [guarda_vidas_id], references: [id])
+  guarda_vidas    guarda_vidas  @relation(fields: [guarda_vidas_id], references: [id], onDelete: Cascade)
 }
 
 
 model solicitacao {
   id String                 @id @default(uuid())
   guarda_vidas_id String
-  guarda_vidas guarda_vidas @relation(fields: [guarda_vidas_id], references: [id])
+  guarda_vidas guarda_vidas @relation(fields: [guarda_vidas_id], references: [id], onDelete: Cascade)
   tipo tipo_solicitacao
   data_original DateTime?   @db.Date
   posto_original Int?

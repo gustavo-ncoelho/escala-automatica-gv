@@ -17,7 +17,7 @@ type Estatisticas = {
     diasDaSemanaMaisFolgado: DiaDaSemana | DiaDaSemana[]
 }
 
-export type GuardaVidasCriacao = Omit<GuardaVidas, "id" | "estatisticas">
+export type GuardaVidasCriacao = Omit<GuardaVidas, "id">
 
 export type GuardaVidasEscala = Omit<GuardaVidas, "dataAdmissao" | "email" | "telefone">
 

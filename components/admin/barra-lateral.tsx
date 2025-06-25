@@ -5,7 +5,7 @@ import {usePathname} from "next/navigation"
 import {cn} from "@/lib/utils"
 import {Button} from "@/components/ui/button"
 import {ScrollArea} from "@/components/ui/scroll-area"
-import {CalendarDays, BarChart3, Users, ClipboardList, Settings, LifeBuoy} from "lucide-react"
+import {CalendarDays, BarChart3, Users, ClipboardList, Settings, LifeBuoy, TowerControl} from "lucide-react"
 
 const itensMenu = [
     {
@@ -17,6 +17,11 @@ const itensMenu = [
         titulo: "Guarda-Vidas",
         href: "/admin/guarda-vidas",
         icone: Users,
+    },
+    {
+        titulo: "Postos",
+        href: "/admin/postos",
+        icone: TowerControl
     },
     {
         titulo: "Painel",
