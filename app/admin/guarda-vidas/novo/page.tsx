@@ -1,20 +1,20 @@
 "use client"
 
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm, useFieldArray } from "react-hook-form"
-import {undefined, z} from "zod"
-import { CalendarIcon, Plus, Trash2 } from "lucide-react"
-import { format } from "date-fns"
-import { Button } from "@/components/ui/button"
-import { Calendar } from "@/components/ui/calendar"
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Separator } from "@/components/ui/separator"
-import { cn } from "@/lib/utils"
+import {zodResolver} from "@hookform/resolvers/zod"
+import {useFieldArray, useForm} from "react-hook-form"
+import {z} from "zod"
+import {CalendarIcon, Plus, Trash2} from "lucide-react"
+import {format} from "date-fns"
+import {Button} from "@/components/ui/button"
+import {Calendar} from "@/components/ui/calendar"
+import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form"
+import {Input} from "@/components/ui/input"
+import {Textarea} from "@/components/ui/textarea"
+import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover"
+import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select"
+import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card"
+import {Separator} from "@/components/ui/separator"
+import {cn} from "@/lib/utils"
 import BackButton from "@/components/utils/back-button";
 import {useCadastrarUsuario} from "@/hooks/api/auth/use-cadastrar-usuario";
 import {useRouter} from "next/navigation";
@@ -27,17 +27,17 @@ export default function LifeguardForm() {
     const router = useRouter();
 
     const preferenciaPostoSchema = z.object({
-        postoId: z.number().optional(),
+        postoId: z.string(),
         justificativa: z.string().optional(),
         prioridade: z.number().min(1).max(10, "Prioridade deve ser entre 1 e 10")
-    })
+    });
 
     const diaIndisponivelSchema = z.object({
         data: z.date({
             required_error: "Data é obrigatória",
         }),
         motivo: z.string().optional(),
-    })
+    });
 
     const guardaVidasSchema = z.object({
         nome: z.string().min(2, "Nome deve ter pelo menos 2 caracteres"),
@@ -98,11 +98,10 @@ export default function LifeguardForm() {
                 ...data,
                 cargo: "GUARDA_VIDAS"
             });
-        } catch (error) {
-            return toast.error(`Erro ao cadastrar guarda vidas ${error}`)
-        } finally {
             toast.success("Guarda Vidas cadastrado com sucesso");
             router.push("/admin/guarda-vidas")
+        } catch (error) {
+            return toast.error(`Erro ao cadastrar guarda vidas ${error}`)
         }
     }
 
@@ -250,7 +249,7 @@ export default function LifeguardForm() {
                                                 <FormItem>
                                                     <FormLabel>Posto</FormLabel>
                                                     <Select
-                                                        onValueChange={(value) => field.onChange(Number.parseInt(value))}
+                                                        onValueChange={field.onChange}
                                                         value={field.value?.toString()}
                                                     >
                                                         <FormControl>
@@ -319,7 +318,7 @@ export default function LifeguardForm() {
                                 className="mt-2"
                                 onClick={() =>
                                     appendPreferencia({
-                                        postoId: 0,
+                                        postoId: "",
                                         justificativa: "",
                                         prioridade: 0,
                                     })

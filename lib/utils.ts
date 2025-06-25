@@ -1,6 +1,6 @@
 import {clsx, type ClassValue} from "clsx"
 import {twMerge} from "tailwind-merge"
-import {AlocacaoDiaria} from "@/types/escala";
+import {AlocacaoDiaria} from "@/types/alocacao-diaria";
 import {isSameDay} from "date-fns";
 import {DiaDaSemana, GuardaVidas, GuardaVidasEscala, Posto} from "@/types/guarda-vidas";
 import {v4 as uuid} from "uuid";

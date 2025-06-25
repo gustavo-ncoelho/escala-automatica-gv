@@ -1,5 +1,5 @@
 import {useMutation, UseMutationResult, useQueryClient} from '@tanstack/react-query';
-import { Api } from "@/api/escala-gv-api-client";
+import { Api } from "@/lib/api/escala-gv-api-client";
 import { HttpError } from "@/lib/errors/errors";
 import { Usuario } from '@/types/auth/usuario';
 import { LoginData } from '@/types/auth/login-data';

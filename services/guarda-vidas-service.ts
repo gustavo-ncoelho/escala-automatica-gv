@@ -1,5 +1,5 @@
 import { prisma } from '@/lib/prisma'
-import {AlocacaoDiaria, EscalaMensal} from "@/types/escala";
+import {AlocacaoDiaria, EscalaMensal} from "@/types/alocacao-diaria";
 import {Solicitacao, TipoSolicitacao} from "@/types/solicitacao";
 
 export async function getAlocacoesDiariasByGuardaVidasId(

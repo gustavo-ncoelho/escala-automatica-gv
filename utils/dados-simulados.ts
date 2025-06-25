@@ -1,5 +1,5 @@
 import {GuardaVidas, Posto} from "@/types/guarda-vidas"
-import {AlocacaoDiaria} from "@/types/escala"
+import {AlocacaoDiaria} from "@/types/alocacao-diaria"
 import type {Solicitacao} from "@/types/solicitacao"
 
 export const guardaVidasMock: GuardaVidas[] = [

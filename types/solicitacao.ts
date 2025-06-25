@@ -2,7 +2,7 @@ export type TipoSolicitacao = "preferencia_posto" | "dia_indisponivel"
 export type StatusSolicitacao = "pendente" | "aprovada" | "rejeitada"
 
 export type Solicitacao = {
-  id: number
+  id: string
   guardaVidasId: number
   tipo: TipoSolicitacao
   dataOriginal?: Date

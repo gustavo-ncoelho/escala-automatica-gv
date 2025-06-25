@@ -2,7 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Calendar, MapPin, Users } from "lucide-react"
 import {GuardaVidas, Posto} from "@/types/guarda-vidas";
-import {AlocacaoDiaria} from "@/types/escala";
+import {AlocacaoDiaria} from "@/types/alocacao-diaria";
 import { isSameDay } from "date-fns";
 import BackButton from "@/components/utils/back-button";
 import {existeAlocacaoNoDia, gerarEscalaDiaria} from "@/lib/utils";
