@@ -7,86 +7,89 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model usuario {
-  id         String         @id @default(uuid())
-  email      String         @unique
-  nome       String
-  telefone   String?
-  senha_hash String
-  cargo      Cargo          @default(GUARDA_VIDAS)
-  perfil_guarda_vidas guarda_vidas?
-  data_criacao     DateTime @default(now())
-  data_atualizacao DateTime @updatedAt
+model Usuario {
+  id                  String        @id @default(uuid())
+  email               String        @unique
+  nome                String
+  telefone            String?
+  senhaHash           String        @map("senha_hash")
+  cargo               Cargo         @default(GUARDA_VIDAS)
+  perfilGuardaVidas   GuardaVidas?
+  dataCriacao         DateTime      @default(now()) @map("data_criacao")
+  dataAtualizacao     DateTime      @updatedAt @map("data_atualizacao")
+  @@map("usuarios")
 }
 
-model guarda_vidas {
-  id                          String                @id @default(uuid())
-  dataAdmissao                DateTime
-  diasDeFolga                 String[]
-  estatisticas                Json?
-  usuario_id                  String                @unique
-  usuario                     usuario               @relation(fields: [usuario_id], references: [id], onDelete: Cascade)
-  preferenciasPostos          preferencia_posto[]
-  diasIndisponiveis           dia_indisponivel[]
-  alocacoes                   alocacao_diaria[]
-  solicitacoes                solicitacao[]
+model GuardaVidas {
+  id                  String                @id @default(uuid())
+  dataAdmissao        DateTime              @map("data_admissao")
+  diasDeFolga         String[]              @map("dias_de_folga")
+  estatisticas        Json?
+  usuarioId           String                @unique @map("usuario_id")
+  usuario             Usuario               @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  preferenciasPostos  PreferenciaPosto[]
+  diasIndisponiveis   DiaIndisponivel[]
+  alocacoes           AlocacaoDiaria[]
+  solicitacoes        Solicitacao[]
+  @@map("guarda_vidas")
 }
 
-
-model posto {
-  id              String                @id @default(uuid())
-  nome            String                @unique
-  numero          Int
-  alocacaoMaxima  Int
-  localizacao     String?
-  preferencias    preferencia_posto[]
-  alocacoes       alocacao_diaria[]
+model Posto {
+  id               String                @id @default(uuid())
+  nome             String                @unique
+  numero           Int
+  alocacaoMaxima   Int                   @map("alocacao_maxima")
+  localizacao      String?
+  preferencias     PreferenciaPosto[]
+  alocacoes        AlocacaoDiaria[]
+  @@map("postos")
 }
 
-model alocacao_diaria {
-  id             String        @id @default(uuid())
-  data           DateTime      @db.Date
-  guarda_vidas_id String
-  guarda_vidas   guarda_vidas  @relation(fields: [guarda_vidas_id], references: [id], onDelete: Cascade)
-  posto_id       String
-  posto          posto         @relation(fields: [posto_id], references: [id], onDelete: Cascade)
-  @@unique([data, guarda_vidas_id])
+model AlocacaoDiaria {
+  id              String        @id @default(uuid())
+  data            DateTime      @db.Date
+  guardaVidasId   String        @map("guarda_vidas_id")
+  guardaVidas     GuardaVidas   @relation(fields: [guardaVidasId], references: [id], onDelete: Cascade)
+  postoId         String        @map("posto_id")
+  posto           Posto         @relation(fields: [postoId], references: [id], onDelete: Cascade)
+  @@unique([data, guardaVidasId], map: "alocacao_diaria_data_guarda_vidas_id_key")
+  @@map("alocacoes_diarias")
 }
 
-model preferencia_posto {
+model PreferenciaPosto {
   id              String        @id @default(uuid())
   prioridade      Int
   justificativa   String?
-  posto_id        String
-  posto           posto         @relation(fields: [posto_id], references: [id], onDelete: Cascade)
-  guarda_vidas_id String
-  guarda_vidas    guarda_vidas  @relation(fields: [guarda_vidas_id], references: [id], onDelete: Cascade)
+  postoId         String        @map("posto_id")
+  posto           Posto         @relation(fields: [postoId], references: [id], onDelete: Cascade)
+  guardaVidasId   String        @map("guarda_vidas_id")
+  guardaVidas     GuardaVidas   @relation(fields: [guardaVidasId], references: [id], onDelete: Cascade)
+  @@map("preferencias_posto")
 }
 
-model dia_indisponivel {
+model DiaIndisponivel {
   id              String        @id @default(uuid())
   data            DateTime      @db.Date
   motivo          String?
-  guarda_vidas_id String
-  guarda_vidas    guarda_vidas  @relation(fields: [guarda_vidas_id], references: [id], onDelete: Cascade)
+  guardaVidasId   String        @map("guarda_vidas_id")
+  guardaVidas     GuardaVidas   @relation(fields: [guardaVidasId], references: [id], onDelete: Cascade)
+  @@map("dias_indisponiveis")
 }
 
-
-model solicitacao {
-  id String                 @id @default(uuid())
-  guarda_vidas_id String
-  guarda_vidas guarda_vidas @relation(fields: [guarda_vidas_id], references: [id], onDelete: Cascade)
-  tipo tipo_solicitacao
-  data_original DateTime?   @db.Date
-  posto_original Int?
-  data_solicitada DateTime? @db.Date
-  posto_solicitado Int?
-  colega_nao_preferido Int?
-  motivo String?
-  status status_solicitacao @default(PENDENTE)
-  data_criacao DateTime @default(now())
-  data_atualizacao DateTime @updatedAt
-
+model Solicitacao {
+  id                  String              @id @default(uuid())
+  tipo                TipoSolicitacao     @map("tipo")
+  dataOriginal        DateTime?           @db.Date @map("data_original")
+  postoOriginal       String?             @map("posto_original")
+  dataSolicitada      DateTime?           @db.Date @map("data_solicitada")
+  postoSolicitado     String?             @map("posto_solicitado")
+  motivo              String?
+  status              StatusSolicitacao   @default(PENDENTE)
+  dataCriacao         DateTime            @default(now()) @map("data_criacao")
+  dataAtualizacao     DateTime            @updatedAt @map("data_atualizacao")
+  guardaVidasId       String              @map("guarda_vidas_id")
+  guardaVidas         GuardaVidas         @relation(fields: [guardaVidasId], references: [id], onDelete: Cascade)
+  @@map("solicitacoes")
 }
 
 enum Cargo {
@@ -104,14 +107,15 @@ enum DiaDaSemana {
   domingo
 }
 
-enum tipo_solicitacao {
+enum TipoSolicitacao {
   PREFERENCIA_POSTO
   DIA_INDISPONIVEL
-  TROCA_ESCALA
+  @@map("tipo_solicitacao")
 }
 
-enum status_solicitacao {
+enum StatusSolicitacao {
   PENDENTE
   APROVADA
   REJEITADA
+  @@map("status_solicitacao")
 }

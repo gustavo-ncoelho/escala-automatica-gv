@@ -19,8 +19,8 @@ export default function NovoPostoPage() {
     }
 
     return (
-        <div className="container mx-auto">
+        <>
             <PostosForm onSubmit={handleSubmit} onCancel={handleCancel} isEditing={false} />
-        </div>
+        </>
     )
 }

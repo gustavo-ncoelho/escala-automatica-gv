@@ -1,7 +1,7 @@
 "use client"
 
 import {useParams, useRouter} from "next/navigation"
-import { useState, useEffect } from "react"
+import {useState, useEffect} from "react"
 import {Posto} from "@/types/guarda-vidas";
 import {postosMock} from "@/utils/dados-simulados";
 import PostosForm from "@/components/admin/postos/postos-form";
@@ -20,7 +20,7 @@ export default function EditarPostoPage() {
     }, [id])
 
     const handleSubmit = (data: Omit<Posto, "id">) => {
-        console.log("Atualizando posto:", { id , ...data })
+        console.log("Atualizando posto:", {id, ...data})
 
         alert("Posto atualizado com sucesso!")
         router.push("/postos")
@@ -55,8 +55,8 @@ export default function EditarPostoPage() {
     }
 
     return (
-        <div className="container">
-            <PostosForm posto={posto} onSubmit={handleSubmit} onCancel={handleCancel} isEditing={true} />
-        </div>
+        <>
+            <PostosForm posto={posto} onSubmit={handleSubmit} onCancel={handleCancel} isEditing={true}/>
+        </>
     )
 }

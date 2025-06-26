@@ -7,7 +7,7 @@ export async function getGuardaVidas() {
             cargo: 'GUARDA_VIDAS'
         },
         include: {
-            perfil_guarda_vidas: {
+            perfilGuardaVidas: {
                 include: {
                     preferenciasPostos: true,
                     diasIndisponiveis: true,
@@ -21,7 +21,7 @@ export async function getGuardaVidasById(id: string) {
     return prisma.usuario.findUniqueOrThrow({
         where: { id },
         include: {
-            perfil_guarda_vidas: {
+            perfilGuardaVidas: {
                 include: {
                     preferenciasPostos: true,
                     diasIndisponiveis: true,
@@ -38,7 +38,7 @@ export async function updateGuardaVidas(id: string, data: GuardaVidasCriacao) {
             nome: data.nome,
             email: data.email,
             telefone: data.telefone,
-            perfil_guarda_vidas: {
+            perfilGuardaVidas: {
                 update: {
                     dataAdmissao: data.dataAdmissao,
                     diasDeFolga: data.diasDeFolga,

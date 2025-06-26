@@ -1,17 +1,18 @@
-export type TipoSolicitacao = "preferencia_posto" | "dia_indisponivel"
+export type TipoSolicitacao = "PREFERENCIA_POSTO" | "DIA_INDISPONIVEL"
 export type StatusSolicitacao = "pendente" | "aprovada" | "rejeitada"
 
 export type Solicitacao = {
   id: string
-  guardaVidasId: number
+  guardaVidasId: string
   tipo: TipoSolicitacao
   dataOriginal?: Date
-  postoOriginal?: number
+  postoOriginal?: string
   dataSolicitada?: Date
-  postoSolicitado?: number
-  colegaNaoPreferido?: number
+  postoSolicitado?: string
   motivo: string
   status: StatusSolicitacao
   dataCriacao: Date
   dataAtualizacao: Date
 }
+
+export type SolicitacaoCriacao = Omit<Solicitacao, "id">;

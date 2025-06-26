@@ -1,6 +1,8 @@
 export type AlocacaoDiaria = {
   id: string
   data: Date
-  guardaVidasId: number
-  postoId: number
+  guardaVidasId: string
+  postoId: string
 }
+
+export type AlocacaoDiariaCriacao = Omit<AlocacaoDiaria, "id">;

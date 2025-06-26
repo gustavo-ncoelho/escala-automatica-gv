@@ -22,9 +22,9 @@ export async function registerUser(data: RegisterData) {
             nome: data.nome,
             email: data.email,
             telefone: data.telefone,
-            senha_hash: hashedPassword,
+            senhaHash: hashedPassword,
             cargo: data.cargo,
-            perfil_guarda_vidas: data.cargo === 'GUARDA_VIDAS' ? {
+            perfilGuardaVidas: data.cargo === 'GUARDA_VIDAS' ? {
                 create: {
                     dataAdmissao: admissaoDate,
                     diasDeFolga: data.diasDeFolga ?? [],
@@ -46,7 +46,7 @@ export async function registerUser(data: RegisterData) {
         }
     });
 
-    const { senha_hash, ...userWithoutPassword } = user;
+    const { senhaHash, ...userWithoutPassword } = user;
     return userWithoutPassword;
 }
 
@@ -56,15 +56,15 @@ export async function loginUser(data: LoginData) {
             email: data.email,
         },
         include: {
-            perfil_guarda_vidas: true
+            perfilGuardaVidas: true
         }
     });
 
-    if (!user || !user.senha_hash) {
+    if (!user || !user.senhaHash) {
         throw new Error('Credenciais inválidas.');
     }
 
-    const isPasswordValid = await bcrypt.compare(data.senha, user.senha_hash);
+    const isPasswordValid = await bcrypt.compare(data.senha, user.senhaHash);
 
     if (!isPasswordValid) {
         throw new Error('Credenciais inválidas.');
@@ -72,6 +72,6 @@ export async function loginUser(data: LoginData) {
 
     const tokens = await generateTokens(user);
 
-    const { senha_hash, ...userWithoutPassword } = user;
+    const { senhaHash, ...userWithoutPassword } = user;
     return { user: userWithoutPassword, tokens };
 }

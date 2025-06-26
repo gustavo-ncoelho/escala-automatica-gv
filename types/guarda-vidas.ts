@@ -33,6 +33,8 @@ export type GuardaVidas = {
     estatisticas?: Estatisticas
 }
 
+export type PostoCriacao = Omit<Posto, "id">
+
 export type Posto = {
     id: string
     nome: string
