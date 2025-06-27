@@ -18,7 +18,7 @@ import {cn} from "@/lib/utils"
 import BackButton from "@/components/utils/back-button";
 import {useCadastrarUsuario} from "@/hooks/api/auth/use-cadastrar-usuario";
 import {useRouter} from "next/navigation";
-import {useToast} from "@/hooks/use-toast";
+import {useToast} from "@/hooks/utils/use-toast";
 
 export default function LifeguardForm() {
 
@@ -162,7 +162,7 @@ export default function LifeguardForm() {
                                         <FormItem>
                                             <FormLabel>Telefone</FormLabel>
                                             <FormControl>
-                                                <Input placeholder="(11) 99999-9999" {...field} />
+                                                <Input placeholder="(00) 00000-0000" {...field} maxLength={11}/>
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>

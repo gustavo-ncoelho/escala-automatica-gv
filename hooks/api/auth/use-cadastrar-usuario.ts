@@ -1,4 +1,4 @@
-import { useMutation, UseMutationResult } from '@tanstack/react-query';
+import {useMutation, UseMutationResult, useQueryClient} from '@tanstack/react-query';
 import { Api } from "@/lib/api/escala-gv-api-client";
 import { HttpError } from "@/lib/errors/errors";
 import { Usuario } from '@/types/auth/usuario';
@@ -9,7 +9,13 @@ const registerUser = async (registerData: RegisterData): Promise<Usuario> => {
 };
 
 export const useCadastrarUsuario = (): UseMutationResult<Usuario, HttpError, RegisterData> => {
+
+    const queryClient = useQueryClient();
+
     return useMutation<Usuario, HttpError, RegisterData>({
-        mutationFn: registerUser
+        mutationFn: registerUser,
+        onSuccess: async () => {
+            await queryClient.invalidateQueries({ queryKey: ['todosGuardaVidas'] });
+        },
     });
 };
