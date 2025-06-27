@@ -1,5 +1,5 @@
 import { Cargo } from "./usuario";
-import {DiaDaSemana} from "@/types/guarda-vidas";
+import {DiaDaSemana} from "@prisma/client";
 
 export type RegisterData = {
     email: string;

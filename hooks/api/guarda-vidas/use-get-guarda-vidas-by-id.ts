@@ -13,6 +13,6 @@ export const useGetGuardaVidasById = (id: string) => {
     return useQuery<GuardaVidas, HttpError>({
         queryKey: ['guardaVidas', id],
         queryFn: () => fetchGuardaVidasById(id),
-        enabled: !!id,
+        enabled: !!id
     });
 };

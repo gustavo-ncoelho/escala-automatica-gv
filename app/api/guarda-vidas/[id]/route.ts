@@ -3,7 +3,7 @@ import { getUser } from "@/lib/session/session";
 import {deleteGuardaVidas, getGuardaVidasById, updateGuardaVidas} from "@/api/services/guarda-vidas-service";
 
 
-export async function GET({ params }: { params: { id: string } }) {
+export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
     try {
         const user = await getUser();
         if (user?.cargo !== 'COMANDANTE') {
@@ -47,7 +47,7 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
     }
 }
 
-export async function DELETE({ params }: { params: { id: string } }) {
+export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
     try {
         const user = await getUser();
         if (user?.cargo !== 'COMANDANTE') {

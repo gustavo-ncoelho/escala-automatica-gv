@@ -19,7 +19,6 @@ function axiosInstance({withoutRetry = false, headers = {}}: {
     headers?: Record<string, string>
 }) {
     const instance = axios.create({
-        baseURL: process.env.NEXT_PUBLIC_BASE_URL,
         withCredentials: true,
         timeout: 35000,
         headers: {

@@ -7,7 +7,7 @@ import {CalendarIcon, Plus, Trash2} from "lucide-react"
 import {format} from "date-fns"
 import {Button} from "@/components/ui/button"
 import {Calendar} from "@/components/ui/calendar"
-import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form"
+import {Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form"
 import {Input} from "@/components/ui/input"
 import {Textarea} from "@/components/ui/textarea"
 import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover"
@@ -19,12 +19,31 @@ import BackButton from "@/components/utils/back-button";
 import {useCadastrarUsuario} from "@/hooks/api/auth/use-cadastrar-usuario";
 import {useRouter} from "next/navigation";
 import {useToast} from "@/hooks/utils/use-toast";
+import { Checkbox } from "@/components/ui/checkbox"
 
-export default function LifeguardForm() {
+export default function LifeguardForm () {
 
     const {mutateAsync} = useCadastrarUsuario();
     const {toast} = useToast();
     const router = useRouter();
+
+    const diasDaSemanaOpcoes = [
+        { id: "segunda", label: "Segunda-feira" },
+        { id: "terca_feira", label: "Terça-feira" },
+        { id: "quarta_feira", label: "Quarta-feira" },
+        { id: "quinta_feira", label: "Quinta-feira" },
+        { id: "sexta_feira", label: "Sexta-feira" },
+        { id: "sabado", label: "Sábado" },
+        { id: "domingo", label: "Domingo" },
+    ] as const;
+
+    const postos = [
+        { id: 1, nome: "Posto 1 - Praia Central" },
+        { id: 2, nome: "Posto 2 - Praia Norte" },
+        { id: 3, nome: "Posto 3 - Praia Sul" },
+        { id: 4, nome: "Posto 4 - Lagoa" },
+        { id: 5, nome: "Posto 5 - Pier" },
+    ]
 
     const preferenciaPostoSchema = z.object({
         postoId: z.string(),
@@ -39,6 +58,16 @@ export default function LifeguardForm() {
         motivo: z.string().optional(),
     });
 
+    const diaDaSemanaEnum = z.enum([
+        "segunda",
+        "terca_feira",
+        "quarta_feira",
+        "quinta_feira",
+        "sexta_feira",
+        "sabado",
+        "domingo"
+    ]);
+
     const guardaVidasSchema = z.object({
         nome: z.string().min(2, "Nome deve ter pelo menos 2 caracteres"),
         email: z.string().email("Email inválido"),
@@ -47,20 +76,12 @@ export default function LifeguardForm() {
         dataAdmissao: z.date({
             required_error: "Data de admissão é obrigatória",
         }),
+        diasDeFolga: z.array(diaDaSemanaEnum).optional(),
         preferenciasPostos: z.array(preferenciaPostoSchema).optional(),
         diasIndisponiveis: z.array(diaIndisponivelSchema).optional()
     })
 
     type GuardaVidasFormValues = z.infer<typeof guardaVidasSchema>
-
-    const postos = [
-        { id: 1, nome: "Posto 1 - Praia Central" },
-        { id: 2, nome: "Posto 2 - Praia Norte" },
-        { id: 3, nome: "Posto 3 - Praia Sul" },
-        { id: 4, nome: "Posto 4 - Lagoa" },
-        { id: 5, nome: "Posto 5 - Pier" },
-    ]
-
 
     const form = useForm<GuardaVidasFormValues>({
         resolver: zodResolver(guardaVidasSchema),
@@ -71,23 +92,16 @@ export default function LifeguardForm() {
             dataAdmissao: new Date(),
             preferenciasPostos: [],
             diasIndisponiveis: [],
+            diasDeFolga: []
         },
     })
 
-    const {
-        fields: preferenciaFields,
-        append: appendPreferencia,
-        remove: removePreferencia,
-    } = useFieldArray({
+    const {fields: preferenciaFields, append: appendPreferencia, remove: removePreferencia} = useFieldArray({
         control: form.control,
         name: "preferenciasPostos",
     })
 
-    const {
-        fields: indisponivelFields,
-        append: appendIndisponivel,
-        remove: removeIndisponivel,
-    } = useFieldArray({
+    const {fields: indisponivelFields, append: appendIndisponivel, remove: removeIndisponivel,} = useFieldArray({
         control: form.control,
         name: "diasIndisponiveis",
     })
@@ -219,6 +233,56 @@ export default function LifeguardForm() {
                                     )}
                                 />
                             </div>
+                        </CardContent>
+                    </Card>
+
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Dias de Folga Fixos</CardTitle>
+                            <FormDescription>
+                                Selecione os dias da semana em que este guarda-vidas terá folga recorrente.
+                            </FormDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <FormField
+                                control={form.control}
+                                name="diasDeFolga"
+                                render={() => (
+                                    <FormItem className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                                        {diasDaSemanaOpcoes.map((dia) => (
+                                            <FormField
+                                                key={dia.id}
+                                                control={form.control}
+                                                name="diasDeFolga"
+                                                render={({ field }) => {
+                                                    return (
+                                                        <FormItem className="flex flex-row items-center space-x-3 space-y-0">
+                                                            <FormControl>
+                                                                <Checkbox
+                                                                    checked={field.value?.includes(dia.id)}
+                                                                    onCheckedChange={(checked) => {
+                                                                        return checked
+                                                                            ? field.onChange([...(field.value || []), dia.id])
+                                                                            : field.onChange(
+                                                                                field.value?.filter(
+                                                                                    (value) => value !== dia.id
+                                                                                )
+                                                                            )
+                                                                    }}
+                                                                />
+                                                            </FormControl>
+                                                            <FormLabel className="font-normal">
+                                                                {dia.label}
+                                                            </FormLabel>
+                                                        </FormItem>
+                                                    )
+                                                }}
+                                            />
+                                        ))}
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
                         </CardContent>
                     </Card>
 

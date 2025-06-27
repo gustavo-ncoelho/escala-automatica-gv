@@ -1,12 +1,16 @@
+'use client';
+
 import {Button} from "@/components/ui/button"
 import {Card, CardContent} from "@/components/ui/card"
 import {Input} from "@/components/ui/input"
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table"
-import {guardaVidasMock} from "@/utils/dados-simulados"
 import {Plus, Search} from "lucide-react"
 import Link from "next/link"
+import {useGetAllGuardaVidas} from "@/hooks/api/guarda-vidas/use-get-all-guarda-vidas";
 
 export default function GuardaVidasPage() {
+
+    const {data: listaGuardaVidas} = useGetAllGuardaVidas();
 
     const layout = "flex justify-center items-center"
 
@@ -65,31 +69,31 @@ export default function GuardaVidasPage() {
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {guardaVidasMock.map((gv) => (
+                            {listaGuardaVidas?.map((gv) => (
                                 <TableRow key={gv.id}>
                                     <TableCell className={"font-medium"}>
                                         <div className={layout}>
-                                            {gv.nome}
+                                            {gv.nome ?? "--------"}
                                         </div>
                                     </TableCell>
                                     <TableCell>
                                         <div className={layout}>
-                                            {gv.email}
+                                            {gv.email ?? "--------"}
                                         </div>
                                     </TableCell>
                                     <TableCell>
                                         <div className={layout}>
-                                            {gv.telefone}
+                                            {gv.telefone ?? "--------"}
                                         </div>
                                     </TableCell>
                                     <TableCell>
                                         <div className={layout}>
-                                            {gv.dataAdmissao.toLocaleDateString("pt-BR")}
+                                            {gv.dataAdmissao ? gv.dataAdmissao.toLocaleDateString("pt-BR") : "--------"}
                                         </div>
                                     </TableCell>
                                     <TableCell>
                                         <div className={layout}>
-                                            {gv.estatisticas?.diasTrabalhadosNaTemporada}
+                                            {gv.estatisticas?.diasTrabalhadosNaTemporada ?? "--------"}
                                         </div>
                                     </TableCell>
                                     <TableCell className="text-right">

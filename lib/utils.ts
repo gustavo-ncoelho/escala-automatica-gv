@@ -23,6 +23,14 @@ export const parseDateStringLocal = (dateString: string): Date => {
     return new Date(year, month - 1, day);
 };
 
+export const gerarArrayDeDatasDoMes = (mes: number, ano: number): Date[] => {
+    const diasNoMes = new Date(ano, mes, 0).getDate();
+
+    return Array.from({length: diasNoMes}, (_, i) => {
+        const dia = i + 1;
+        return new Date(ano, mes - 1, dia);
+    });
+};
 
 export const getNomeMes = (mes: number) => {
     const meses = [
@@ -73,12 +81,12 @@ export const filtrarAlocacoesPorMes = (mes: number, ano: number, todasAsAlocacoe
     });
 };
 
-export function obterNomeGuardaVidas(id: number): string {
+export function obterNomeGuardaVidas(id: string): string {
     const gv = guardaVidasMock.find((g) => g.id === id)
     return gv ? gv.nome : "Desconhecido"
 }
 
-export function obterNomePosto(id: number): string {
+export function obterNomePosto(id: string): string {
     const posto = postosMock.find((p) => p.id === id)
     return posto ? posto.nome : "Desconhecido"
 }
@@ -117,18 +125,14 @@ export const guardaVidaTrabalhaEm = (guardaVida: GuardaVidasEscala, dataDoDia: D
     return !guardaVida.diasIndisponiveis?.some(dia => isSameDay(new Date(dia.data), dataDoDia));
 };
 
-export const gerarEscalaDiaria = (
-    listaDePostos: Posto[],
-    listaDeGuardaVidas: GuardaVidas[],
-    dataAlvo: Date
-): AlocacaoDiaria[] => {
+export const gerarEscalaDiaria = (listaDePostos: Posto[], listaDeGuardaVidas: GuardaVidas[], dataAlvo: Date): AlocacaoDiaria[] => {
     let escala: AlocacaoDiaria[] = [];
-    const gvAlocados: Set<number> = new Set();
+    const gvAlocados: Set<string> = new Set();
     const gvDisponiveis = listaDeGuardaVidas.filter(gv => guardaVidaTrabalhaEm(gv, dataAlvo));
 
     const gvNaoAlocados = () => gvDisponiveis.filter(gv => !gvAlocados.has(gv.id));
 
-    const calcularScore = (gv: GuardaVidas, postoId: number) => {
+    const calcularScore = (gv: GuardaVidas, postoId: string) => {
         const preferencia = gv.preferenciasPostos?.find(p => p.postoId === postoId);
         const prioridadeScore = (preferencia?.prioridade ?? 0) * 10;
         const diasTrabalhadosScore = 100 - (gv.estatisticas?.diasTrabalhadosNaTemporada ?? 0);
@@ -149,20 +153,6 @@ export const gerarEscalaDiaria = (
 
     for (const posto of postosPriorizados) {
         let vagasOcupadas = escala.filter(a => a.postoId === posto.id).length;
-        while (vagasOcupadas < 2 && gvNaoAlocados().length > 0) {
-            const candidatos = gvNaoAlocados()
-                .map(gv => ({ gv, score: calcularScore(gv, posto.id) }))
-                .sort((a, b) => b.score - a.score);
-            if (candidatos.length === 0) break;
-            const melhorCandidato = candidatos[0].gv;
-            escala.push({ id: uuid(), data: dataAlvo, guardaVidasId: melhorCandidato.id, postoId: posto.id });
-            gvAlocados.add(melhorCandidato.id);
-            vagasOcupadas++;
-        }
-    }
-
-    for (const posto of postosPriorizados) {
-        let vagasOcupadas = escala.filter(a => a.postoId === posto.id).length;
         while (vagasOcupadas < posto.alocacaoMaxima && gvNaoAlocados().length > 0) {
             const candidatos = gvNaoAlocados()
                 .map(gv => ({ gv, score: calcularScore(gv, posto.id) }))
@@ -178,11 +168,11 @@ export const gerarEscalaDiaria = (
     const contagemFinalPorPosto = escala.reduce((acc, alocacao) => {
         acc[alocacao.postoId] = (acc[alocacao.postoId] || 0) + 1;
         return acc;
-    }, {} as Record<number, number>);
+    }, {} as Record<string, number>);
 
     const postosInvalidos = Object.entries(contagemFinalPorPosto)
         .filter(([, count]) => count === 1)
-        .map(([postoId]) => Number(postoId));
+        .map(([postoId]) => postoId);
 
     if (postosInvalidos.length > 0) {
         escala = escala.filter(alocacao => !postosInvalidos.includes(alocacao.postoId));

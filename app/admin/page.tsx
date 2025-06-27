@@ -4,37 +4,34 @@ import {useState} from "react"
 import {GuardaVidasEscala} from "@/types/guarda-vidas"
 import EscalaMensal from "@/components/admin/escala/escala-mensal";
 import {Calendar, Eye, Grid3X3} from "lucide-react";
-import {converterGVParaGVEscala, getNomeMes} from "@/lib/utils";
+import {converterGVParaGVEscala, gerarArrayDeDatasDoMes, getNomeMes} from "@/lib/utils";
 import {Button} from "@/components/ui/button";
 import VisaoGeral from "@/components/admin/escala/visao-geral";
 import {guardaVidasMock} from "@/utils/dados-simulados";
+import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
 
 export default function EscalaPage() {
 
-    const mes = 3;
-    const ano = 2025;
-
+    const dataAtual = new Date();
+    const [anoSelecionado, setAnoSelecionado] = useState<number>(dataAtual.getFullYear());
+    const [mesSelecionado, setMesSelecionado] = useState<number>(dataAtual.getMonth() + 1);
+    const [modoAtual, setModoAtual] = useState<string>("mensal");
     const guardaVidasEscala: GuardaVidasEscala[] = converterGVParaGVEscala(guardaVidasMock);
+    const diasArray = gerarArrayDeDatasDoMes(mesSelecionado, anoSelecionado);
+
+    const anosParaSelecionar = Array.from({ length: 5 }, (_, i) => dataAtual.getFullYear() - 2 + i);
+    const mesesParaSelecionar = [
+        { valor: 1, nome: 'Janeiro' }, { valor: 2, nome: 'Fevereiro' },
+        { valor: 3, nome: 'Março' }, { valor: 4, nome: 'Abril' },
+        { valor: 5, nome: 'Maio' }, { valor: 6, nome: 'Junho' },
+        { valor: 7, nome: 'Julho' }, { valor: 8, nome: 'Agosto' },
+        { valor: 9, nome: 'Setembro' }, { valor: 10, nome: 'Outubro' },
+        { valor: 11, nome: 'Novembro' }, { valor: 12, nome: 'Dezembro' },
+    ];
 
     const handleDayClick = (dia: number) => {
         console.log(`Clicou no dia ${dia}`)
     }
-
-    const [modoAtual, setModoAtual] = useState<string>("mensal")
-
-    const gerarArrayDeDatasDoMes = (mes: number, ano: number): Date[] => {
-        const diasNoMes = new Date(ano, mes, 0).getDate();
-
-        return Array.from({length: diasNoMes}, (_, i) => {
-            const dia = i + 1;
-            return new Date(ano, mes - 1, dia);
-        });
-    };
-
-    const mesAtual = 3;
-    const anoAtual = 2025;
-
-    const diasArray = gerarArrayDeDatasDoMes(mesAtual, anoAtual);
 
     return (
         <>
@@ -42,8 +39,32 @@ export default function EscalaPage() {
                 <div className="flex items-center gap-2">
                     <Calendar className="h-6 w-6" />
                     <h1 className="text-3xl font-bold">
-                        {getNomeMes(mes)} {ano}
+                        {getNomeMes(mesSelecionado)} {anoSelecionado}
                     </h1>
+                </div>
+
+                <div className="flex items-center gap-2">
+                    <Select value={mesSelecionado.toString()} onValueChange={(valor) => setMesSelecionado(Number(valor))}>
+                        <SelectTrigger className="w-[180px]">
+                            <SelectValue placeholder="Selecione o Mês" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {mesesParaSelecionar.map(mes => (
+                                <SelectItem key={mes.valor} value={mes.valor.toString()}>{mes.nome}</SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+
+                    <Select value={anoSelecionado.toString()} onValueChange={(valor) => setAnoSelecionado(Number(valor))}>
+                        <SelectTrigger className="w-[120px]">
+                            <SelectValue placeholder="Selecione o Ano" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {anosParaSelecionar.map(ano => (
+                                <SelectItem key={ano} value={ano.toString()}>{ano}</SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
                 </div>
 
                 <div className="flex gap-2">

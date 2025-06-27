@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import {Button} from "@/components/ui/button"
 import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card"
@@ -7,20 +7,20 @@ import {Label} from "@/components/ui/label"
 import {Slider} from "@/components/ui/slider"
 import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs"
 import {guardaVidasMock, postosMock} from "@/utils/dados-simulados"
-import {ArrowLeft, Calendar, Plus, Trash} from "lucide-react"
+import {Calendar, Plus, Trash} from "lucide-react"
 import Link from "next/link"
-import {useRouter, useParams} from "next/navigation"
-import {useState, useEffect} from "react"
+import {useParams, useRouter} from "next/navigation"
+import {useEffect, useState} from "react"
 import BackButton from "@/components/utils/back-button";
 
 export default function EditarGuardaVidas() {
     const params = useParams();
     const router = useRouter()
-    const id = Number(params.id);
+    const id = params.id as string;
     const guardaVida = guardaVidasMock.find((gv) => gv.id === id)
 
     const [isLoading, setIsLoading] = useState(true)
-    const [preferencias, setPreferencias] = useState({} as Record<number, number>)
+    const [preferencias, setPreferencias] = useState({} as Record<string, number>)
     const [diasIndisponiveis, setDiasIndisponiveis] = useState([] as { data: string; motivo?: string }[])
 
     useEffect(() => {
@@ -34,7 +34,7 @@ export default function EditarGuardaVidas() {
                             acc[pref.postoId] = pref.prioridade
                             return acc
                         },
-                        {} as Record<number, number>,
+                        {} as Record<string, number>,
                     ),
                 )
             }
