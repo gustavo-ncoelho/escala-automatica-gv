@@ -6,19 +6,18 @@ import { SessionPayload } from "@/types/auth/session-payload";
 import { cookies } from "next/headers";
 import { jwtDecode } from "jwt-decode";
 import { isServer } from "@/lib/utils";
-import {Usuario} from "@/types/auth/usuario";
-import {GuardaVidas} from "@/types/guarda-vidas";
-import {usuario} from "@prisma/client";
+import {Usuario} from "@prisma/client";
+import {UsuarioPayload} from "@/types/auth/usuario";
 
 const secretKey = process.env.SESSION_SECRET
 const encodedKey = new TextEncoder().encode(secretKey)
 
-export async function generateTokens(user: Pick<usuario, 'id' | 'email' | 'nome' | 'cargo'>) {
+export async function generateTokens(user: Pick<Usuario, 'id' | 'email' | 'nome' | 'cargo'>) {
     const authorizationToken = await new SignJWT({
         id: user.id,
         email: user.email,
         nome: user.nome,
-        cargo: user.cargo // <-- IMPORTANTE: O cargo agora é incluído no token!
+        cargo: user.cargo
     })
         .setProtectedHeader({ alg: 'HS256' })
         .setIssuedAt()
@@ -108,10 +107,10 @@ export async function deleteSession() {
     cookieStore.delete('session');
 }
 
-export async function getUser(): Promise<Usuario | undefined> {
+export async function getUser(): Promise<UsuarioPayload | undefined> {
     const session = await getSession();
 
     if (!session) return
 
-    return jwtDecode(session.authorizationToken) as Usuario
+    return jwtDecode(session.authorizationToken) as UsuarioPayload
 }

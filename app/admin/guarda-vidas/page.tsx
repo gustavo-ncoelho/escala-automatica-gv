@@ -88,12 +88,12 @@ export default function GuardaVidasPage() {
                                     </TableCell>
                                     <TableCell>
                                         <div className={layout}>
-                                            {gv.dataAdmissao ? gv.dataAdmissao.toLocaleDateString("pt-BR") : "--------"}
+                                            {gv.perfilGuardaVidas?.dataAdmissao ? new Date(gv.perfilGuardaVidas.dataAdmissao).toLocaleDateString("pt-BR") : "--------"}
                                         </div>
                                     </TableCell>
                                     <TableCell>
                                         <div className={layout}>
-                                            {gv.estatisticas?.diasTrabalhadosNaTemporada ?? "--------"}
+                                            {gv.perfilGuardaVidas?.estatisticas?.diasTrabalhadosNaTemporada ?? "--------"}
                                         </div>
                                     </TableCell>
                                     <TableCell className="text-right">

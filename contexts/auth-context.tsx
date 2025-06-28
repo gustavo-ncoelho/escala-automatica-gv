@@ -2,16 +2,16 @@
 
 import React, {createContext, useContext, useState, useEffect, ReactNode} from 'react';
 import {obterUsuario} from "@/actions/session-actions/obter-usuario";
-import {Usuario} from "@/types/auth/usuario"; // Use o tipo do seu payload
+import {UsuarioPayload} from "@/types/auth/usuario";
 
 type AuthContextType = {
-    usuario: Usuario | null;
+    usuario: UsuarioPayload | null;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({children}: { children: ReactNode }) => {
-    const [usuario, setUsuario] = useState<Usuario | null>(null);
+    const [usuario, setUsuario] = useState<UsuarioPayload | null>(null);
 
     useEffect(() => {
         const fetchUser = async () => {

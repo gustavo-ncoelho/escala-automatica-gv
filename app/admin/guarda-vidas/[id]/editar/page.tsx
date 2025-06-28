@@ -6,30 +6,33 @@ import {Input} from "@/components/ui/input"
 import {Label} from "@/components/ui/label"
 import {Slider} from "@/components/ui/slider"
 import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs"
-import {guardaVidasMock, postosMock} from "@/utils/dados-simulados"
+import {postosMock} from "@/utils/dados-simulados"
 import {Calendar, Plus, Trash} from "lucide-react"
 import Link from "next/link"
 import {useParams, useRouter} from "next/navigation"
 import {useEffect, useState} from "react"
 import BackButton from "@/components/utils/back-button";
+import {useUpdateGuardaVidas} from "@/hooks/api/guarda-vidas/use-update-guarda-vidas";
+import {useGetGuardaVidasById} from "@/hooks/api/guarda-vidas/use-get-guarda-vidas-by-id";
+import {toast} from "sonner";
 
 export default function EditarGuardaVidas() {
     const params = useParams();
-    const router = useRouter()
+    const router = useRouter();
     const id = params.id as string;
-    const guardaVida = guardaVidasMock.find((gv) => gv.id === id)
-
-    const [isLoading, setIsLoading] = useState(true)
-    const [preferencias, setPreferencias] = useState({} as Record<string, number>)
-    const [diasIndisponiveis, setDiasIndisponiveis] = useState([] as { data: string; motivo?: string }[])
+    const {data: guardaVida} = useGetGuardaVidasById(id);
+    const [isLoading, setIsLoading] = useState(true);
+    const [preferencias, setPreferencias] = useState({} as Record<string, number>);
+    const [diasIndisponiveis, setDiasIndisponiveis] = useState([] as { data: string; motivo?: string }[]);
+    const {mutateAsync} = useUpdateGuardaVidas();
 
     useEffect(() => {
         if (!guardaVida) {
             router.push("/admin/guarda-vidas")
         } else {
-            if (guardaVida.preferenciasPostos) {
+            if (guardaVida.perfilGuardaVidas?.preferenciasPostos) {
                 setPreferencias(
-                    guardaVida.preferenciasPostos.reduce(
+                    guardaVida.perfilGuardaVidas.preferenciasPostos.reduce(
                         (acc, pref) => {
                             acc[pref.postoId] = pref.prioridade
                             return acc
@@ -39,9 +42,9 @@ export default function EditarGuardaVidas() {
                 )
             }
 
-            if (guardaVida.diasIndisponiveis) {
+            if (guardaVida.perfilGuardaVidas?.diasIndisponiveis) {
                 setDiasIndisponiveis(
-                    guardaVida.diasIndisponiveis.map((dia) => ({
+                    guardaVida.perfilGuardaVidas?.diasIndisponiveis.map((dia) => ({
                         data: dia.data.toISOString().split("T")[0],
                         motivo: dia.motivo,
                     })),
@@ -56,13 +59,35 @@ export default function EditarGuardaVidas() {
         return <div>Carregando...</div>
     }
 
-    if (!guardaVida) {
-        return null
-    }
-
-    const handleSalvar = () => {
-
-        router.push(`/admin/guarda-vidas/${id}`)
+    async function handleSalvar() {
+        if (guardaVida && guardaVida.perfilGuardaVidas) {
+            const preferenciasFormatadas = Object.entries(preferencias).map(([postoId, prioridade]) => ({
+                postoId: postoId,
+                prioridade: prioridade
+            }));
+            const diasIndisponiveisFormatados = diasIndisponiveis
+                .filter(dia => dia.data)
+                .map(dia => ({
+                    ...dia,
+                    data: new Date(`${dia.data}T12:00:00Z`)
+                }));
+            try {
+                await mutateAsync({
+                    id: guardaVida.id, data: {
+                        ...guardaVida,
+                        dataAdmissao: new Date(guardaVida.perfilGuardaVidas?.dataAdmissao),
+                        preferenciasPostos: preferenciasFormatadas,
+                        diasIndisponiveis: diasIndisponiveisFormatados
+                    }
+                });
+                toast.success("Guarda-vidas atualizado com sucesso!");
+                router.push(`/admin/guarda-vidas`);
+                router.refresh();
+            } catch (error) {
+                const errorMessage = error instanceof Error ? error.message : "Ocorreu um erro desconhecido";
+                toast.error(`Falha ao atualizar: ${errorMessage}`);
+            }
+        }
     }
 
     const adicionarDiaIndisponivel = () => {
@@ -78,7 +103,7 @@ export default function EditarGuardaVidas() {
             <div className="flex items-center gap-4">
                 <BackButton href={"/admin/guarda-vidas"}/>
                 <div>
-                    <h1 className="text-3xl font-bold tracking-tight">Editar {guardaVida.nome}</h1>
+                    <h1 className="text-3xl font-bold tracking-tight">Editar {guardaVida?.nome}</h1>
                     <p className="text-muted-foreground">Atualize as preferências e configurações do guarda-vidas.</p>
                 </div>
             </div>
@@ -119,6 +144,11 @@ export default function EditarGuardaVidas() {
                                         />
                                     </div>
                                 ))}
+                                {(!postosMock || postosMock.length === 0 ) &&
+                                    <div className="text-center py-6 text-muted-foreground">
+                                        Nenhuma preferência de posto definida.  Clique em "Adicionar" para incluir.
+                                    </div>
+                                }
                             </div>
                         </CardContent>
                     </Card>

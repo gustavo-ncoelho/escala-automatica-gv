@@ -8,8 +8,10 @@ import {Calendar, Edit} from "lucide-react"
 import Link from "next/link"
 import {notFound, useParams} from "next/navigation"
 import BackButton from "@/components/utils/back-button";
-import {obterNomePosto} from "@/lib/utils";
+import {formatarDiaSemana, obterNomePosto} from "@/lib/utils";
 import {useGetGuardaVidasById} from "@/hooks/api/guarda-vidas/use-get-guarda-vidas-by-id";
+import {Badge} from "@/components/ui/badge";
+import {postosMock} from "@/utils/dados-simulados";
 
 export default function DetalhesGuardaVidas () {
 
@@ -63,8 +65,21 @@ export default function DetalhesGuardaVidas () {
                           </div>
                           <div className="gap-2 flex items-center justify-start">
                             <div className="text-sm font-medium text-muted-foreground">Admissão:</div>
-                            <div>{guardaVida?.dataAdmissao ? guardaVida?.dataAdmissao.toLocaleDateString("pt-BR") : "---------"}</div>
+                            <div>{guardaVida?.perfilGuardaVidas?.dataAdmissao ? new Date(guardaVida.perfilGuardaVidas.dataAdmissao).toLocaleDateString("pt-BR") : "---------"}</div>
                           </div>
+                        </div>
+
+                        <div>
+                            <div className="text-sm font-medium text-muted-foreground mb-2">Folgas Fixas:</div>
+                            <div className="flex flex-wrap gap-2">
+                                {guardaVida?.perfilGuardaVidas?.diasDeFolga && guardaVida.perfilGuardaVidas.diasDeFolga.length > 0 ? (
+                                    guardaVida.perfilGuardaVidas.diasDeFolga.map(dia => (
+                                        <Badge key={dia} variant="secondary">{formatarDiaSemana(dia)}</Badge>
+                                    ))
+                                ) : (
+                                    <p className="text-sm text-muted-foreground italic">Nenhuma folga fixa registrada.</p>
+                                )}
+                            </div>
                         </div>
                     </CardContent>
                 </Card>
@@ -84,7 +99,7 @@ export default function DetalhesGuardaVidas () {
                         </CardHeader>
                         <CardContent>
                             <div className="space-y-4">
-                                {guardaVida?.preferenciasPostos && guardaVida?.preferenciasPostos
+                                {guardaVida?.perfilGuardaVidas?.preferenciasPostos && guardaVida?.perfilGuardaVidas.preferenciasPostos
                                     .sort((a, b) => b.prioridade - a.prioridade)
                                     .map((pref) => (
                                         <div key={pref.postoId} className="space-y-2">
@@ -98,6 +113,11 @@ export default function DetalhesGuardaVidas () {
                                         </div>
                                     ))
                                 }
+                                {(!guardaVida?.perfilGuardaVidas?.preferenciasPostos || guardaVida.perfilGuardaVidas.preferenciasPostos.length === 0) &&
+                                    <div className="text-center py-6 text-muted-foreground">
+                                        Nenhuma preferência de posto definida.
+                                    </div>
+                                }
                             </div>
                         </CardContent>
                     </Card>
@@ -110,9 +130,9 @@ export default function DetalhesGuardaVidas () {
                             <CardDescription>Datas em que o guarda-vidas não pode trabalhar</CardDescription>
                         </CardHeader>
                         <CardContent>
-                            {guardaVida?.diasIndisponiveis && guardaVida?.diasIndisponiveis.length > 0 ? (
+                            {guardaVida?.perfilGuardaVidas?.diasIndisponiveis && guardaVida?.perfilGuardaVidas.diasIndisponiveis.length > 0 ? (
                                 <div className="space-y-4">
-                                    {guardaVida.diasIndisponiveis.map((dia, index) => (
+                                    {guardaVida.perfilGuardaVidas.diasIndisponiveis.map((dia, index) => (
                                         <div key={index}
                                              className="flex items-start gap-4 pb-4 border-b last:border-0 last:pb-0">
                                             <div

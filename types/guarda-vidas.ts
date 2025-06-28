@@ -23,9 +23,6 @@ export type GuardaVidasEscala = Omit<GuardaVidas, "dataAdmissao" | "email" | "te
 
 export type GuardaVidas = {
     id: string
-    nome: string
-    email: string
-    telefone?: string;
     dataAdmissao: Date
     diasDeFolga?: DiaDaSemana[],
     preferenciasPostos?: PreferenciaPosto[]

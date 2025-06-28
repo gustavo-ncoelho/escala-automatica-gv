@@ -1,33 +1,35 @@
-import { prisma } from '@/lib/prisma';
+import {prisma} from '@/lib/prisma';
 import {GuardaVidasCriacao} from "@/types/guarda-vidas";
+
+const userSelection = {
+    id: true,
+    email: true,
+    nome: true,
+    telefone: true,
+    cargo: true,
+    dataCriacao: true,
+    dataAtualizacao: true,
+    perfilGuardaVidas: {
+        include: {
+            preferenciasPostos: true,
+            diasIndisponiveis: true
+        }
+    }
+};
 
 export async function getGuardaVidas() {
     return prisma.usuario.findMany({
         where: {
             cargo: 'GUARDA_VIDAS'
         },
-        include: {
-            perfilGuardaVidas: {
-                include: {
-                    preferenciasPostos: true,
-                    diasIndisponiveis: true,
-                }
-            }
-        }
+        select: userSelection
     });
 }
 
 export async function getGuardaVidasById(id: string) {
     return prisma.usuario.findUniqueOrThrow({
         where: { id },
-        include: {
-            perfilGuardaVidas: {
-                include: {
-                    preferenciasPostos: true,
-                    diasIndisponiveis: true,
-                }
-            }
-        }
+        select: userSelection
     });
 }
 
@@ -35,9 +37,6 @@ export async function updateGuardaVidas(id: string, data: GuardaVidasCriacao) {
     return prisma.usuario.update({
         where: { id },
         data: {
-            nome: data.nome,
-            email: data.email,
-            telefone: data.telefone,
             perfilGuardaVidas: {
                 update: {
                     dataAdmissao: data.dataAdmissao,

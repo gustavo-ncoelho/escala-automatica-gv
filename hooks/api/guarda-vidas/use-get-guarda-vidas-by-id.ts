@@ -3,14 +3,14 @@
 import { useQuery } from '@tanstack/react-query';
 import { Api } from '@/lib/api/escala-gv-api-client';
 import { HttpError } from '@/lib/errors/errors';
-import {GuardaVidas} from "@/types/guarda-vidas";
+import {Usuario} from "@/types/auth/usuario";
 
-const fetchGuardaVidasById = async (id: string): Promise<GuardaVidas> => {
-    return await Api.get<GuardaVidas>(`/api/guarda-vidas/${id}`);
+const fetchGuardaVidasById = async (id: string): Promise<Usuario> => {
+    return await Api.get<Usuario>(`/api/guarda-vidas/${id}`);
 };
 
 export const useGetGuardaVidasById = (id: string) => {
-    return useQuery<GuardaVidas, HttpError>({
+    return useQuery<Usuario, HttpError>({
         queryKey: ['guardaVidas', id],
         queryFn: () => fetchGuardaVidasById(id),
         enabled: !!id

@@ -54,6 +54,12 @@ const getDiasNoMes = (mes: number, ano: number) => {
     return new Date(ano, mes, 0).getDate()
 }
 
+export const formatarDiaSemana = (dia: string) => {
+    if (!dia) return '';
+    const comHifen = dia.replace('_', '-');
+    return comHifen.charAt(0).toUpperCase() + comHifen.slice(1);
+};
+
 const mes = 3;          // TODO -> MOCADO
 const ano = 2026;       // TODO -> MOCADO
 
