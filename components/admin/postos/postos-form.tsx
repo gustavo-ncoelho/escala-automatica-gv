@@ -8,17 +8,18 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import {Posto} from "@/types/guarda-vidas";
+import {Posto, PostoCriacao} from "@/types/guarda-vidas";
 import BackButton from "@/components/utils/back-button";
 
 interface PostoFormProps {
     posto?: Posto
-    onSubmit: (data: Omit<Posto, "id">) => void
+    onSubmitCriacao?: (data: PostoCriacao) => void
+    onSubmitUpdate?: (id:string, data: PostoCriacao) => void
     onCancel: () => void
     isEditing?: boolean
 }
 
-export default function PostosForm({ posto, onSubmit, onCancel, isEditing = false }: PostoFormProps) {
+export default function PostosForm({ posto, onSubmitCriacao, onSubmitUpdate, onCancel, isEditing = false }: PostoFormProps) {
     const [formData, setFormData] = useState({
         nome: posto?.nome || "",
         numero: posto?.numero || 0,
@@ -43,26 +44,26 @@ export default function PostosForm({ posto, onSubmit, onCancel, isEditing = fals
             newErrors.alocacaoMaxima = "Alocação máxima deve ser maior que zero"
         }
 
-        if (!formData.localizacao.trim()) {
-            newErrors.localizacao = "Localização é obrigatória"
-        }
-
         setErrors(newErrors)
         return Object.keys(newErrors).length === 0
-    }
-
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault()
-
-        if (validateForm()) {
-            onSubmit(formData)
-        }
     }
 
     const handleInputChange = (field: string, value: string | number) => {
         setFormData((prev) => ({ ...prev, [field]: value }))
         if (errors[field]) {
             setErrors((prev) => ({ ...prev, [field]: "" }))
+        }
+    }
+
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault()
+
+        if (validateForm() && !!onSubmitCriacao && !isEditing) {
+            onSubmitCriacao(formData)
+        }
+
+        if (validateForm() && !!onSubmitUpdate && isEditing && posto?.id) {
+            onSubmitUpdate(posto?.id, formData);
         }
     }
 

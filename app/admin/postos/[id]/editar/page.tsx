@@ -1,44 +1,38 @@
 "use client"
 
 import {useParams, useRouter} from "next/navigation"
-import {useState, useEffect} from "react"
-import {Posto} from "@/types/guarda-vidas";
-import {postosMock} from "@/utils/dados-simulados";
+import {PostoCriacao} from "@/types/guarda-vidas";
 import PostosForm from "@/components/admin/postos/postos-form";
+import {useUpdatePosto} from "@/hooks/api/postos/use-update-posto";
+import { toast } from "sonner";
+import {useGetPostoById} from "@/hooks/api/postos/use-get-posto-by-id";
 
 export default function EditarPostoPage() {
 
-    const {id} = useParams();
-    const router = useRouter()
-    const [posto, setPosto] = useState<Posto | null>(null)
-    const [loading, setLoading] = useState(true)
+    const params = useParams();
+    const id = params.id as string;
+    const router = useRouter();
+    const {data: posto} = useGetPostoById(id);
+    const {mutateAsync: atualizarPosto} = useUpdatePosto();
 
-    useEffect(() => {
-        const postoEncontrado = postosMock.find((p) => p.id === id)
-        setPosto(postoEncontrado || null)
-        setLoading(false)
-    }, [id])
 
-    const handleSubmit = (data: Omit<Posto, "id">) => {
-        console.log("Atualizando posto:", {id, ...data})
+    const handleSubmit = async (id: string, data: PostoCriacao) => {
+        try {
+            await atualizarPosto({id, data});
+            toast.success("Posto alterado com sucesso!");
+        } catch (error) {
+            console.error(error);
+            toast.error("Erro ao alterar posto");
+        }
 
-        alert("Posto atualizado com sucesso!")
-        router.push("/postos")
+
+        router.push("/admin/postos")
     }
 
     const handleCancel = () => {
-        router.push("/postos")
+        router.push("/admin/postos")
     }
 
-    if (loading) {
-        return (
-            <div className="container mx-auto p-6">
-                <div className="flex justify-center items-center h-64">
-                    <p>Carregando...</p>
-                </div>
-            </div>
-        )
-    }
 
     if (!posto) {
         return (
@@ -56,7 +50,7 @@ export default function EditarPostoPage() {
 
     return (
         <>
-            <PostosForm posto={posto} onSubmit={handleSubmit} onCancel={handleCancel} isEditing={true}/>
+            <PostosForm posto={posto} onSubmitUpdate={handleSubmit} onCancel={handleCancel} isEditing={true}/>
         </>
     )
 }

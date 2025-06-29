@@ -1,29 +1,35 @@
 "use client"
 
-import { useState } from "react"
+import {useState} from "react"
 import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Input } from "@/components/ui/input"
-import { MapPin, Users, Edit, Trash2, Plus, Search } from "lucide-react"
-import {Posto} from "@/types/guarda-vidas";
-import {postosMock} from "@/utils/dados-simulados";
+import {Button} from "@/components/ui/button"
+import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card"
+import {Badge} from "@/components/ui/badge"
+import {Input} from "@/components/ui/input"
+import {Edit, MapPin, Plus, Search, Trash2, Users} from "lucide-react"
+import {useGetPostos} from "@/hooks/api/postos/use-get-all-postos";
+import {useDeletePosto} from "@/hooks/api/postos/use-delete-posto";
+import { toast } from "sonner"
 
 export default function PostosPage() {
-    const [postos, setPostos] = useState<Posto[]>(postosMock)
     const [searchTerm, setSearchTerm] = useState("")
+    const {mutateAsync: deletarPosto} = useDeletePosto();
+    const {data: postos} = useGetPostos();
 
-    const filteredPostos = postos.filter(
+    const filteredPostos = postos?.filter(
         (posto) =>
             posto.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
             posto.localizacao.toLowerCase().includes(searchTerm.toLowerCase()) ||
             posto.numero.toString().includes(searchTerm),
     )
 
-    const handleDelete = (id: string) => {
-        if (confirm("Tem certeza que deseja excluir este posto?")) {
-            setPostos((prev) => prev.filter((posto) => posto.id !== id))
+    const handleDelete = async (id: string) => {
+        try {
+            await deletarPosto(id);
+            toast.success("Posto removido com sucesso!");
+        } catch (error) {
+            console.error(error);
+            toast.error("Ocorreu um erro ao remover posto");
         }
     }
 
@@ -53,7 +59,7 @@ export default function PostosPage() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filteredPostos.map((posto) => (
+                {filteredPostos?.map((posto) => (
                     <Card key={posto.id} className="hover:shadow-lg transition-shadow">
                         <CardHeader className="pb-3">
                             <div className="flex justify-between items-start">
@@ -94,13 +100,13 @@ export default function PostosPage() {
                 ))}
             </div>
 
-            {filteredPostos.length === 0 && (
+            {filteredPostos?.length === 0 && (
                 <div className="text-center py-12">
                     <p className="text-muted-foreground">
                         {searchTerm ? "Nenhum posto encontrado com os critérios de busca." : "Nenhum posto cadastrado ainda."}
                     </p>
                     {!searchTerm && (
-                        <Link href="admin/postos/novo">
+                        <Link href="postos/novo">
                             <Button className="mt-4">
                                 <Plus className="w-4 h-4 mr-2" />
                                 Cadastrar Primeiro Posto

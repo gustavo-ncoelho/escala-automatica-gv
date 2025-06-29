@@ -11,6 +11,12 @@ export async function getPostos() {
     });
 }
 
+export async function getPostoById(id: string) {
+    return prisma.posto.findUniqueOrThrow({
+        where: { id },
+    });
+}
+
 export async function createPosto(data: PostoCriacao) {
     const existingPosto = await prisma.posto.findFirst({
         where: { OR: [{ nome: data.nome }, { numero: data.numero }] }
