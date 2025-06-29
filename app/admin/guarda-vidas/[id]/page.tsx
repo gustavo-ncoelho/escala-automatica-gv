@@ -11,14 +11,11 @@ import BackButton from "@/components/utils/back-button";
 import {formatarDiaSemana, obterNomePosto} from "@/lib/utils";
 import {useGetGuardaVidasById} from "@/hooks/api/guarda-vidas/use-get-guarda-vidas-by-id";
 import {Badge} from "@/components/ui/badge";
-import {postosMock} from "@/utils/dados-simulados";
 
 export default function DetalhesGuardaVidas () {
 
     const params = useParams();
     const id = params.id as string;
-
-    console.log(id);
 
     const {data: guardaVida} = useGetGuardaVidasById(id);
 
@@ -135,8 +132,7 @@ export default function DetalhesGuardaVidas () {
                                     {guardaVida.perfilGuardaVidas.diasIndisponiveis.map((dia, index) => (
                                         <div key={index}
                                              className="flex items-start gap-4 pb-4 border-b last:border-0 last:pb-0">
-                                            <div
-                                                className="flex h-10 w-10 items-center justify-center rounded-full bg-muted">
+                                            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted">
                                                 <Calendar className="h-5 w-5"/>
                                             </div>
                                             <div>

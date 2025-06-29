@@ -11,5 +11,16 @@ export const useGetAllSolicitacoes = () => {
     return useQuery<Solicitacao[], HttpError>({
         queryKey: ['solicitacoes'],
         queryFn: fetchSolicitacoes,
+        select: (data) => {
+            if (!data) return [];
+
+            return data.map(solicitacao => ({
+                ...solicitacao,
+                dataCriacao: new Date(solicitacao.dataCriacao),
+                dataAtualizacao: new Date(solicitacao.dataAtualizacao),
+                dataOriginal: solicitacao.dataOriginal ? new Date(solicitacao.dataOriginal) : undefined,
+                dataSolicitada: solicitacao.dataSolicitada ? new Date(solicitacao.dataSolicitada) : undefined,
+            }));
+        }
     });
 };

@@ -13,6 +13,14 @@ export const useGetAlocacoesPorGuardaVidas = (guardaVidasId: string) => {
     return useQuery<AlocacaoDiaria[], HttpError>({
         queryKey: queryKey,
         queryFn: () => fetchAlocacoesPorGuardaVidas(guardaVidasId),
-        enabled: !!guardaVidasId
+        enabled: !!guardaVidasId,
+        select: (data) => {
+            if (!data) return [];
+
+            return data.map(alocacao => ({
+                ...alocacao,
+                data: new Date(alocacao.data),
+            }));
+        }
     });
 };

@@ -19,6 +19,14 @@ export const useGetAlocacoesPorData = (dataAlvo: Date) => {
     return useQuery<AlocacaoDiaria[], HttpError>({
         queryKey: queryKey,
         queryFn: () => fetchAlocacoesPorData(dataAlvo),
-        enabled: !!dataAlvo
+        enabled: !!dataAlvo,
+        select: (data) => {
+            if (!data) return [];
+
+            return data.map(alocacao => ({
+                ...alocacao,
+                data: new Date(alocacao.data),
+            }));
+        }
     });
 };

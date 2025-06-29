@@ -13,6 +13,21 @@ export const useGetGuardaVidasById = (id: string) => {
     return useQuery<Usuario, HttpError>({
         queryKey: ['guardaVidas', id],
         queryFn: () => fetchGuardaVidasById(id),
-        enabled: !!id
+        enabled: !!id,
+        select: (data) => {
+            return {
+                ...data,
+                dataCriacao: new Date(data.dataCriacao),
+                dataAtualizacao: data.dataAtualizacao ? new Date(data.dataAtualizacao) : undefined,
+                perfilGuardaVidas: data.perfilGuardaVidas ? {
+                    ...data.perfilGuardaVidas,
+                    dataAdmissao: new Date(data.perfilGuardaVidas.dataAdmissao),
+                    diasIndisponiveis: data.perfilGuardaVidas?.diasIndisponiveis?.map(d => ({
+                        ...d,
+                        data: new Date(d.data)
+                    }))
+                } : undefined
+            };
+        }
     });
 };

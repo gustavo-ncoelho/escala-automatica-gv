@@ -15,5 +15,22 @@ export const useGetAllGuardaVidas = () => {
         queryFn: fetchAllGuardaVidas,
         retry: 1,
         staleTime: 1000 * 60,
+        select: (data) => {
+            if (!data) return [];
+
+            return data.map(user => ({
+                ...user,
+                dataCriacao: new Date(user.dataCriacao),
+                dataAtualizacao: user.dataAtualizacao ? new Date(user.dataAtualizacao) : undefined,
+                perfilGuardaVidas: user.perfilGuardaVidas ? {
+                    ...user.perfilGuardaVidas,
+                    dataAdmissao: new Date(user.perfilGuardaVidas.dataAdmissao),
+                    diasIndisponiveis: user.perfilGuardaVidas?.diasIndisponiveis?.map(dia => ({
+                        ...dia,
+                        data: new Date(dia.data)
+                    }))
+                } : undefined
+            }));
+        }
     });
 };

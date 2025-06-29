@@ -20,6 +20,7 @@ import {useCadastrarUsuario} from "@/hooks/api/auth/use-cadastrar-usuario";
 import {useRouter} from "next/navigation";
 import {useToast} from "@/hooks/utils/use-toast";
 import {Checkbox} from "@/components/ui/checkbox"
+import {DateInput} from "@/components/ui/DateInput";
 
 export default function LifeguardForm() {
 
@@ -42,9 +43,7 @@ export default function LifeguardForm() {
     });
 
     const diaIndisponivelSchema = z.object({
-        data: z.date({
-            required_error: "Data é obrigatória",
-        }),
+        data: z.string({required_error: "Data é obrigatória"}).regex(/^\d{2}\/\d{2}\/\d{4}$/, "Formato inválido (DD/MM/AAAA)"),
         motivo: z.string().optional(),
     });
 
@@ -99,6 +98,10 @@ export default function LifeguardForm() {
         try {
             await mutateAsync({
                 ...data,
+                diasIndisponiveis: data.diasIndisponiveis?.map(dia => ({
+                    ...dia,
+                    data: parse(dia.data, "dd/MM/yyyy", new Date())
+                })),
                 data_admissao: parse(data.dataAdmissao, "dd/MM/yyyy", new Date()),
                 cargo: "GUARDA_VIDAS"
             });
@@ -191,32 +194,13 @@ export default function LifeguardForm() {
                                 <FormField
                                     control={form.control}
                                     name="dataAdmissao"
-                                    render={({field}) => {
-                                        const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-                                            let value = e.target.value.replace(/\D/g, '');
-                                            if (value.length > 2) {
-                                                value = `${value.slice(0, 2)}/${value.slice(2)}`;
-                                            }
-                                            if (value.length > 5) {
-                                                value = `${value.slice(0, 5)}/${value.slice(5, 9)}`;
-                                            }
-                                            field.onChange(value);
-                                        };
-
-                                        return (
-                                            <FormItem>
-                                                <FormLabel>Data de Admissão</FormLabel>
-                                                <FormControl>
-                                                    <Input
-                                                        placeholder="DD/MM/AAAA"
-                                                        value={field.value}
-                                                        onChange={handleDateChange}
-                                                    />
-                                                </FormControl>
-                                                <FormMessage/>
-                                            </FormItem>
-                                        );
-                                    }}
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Data de Admissão</FormLabel>
+                                            <FormControl><DateInput field={field} /></FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
                                 />
                             </div>
                         </CardContent>
@@ -409,37 +393,11 @@ export default function LifeguardForm() {
                                         <FormField
                                             control={form.control}
                                             name={`diasIndisponiveis.${index}.data`}
-                                            render={({field}) => (
-                                                <FormItem className="flex flex-col">
+                                            render={({ field }) => (
+                                                <FormItem>
                                                     <FormLabel>Data</FormLabel>
-                                                    <Popover>
-                                                        <PopoverTrigger asChild>
-                                                            <FormControl>
-                                                                <Button
-                                                                    variant={"outline"}
-                                                                    className={cn(
-                                                                        "w-full pl-3 text-left font-normal",
-                                                                        !field.value && "text-muted-foreground",
-                                                                    )}
-                                                                >
-                                                                    {field.value ? format(field.value, "dd/MM/yyyy") :
-                                                                        <span>Selecione uma data</span>}
-                                                                    <CalendarIcon
-                                                                        className="ml-auto h-4 w-4 opacity-50"/>
-                                                                </Button>
-                                                            </FormControl>
-                                                        </PopoverTrigger>
-                                                        <PopoverContent className="w-auto p-0" align="start">
-                                                            <Calendar
-                                                                mode="single"
-                                                                selected={field.value}
-                                                                onSelect={field.onChange}
-                                                                disabled={(date) => date < new Date()}
-                                                                initialFocus
-                                                            />
-                                                        </PopoverContent>
-                                                    </Popover>
-                                                    <FormMessage/>
+                                                    <FormControl><DateInput field={field} /></FormControl>
+                                                    <FormMessage />
                                                 </FormItem>
                                             )}
                                         />
@@ -472,7 +430,7 @@ export default function LifeguardForm() {
                                 className="mt-2"
                                 onClick={() =>
                                     appendIndisponivel({
-                                        data: new Date(),
+                                        data: "",
                                         motivo: "",
                                     })
                                 }
