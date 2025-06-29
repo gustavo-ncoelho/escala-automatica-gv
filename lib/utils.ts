@@ -32,6 +32,16 @@ export const gerarArrayDeDatasDoMes = (mes: number, ano: number): Date[] => {
     });
 };
 
+export const diasDaSemanaOpcoes = [
+    { id: "segunda", label: "Segunda-feira" },
+    { id: "terca_feira", label: "Terça-feira" },
+    { id: "quarta_feira", label: "Quarta-feira" },
+    { id: "quinta_feira", label: "Quinta-feira" },
+    { id: "sexta_feira", label: "Sexta-feira" },
+    { id: "sabado", label: "Sábado" },
+    { id: "domingo", label: "Domingo" },
+] as const;
+
 export const getNomeMes = (mes: number) => {
     const meses = [
         "Janeiro",

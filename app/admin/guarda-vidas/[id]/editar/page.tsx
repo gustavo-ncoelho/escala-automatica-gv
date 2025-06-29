@@ -15,6 +15,9 @@ import BackButton from "@/components/utils/back-button";
 import {useUpdateGuardaVidas} from "@/hooks/api/guarda-vidas/use-update-guarda-vidas";
 import {useGetGuardaVidasById} from "@/hooks/api/guarda-vidas/use-get-guarda-vidas-by-id";
 import {toast} from "sonner";
+import {DiaDaSemana} from "@/types/guarda-vidas";
+import {Checkbox} from "@/components/ui/checkbox";
+import {diasDaSemanaOpcoes} from "@/lib/utils";
 
 export default function EditarGuardaVidas() {
     const params = useParams();
@@ -24,6 +27,7 @@ export default function EditarGuardaVidas() {
     const [isLoading, setIsLoading] = useState(true);
     const [preferencias, setPreferencias] = useState({} as Record<string, number>);
     const [diasIndisponiveis, setDiasIndisponiveis] = useState([] as { data: string; motivo?: string }[]);
+    const [diasDeFolga, setDiasDeFolga] = useState<DiaDaSemana[]>([]);
     const {mutateAsync} = useUpdateGuardaVidas();
 
     useEffect(() => {
@@ -51,6 +55,10 @@ export default function EditarGuardaVidas() {
                 );
             }
 
+            if (guardaVida.perfilGuardaVidas?.diasDeFolga) {
+                setDiasDeFolga(guardaVida.perfilGuardaVidas.diasDeFolga as DiaDaSemana[]);
+            }
+
             setIsLoading(false)
         }
     }, [guardaVida, router])
@@ -76,6 +84,7 @@ export default function EditarGuardaVidas() {
                     id: guardaVida.id, data: {
                         ...guardaVida,
                         dataAdmissao: new Date(guardaVida.perfilGuardaVidas?.dataAdmissao),
+                        diasDeFolga: diasDeFolga,
                         preferenciasPostos: preferenciasFormatadas,
                         diasIndisponiveis: diasIndisponiveisFormatados
                     }
@@ -87,6 +96,8 @@ export default function EditarGuardaVidas() {
                 const errorMessage = error instanceof Error ? error.message : "Ocorreu um erro desconhecido";
                 toast.error(`Falha ao atualizar: ${errorMessage}`);
             }
+        } else {
+            console.log("Erro ao atualizar");
         }
     }
 
@@ -109,9 +120,10 @@ export default function EditarGuardaVidas() {
             </div>
 
             <Tabs defaultValue="preferencias">
-                <TabsList className="grid w-full grid-cols-2">
+                <TabsList className="grid w-full grid-cols-3">
                     <TabsTrigger value="preferencias">Preferências de Postos</TabsTrigger>
                     <TabsTrigger value="indisponibilidade">Dias Indisponíveis</TabsTrigger>
+                    <TabsTrigger value="diasDeFolga">Dias de Folga</TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="preferencias" className="mt-6">
@@ -214,13 +226,47 @@ export default function EditarGuardaVidas() {
                         </CardContent>
                     </Card>
                 </TabsContent>
+
+                <TabsContent value="diasDeFolga" className="mt-6">
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Dias de Folga Fixos</CardTitle>
+                            <CardDescription>
+                                Selecione os dias da semana em que o guarda-vidas terá folga recorrente.
+                            </CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                                {diasDaSemanaOpcoes.map((dia) => (
+                                    <div key={dia.id} className="flex items-center space-x-2">
+                                        <Checkbox
+                                            id={dia.id}
+                                            checked={diasDeFolga.includes(dia.id as DiaDaSemana)}
+                                            onCheckedChange={(checked) => {
+                                                const diaId = dia.id as DiaDaSemana;
+                                                if (checked) {
+                                                    setDiasDeFolga([...diasDeFolga, diaId]);
+                                                } else {
+                                                    setDiasDeFolga(diasDeFolga.filter((d) => d !== diaId));
+                                                }
+                                            }}
+                                        />
+                                        <label htmlFor={dia.id} className="text-sm font-medium leading-none">
+                                            {dia.label}
+                                        </label>
+                                    </div>
+                                ))}
+                            </div>
+                        </CardContent>
+                    </Card>
+                </TabsContent>
             </Tabs>
 
             <div className="flex justify-end gap-4">
                 <Button variant="outline" asChild>
                     <Link href={`/admin/guarda-vidas/${id}`}>Cancelar</Link>
                 </Button>
-                <Button onClick={handleSalvar}>Salvar Alterações</Button>
+                <Button onClick={() => handleSalvar()}>Salvar Alterações</Button>
             </div>
         </div>
     )

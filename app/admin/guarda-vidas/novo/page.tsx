@@ -14,7 +14,7 @@ import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover"
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select"
 import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card"
 import {Separator} from "@/components/ui/separator"
-import {cn} from "@/lib/utils"
+import {cn, diasDaSemanaOpcoes} from "@/lib/utils"
 import BackButton from "@/components/utils/back-button";
 import {useCadastrarUsuario} from "@/hooks/api/auth/use-cadastrar-usuario";
 import {useRouter} from "next/navigation";
@@ -26,16 +26,6 @@ export default function LifeguardForm() {
     const {mutateAsync} = useCadastrarUsuario();
     const {toast} = useToast();
     const router = useRouter();
-
-    const diasDaSemanaOpcoes = [
-        {id: "segunda", label: "Segunda-feira"},
-        {id: "terca_feira", label: "Terça-feira"},
-        {id: "quarta_feira", label: "Quarta-feira"},
-        {id: "quinta_feira", label: "Quinta-feira"},
-        {id: "sexta_feira", label: "Sexta-feira"},
-        {id: "sabado", label: "Sábado"},
-        {id: "domingo", label: "Domingo"},
-    ] as const;
 
     const postos = [
         {id: "1", nome: "Posto 1 - Praia Central"},
@@ -85,6 +75,7 @@ export default function LifeguardForm() {
         resolver: zodResolver(guardaVidasSchema),
         defaultValues: {
             nome: "",
+            senha: "",
             email: "",
             telefone: "",
             dataAdmissao: "",
@@ -294,7 +285,7 @@ export default function LifeguardForm() {
                                 <div key={field.id} className="space-y-4 p-4 border rounded-lg">
                                     <div className="flex items-center justify-between">
                                         <h4 className="font-medium">Preferência {index + 1}</h4>
-                                        {preferenciaFields.length > 1 && (
+                                        {preferenciaFields.length >= 1 && (
                                             <Button type="button" variant="outline" size="sm"
                                                     onClick={() => removePreferencia(index)}>
                                                 <Trash2 className="h-4 w-4"/>
