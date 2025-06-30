@@ -1,14 +1,13 @@
 "use client"
 
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import {DiaDaSemana, GuardaVidasEscala} from "@/types/guarda-vidas"; // Ajuste o caminho se necessário
+import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table"
+import {GuardaVidasEscala} from "@/types/guarda-vidas";
 import {cn, guardaVidaTrabalhaEm} from "@/lib/utils";
-import { isSameDay } from 'date-fns';
 
 interface EscalaMensalProps {
     diasDoMes: Date[];
     guardaVidas: GuardaVidasEscala[];
-    onDayClick?: (data: Date, guardaVidasId: number) => void;
+    onDayClick?: (data: Date, guardaVidasId: string) => void;
 }
 
 export default function EscalaMensal({ diasDoMes, guardaVidas, onDayClick }: EscalaMensalProps) {

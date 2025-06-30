@@ -3,38 +3,30 @@
 import {zodResolver} from "@hookform/resolvers/zod"
 import {useFieldArray, useForm} from "react-hook-form"
 import {z} from "zod"
-import {CalendarIcon, Plus, Trash2} from "lucide-react"
-import {format, parse} from "date-fns"
+import {Plus, Trash2} from "lucide-react"
+import {parse} from "date-fns"
 import {Button} from "@/components/ui/button"
-import {Calendar} from "@/components/ui/calendar"
 import {Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form"
 import {Input} from "@/components/ui/input"
 import {Textarea} from "@/components/ui/textarea"
-import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover"
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select"
 import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card"
 import {Separator} from "@/components/ui/separator"
-import {cn, diasDaSemanaOpcoes} from "@/lib/utils"
+import {diasDaSemanaOpcoes} from "@/lib/utils"
 import BackButton from "@/components/utils/back-button";
 import {useCadastrarUsuario} from "@/hooks/api/auth/use-cadastrar-usuario";
 import {useRouter} from "next/navigation";
-import {useToast} from "@/hooks/utils/use-toast";
 import {Checkbox} from "@/components/ui/checkbox"
 import {DateInput} from "@/components/ui/DateInput";
+import {toast} from "sonner"
+import {useGetPostos} from "@/hooks/api/postos/use-get-all-postos";
 
 export default function LifeguardForm() {
 
     const {mutateAsync} = useCadastrarUsuario();
-    const {toast} = useToast();
     const router = useRouter();
 
-    const postos = [
-        {id: "1", nome: "Posto 1 - Praia Central"},
-        {id: "2", nome: "Posto 2 - Praia Norte"},
-        {id: "3", nome: "Posto 3 - Praia Sul"},
-        {id: "4", nome: "Posto 4 - Lagoa"},
-        {id: "5", nome: "Posto 5 - Pier"},
-    ]
+    const {data:postos} = useGetPostos();
 
     const preferenciaPostoSchema = z.object({
         postoId: z.string(),
@@ -270,7 +262,7 @@ export default function LifeguardForm() {
                                     <div className="flex items-center justify-between">
                                         <h4 className="font-medium">Preferência {index + 1}</h4>
                                         {preferenciaFields.length >= 1 && (
-                                            <Button type="button" variant="outline" size="sm"
+                                            <Button type="button" variant="trash" size="sm"
                                                     onClick={() => removePreferencia(index)}>
                                                 <Trash2 className="h-4 w-4"/>
                                             </Button>
@@ -294,11 +286,17 @@ export default function LifeguardForm() {
                                                             </SelectTrigger>
                                                         </FormControl>
                                                         <SelectContent>
-                                                            {postos.map((posto) => (
-                                                                <SelectItem key={posto.id} value={posto.id.toString()}>
-                                                                    {posto.nome}
+                                                            {(!postos || postos.length === 0) ? (
+                                                                <SelectItem value="no-options" disabled>
+                                                                    Nenhum posto cadastrado.
                                                                 </SelectItem>
-                                                            ))}
+                                                            ) : (
+                                                                postos.map((posto) => (
+                                                                    <SelectItem key={posto.id} value={posto.id.toString()}>
+                                                                        {posto.nome}
+                                                                    </SelectItem>
+                                                                ))
+                                                            )}
                                                         </SelectContent>
                                                     </Select>
                                                     <FormMessage/>
@@ -383,7 +381,7 @@ export default function LifeguardForm() {
                                 <div key={field.id} className="space-y-4 p-4 border rounded-lg">
                                     <div className="flex items-center justify-between">
                                         <h4 className="font-medium">Dia Indisponível {index + 1}</h4>
-                                        <Button type="button" variant="outline" size="sm"
+                                        <Button type="button" variant="trash" size="sm"
                                                 onClick={() => removeIndisponivel(index)}>
                                             <Trash2 className="h-4 w-4"/>
                                         </Button>

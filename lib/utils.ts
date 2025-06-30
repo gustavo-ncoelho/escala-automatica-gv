@@ -4,7 +4,8 @@ import {AlocacaoDiaria} from "@/types/alocacao-diaria";
 import {isSameDay} from "date-fns";
 import {DiaDaSemana, GuardaVidas, GuardaVidasEscala, Posto} from "@/types/guarda-vidas";
 import {v4 as uuid} from "uuid";
-import {guardaVidasMock, postosMock} from "@/utils/dados-simulados";
+import {guardaVidasMock} from "@/utils/dados-simulados";
+import {Usuario} from "@/types/auth/usuario";
 
 export function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs))
@@ -42,6 +43,26 @@ export const diasDaSemanaOpcoes = [
     { id: "domingo", label: "Domingo" },
 ] as const;
 
+export const dataAtual = new Date();
+
+export const anosParaSelecionar = Array.from({ length: 5 }, (_, i) => dataAtual.getFullYear() - 2 + i);
+
+
+export const mesesParaSelecionar = [
+    { valor: 1, nome: 'Janeiro' },
+    { valor: 2, nome: 'Fevereiro' },
+    { valor: 3, nome: 'Março' },
+    { valor: 4, nome: 'Abril' },
+    { valor: 5, nome: 'Maio' },
+    { valor: 6, nome: 'Junho' },
+    { valor: 7, nome: 'Julho' },
+    { valor: 8, nome: 'Agosto' },
+    { valor: 9, nome: 'Setembro' },
+    { valor: 10, nome: 'Outubro' },
+    { valor: 11, nome: 'Novembro' },
+    { valor: 12, nome: 'Dezembro' },
+];
+
 export const getNomeMes = (mes: number) => {
     const meses = [
         "Janeiro",
@@ -62,16 +83,13 @@ export const getNomeMes = (mes: number) => {
 
 const getDiasNoMes = (mes: number, ano: number) => {
     return new Date(ano, mes, 0).getDate()
-}
+};
 
 export const formatarDiaSemana = (dia: string) => {
     if (!dia) return '';
     const comHifen = dia.replace('_', '-');
     return comHifen.charAt(0).toUpperCase() + comHifen.slice(1);
 };
-
-const mes = 3;          // TODO -> MOCADO
-const ano = 2026;       // TODO -> MOCADO
 
 export const contarGuardaVidasPorDia = (targetDate: Date, alocacoes: AlocacaoDiaria[]): number => {
     if (!targetDate || !alocacoes) {
@@ -83,7 +101,7 @@ export const contarGuardaVidasPorDia = (targetDate: Date, alocacoes: AlocacaoDia
     );
 
     return alocacoesDoDia.length;
-}
+};
 
 export const filtrarAlocacoesPorMes = (mes: number, ano: number, todasAsAlocacoes: AlocacaoDiaria[]): AlocacaoDiaria[] => {
     return todasAsAlocacoes.filter(alocacao => {
@@ -102,8 +120,8 @@ export function obterNomeGuardaVidas(id: string): string {
     return gv ? gv.nome : "Desconhecido"
 }
 
-export function obterNomePosto(id: string): string {
-    const posto = postosMock.find((p) => p.id === id)
+export function obterNomePosto(id: string, postos: Posto[]): string {
+    const posto = postos.find((p) => p.id === id)
     return posto ? posto.nome : "Desconhecido"
 }
 
@@ -113,7 +131,7 @@ export const existeAlocacaoNoDia = (dataAlvo: Date, alocacoes: AlocacaoDiaria[])
     );
 };
 
-export const converterGVParaGVEscala = (listaDeGuardaVidas: GuardaVidas[]): GuardaVidasEscala[] => {
+export const converterGVParaGVEscala = (listaDeGuardaVidas?: Usuario[]): GuardaVidasEscala[] => {
     if (!listaDeGuardaVidas) {
         return [];
     }
@@ -122,16 +140,16 @@ export const converterGVParaGVEscala = (listaDeGuardaVidas: GuardaVidas[]): Guar
         return {
             id: guardaVida.id,
             nome: guardaVida.nome,
-            preferenciasPostos: guardaVida.preferenciasPostos,
-            diasIndisponiveis: guardaVida.diasIndisponiveis,
-            estatisticas: guardaVida.estatisticas,
-            diasDeFolga: guardaVida.diasDeFolga
+            preferenciasPostos: guardaVida.perfilGuardaVidas?.preferenciasPostos,
+            diasIndisponiveis: guardaVida.perfilGuardaVidas?.diasIndisponiveis,
+            estatisticas: guardaVida.perfilGuardaVidas?.estatisticas,
+            diasDeFolga: guardaVida.perfilGuardaVidas?.diasDeFolga
         };
     });
 };
 
 export const guardaVidaTrabalhaEm = (guardaVida: GuardaVidasEscala, dataDoDia: Date): boolean => {
-    const diasDaSemanaMap: DiaDaSemana[] = ["domingo", "segunda", "terça-feira", "quarta-feira", "quinta-feira", "sexta-feira", "sabado"];
+    const diasDaSemanaMap: DiaDaSemana[] = [ "domingo", "segunda", "terca_feira", "quarta_feira", "quinta_feira", "sexta_feira", "sabado"];
     const nomeDoDiaDaSemana = diasDaSemanaMap[dataDoDia.getDay()];
 
     if (guardaVida.diasDeFolga?.includes(nomeDoDiaDaSemana)) {
@@ -141,14 +159,14 @@ export const guardaVidaTrabalhaEm = (guardaVida: GuardaVidasEscala, dataDoDia: D
     return !guardaVida.diasIndisponiveis?.some(dia => isSameDay(new Date(dia.data), dataDoDia));
 };
 
-export const gerarEscalaDiaria = (listaDePostos: Posto[], listaDeGuardaVidas: GuardaVidas[], dataAlvo: Date): AlocacaoDiaria[] => {
+export const gerarEscalaDiaria = (listaDePostos: Posto[], listaDeGuardaVidas: GuardaVidasEscala[], dataAlvo: Date): AlocacaoDiaria[] => {
     let escala: AlocacaoDiaria[] = [];
     const gvAlocados: Set<string> = new Set();
     const gvDisponiveis = listaDeGuardaVidas.filter(gv => guardaVidaTrabalhaEm(gv, dataAlvo));
 
     const gvNaoAlocados = () => gvDisponiveis.filter(gv => !gvAlocados.has(gv.id));
 
-    const calcularScore = (gv: GuardaVidas, postoId: string) => {
+    const calcularScore = (gv: GuardaVidasEscala, postoId: string) => {
         const preferencia = gv.preferenciasPostos?.find(p => p.postoId === postoId);
         const prioridadeScore = (preferencia?.prioridade ?? 0) * 10;
         const diasTrabalhadosScore = 100 - (gv.estatisticas?.diasTrabalhadosNaTemporada ?? 0);

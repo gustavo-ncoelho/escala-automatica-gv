@@ -1,9 +1,9 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Calendar, MapPin, Users } from "lucide-react"
-import {GuardaVidas, Posto} from "@/types/guarda-vidas";
+import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card"
+import {Badge} from "@/components/ui/badge"
+import {Calendar} from "lucide-react"
+import {GuardaVidasEscala, Posto} from "@/types/guarda-vidas";
 import {AlocacaoDiaria} from "@/types/alocacao-diaria";
-import { isSameDay } from "date-fns";
+import {isSameDay} from "date-fns";
 import BackButton from "@/components/utils/back-button";
 import {existeAlocacaoNoDia, gerarEscalaDiaria} from "@/lib/utils";
 import {Button} from "@/components/ui/button";
@@ -13,20 +13,20 @@ import {useState} from "react";
 interface EscalaDiariaProps {
     data: Date
     postos: Posto[]
-    alocacoes: AlocacaoDiaria[]
-    guardaVidas: GuardaVidas[]
+    alocacoesProp: AlocacaoDiaria[]
+    guardaVidas: GuardaVidasEscala[]
 }
 
-export default function EscalaDiaria({data, postos, alocacoes, guardaVidas}: EscalaDiariaProps) {
+export default function EscalaDiaria({data, postos, alocacoesProp, guardaVidas}: EscalaDiariaProps) {
 
     const router = useRouter();
 
     const dataDoDia = new Date(data);
 
-    const [novasAlocacoes, setNovasAlocacoes] = useState<AlocacaoDiaria[]>([]);
+    const [alocacoes, setAlocacoes] = useState<AlocacaoDiaria[]>(alocacoesProp ?? []);
 
-    const getGuardaVidasPorPosto = (postoId: number) => {
-        const alocacoesPosto = novasAlocacoes.filter(
+    const getGuardaVidasPorPosto = (postoId: string) => {
+        const alocacoesPosto = alocacoes.filter(
             (alocacao) => {
                 return alocacao.postoId === postoId && isSameDay(alocacao.data, dataDoDia);
             }
@@ -47,7 +47,7 @@ export default function EscalaDiaria({data, postos, alocacoes, guardaVidas}: Esc
     }
 
     const handleGerarEscala = () => {
-        setNovasAlocacoes(gerarEscalaDiaria(postos,guardaVidas,dataDoDia))
+        setAlocacoes(gerarEscalaDiaria(postos,guardaVidas,dataDoDia))
     }
 
     return (
@@ -62,7 +62,7 @@ export default function EscalaDiaria({data, postos, alocacoes, guardaVidas}: Esc
                 </div>
             </div>
 
-            {!existeAlocacaoNoDia(dataDoDia, novasAlocacoes) &&
+            {!existeAlocacaoNoDia(dataDoDia, alocacoes) &&
                 <div className={"w-full py-40 flex items-center justify-center"}>
                     <Button onClick={handleGerarEscala} variant={"outline"} size={"default"} className={"text-3xl font-semibold p-8"}>
                         Gerar escala
@@ -70,7 +70,7 @@ export default function EscalaDiaria({data, postos, alocacoes, guardaVidas}: Esc
                 </div>
             }
 
-            {existeAlocacaoNoDia(dataDoDia, novasAlocacoes) &&
+            {existeAlocacaoNoDia(dataDoDia, alocacoes) &&
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {postos.map((posto) => {
                         const guardaVidasAlocados = getGuardaVidasPorPosto(posto.id);
@@ -83,7 +83,7 @@ export default function EscalaDiaria({data, postos, alocacoes, guardaVidas}: Esc
                                     <div className="flex items-center justify-between">
                                         <div className="flex items-center gap-3">
                                             <div className="w-12 h-12 border bg-black text-white rounded-lg flex items-center justify-center">
-                                                <span className="text-xl font-bold">{posto.nome.includes("Lagoa") ? "L" : posto.id}</span>
+                                                <span className="text-xl font-bold">{posto.nome.includes("Lagoa") ? "L" : posto.numero}</span>
                                             </div>
                                             <div>
                                                 <CardTitle className="text-lg">{posto.nome}</CardTitle>

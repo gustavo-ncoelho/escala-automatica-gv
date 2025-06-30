@@ -1,4 +1,6 @@
-export type DiaDaSemana = "segunda" | "terça-feira" | "quarta-feira" | "quinta-feira" | "sexta-feira" | "sabado" | "domingo";
+import {Usuario} from "@/types/auth/usuario";
+
+export type DiaDaSemana = "segunda" | "terca_feira" | "quarta_feira" | "quinta_feira" | "sexta_feira" | "sabado" | "domingo";
 
 export type PreferenciaPosto = {
     postoId: string
@@ -19,7 +21,14 @@ type Estatisticas = {
 
 export type GuardaVidasCriacao = Omit<GuardaVidas, "id">
 
-export type GuardaVidasEscala = Omit<GuardaVidas, "dataAdmissao" | "email" | "telefone">
+export type GuardaVidasEscala = {
+    id: string;
+    nome: string;
+    diasDeFolga?: string[];
+    preferenciasPostos?: any[];
+    diasIndisponiveis?: any[];
+    estatisticas?: any;
+};
 
 export type GuardaVidas = {
     id: string

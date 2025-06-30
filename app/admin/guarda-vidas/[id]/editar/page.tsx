@@ -6,8 +6,7 @@ import {Input} from "@/components/ui/input"
 import {Label} from "@/components/ui/label"
 import {Slider} from "@/components/ui/slider"
 import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs"
-import {postosMock} from "@/utils/dados-simulados"
-import {Calendar, Plus, Trash} from "lucide-react"
+import {Calendar, Plus, Trash, Trash2} from "lucide-react"
 import Link from "next/link"
 import {useParams, useRouter} from "next/navigation"
 import {useEffect, useState} from "react"
@@ -18,17 +17,20 @@ import {toast} from "sonner";
 import {DiaDaSemana} from "@/types/guarda-vidas";
 import {Checkbox} from "@/components/ui/checkbox";
 import {diasDaSemanaOpcoes} from "@/lib/utils";
+import {useGetPostos} from "@/hooks/api/postos/use-get-all-postos";
+import {useDeleteGuardaVidas} from "@/hooks/api/guarda-vidas/use-delete-guarda-vidas";
 
 export default function EditarGuardaVidas() {
     const params = useParams();
     const router = useRouter();
     const id = params.id as string;
-    const {data: guardaVida} = useGetGuardaVidasById(id);
-    const [isLoading, setIsLoading] = useState(true);
+    const {data: guardaVida, isLoading} = useGetGuardaVidasById(id);
     const [preferencias, setPreferencias] = useState({} as Record<string, number>);
     const [diasIndisponiveis, setDiasIndisponiveis] = useState([] as { data: string; motivo?: string }[]);
     const [diasDeFolga, setDiasDeFolga] = useState<DiaDaSemana[]>([]);
-    const {mutateAsync} = useUpdateGuardaVidas();
+    const {mutateAsync: atualizarGuardaVidas} = useUpdateGuardaVidas();
+    const {mutateAsync: deleteGuardaVidas} = useDeleteGuardaVidas();
+    const {data: postos} = useGetPostos();
 
     useEffect(() => {
         if (!guardaVida) {
@@ -58,16 +60,23 @@ export default function EditarGuardaVidas() {
             if (guardaVida.perfilGuardaVidas?.diasDeFolga) {
                 setDiasDeFolga(guardaVida.perfilGuardaVidas.diasDeFolga as DiaDaSemana[]);
             }
-
-            setIsLoading(false)
         }
-    }, [guardaVida, router])
+    }, [isLoading])
 
-    if (isLoading) {
-        return <div>Carregando...</div>
+    const handleDeletar = async () => {
+        if (guardaVida?.id) {
+            try {
+                await deleteGuardaVidas(guardaVida?.id);
+                toast.success("Guarda vida deletado com sucesso!");
+                router.push("/admin/guarda-vidas")
+            } catch (error) {
+                console.error(error);
+                toast.error("Erro ao deletar guarda vidas")
+            }
+        }
     }
 
-    async function handleSalvar() {
+    const handleSalvar = async () => {
         if (guardaVida && guardaVida.perfilGuardaVidas) {
             const preferenciasFormatadas = Object.entries(preferencias).map(([postoId, prioridade]) => ({
                 postoId: postoId,
@@ -80,7 +89,7 @@ export default function EditarGuardaVidas() {
                     data: new Date(`${dia.data}T12:00:00Z`)
                 }));
             try {
-                await mutateAsync({
+                await atualizarGuardaVidas({
                     id: guardaVida.id, data: {
                         ...guardaVida,
                         dataAdmissao: new Date(guardaVida.perfilGuardaVidas?.dataAdmissao),
@@ -97,7 +106,7 @@ export default function EditarGuardaVidas() {
                 toast.error(`Falha ao atualizar: ${errorMessage}`);
             }
         } else {
-            console.log("Erro ao atualizar");
+            console.error("Erro ao atualizar");
         }
     }
 
@@ -111,12 +120,20 @@ export default function EditarGuardaVidas() {
 
     return (
         <div className="space-y-6">
-            <div className="flex items-center gap-4">
-                <BackButton href={"/admin/guarda-vidas"}/>
-                <div>
-                    <h1 className="text-3xl font-bold tracking-tight">Editar {guardaVida?.nome}</h1>
-                    <p className="text-muted-foreground">Atualize as preferências e configurações do guarda-vidas.</p>
+            <div className={"flex items-center justify-between w-full"}>
+                <div className="flex items-center gap-4">
+                    <BackButton href={`/admin/guarda-vidas/${guardaVida?.id}`}/>
+                    <div>
+                        <h1 className="text-3xl font-bold tracking-tight">Editar {guardaVida?.nome}</h1>
+                        <p className="text-muted-foreground">Atualize as preferências e configurações do
+                            guarda-vidas.</p>
+                    </div>
                 </div>
+
+                <Button type="button" variant="trash" size="sm"
+                        onClick={handleDeletar}>
+                    <Trash2 className="h-4 w-4"/>
+                </Button>
             </div>
 
             <Tabs defaultValue="preferencias">
@@ -133,35 +150,38 @@ export default function EditarGuardaVidas() {
                             <CardDescription>Defina a prioridade para cada posto (0-10)</CardDescription>
                         </CardHeader>
                         <CardContent>
-                            <div className="space-y-6">
-                                {postosMock.map((posto) => (
-                                    <div key={posto.id} className="space-y-2">
-                                        <div className="flex items-center justify-between">
-                                            <Label htmlFor={`posto-${posto.id}`}>{posto.nome}</Label>
-                                            <span
-                                                className="text-sm font-medium">{preferencias[posto.id] || 0}/10</span>
+                            {postos &&
+                                <div className="space-y-6">
+                                    {postos.map((posto) => (
+                                        <div key={posto.id} className="space-y-2">
+                                            <div className="flex items-center justify-between">
+                                                <Label htmlFor={`posto-${posto.id}`}>{posto.nome}</Label>
+                                                <span
+                                                    className="text-sm font-medium">{preferencias[posto.id] || 0}/10</span>
+                                            </div>
+                                            <Slider
+                                                id={`posto-${posto.id}`}
+                                                min={0}
+                                                max={10}
+                                                step={1}
+                                                value={[preferencias[posto.id] || 0]}
+                                                onValueChange={(value) => {
+                                                    setPreferencias({
+                                                        ...preferencias,
+                                                        [posto.id]: value[0],
+                                                    })
+                                                }}
+                                            />
                                         </div>
-                                        <Slider
-                                            id={`posto-${posto.id}`}
-                                            min={0}
-                                            max={10}
-                                            step={1}
-                                            value={[preferencias[posto.id] || 0]}
-                                            onValueChange={(value) => {
-                                                setPreferencias({
-                                                    ...preferencias,
-                                                    [posto.id]: value[0],
-                                                })
-                                            }}
-                                        />
-                                    </div>
-                                ))}
-                                {(!postosMock || postosMock.length === 0 ) &&
-                                    <div className="text-center py-6 text-muted-foreground">
-                                        Nenhuma preferência de posto definida.  Clique em "Adicionar" para incluir.
-                                    </div>
-                                }
-                            </div>
+                                    ))}
+                                    {(!postos || postos.length === 0) &&
+                                        <div className="text-center py-6 text-muted-foreground">
+                                            Nenhuma preferência de posto definida. Clique em "Adicionar" para incluir.
+                                        </div>
+                                    }
+                                </div>
+                            }
+
                         </CardContent>
                     </Card>
                 </TabsContent>
@@ -266,7 +286,7 @@ export default function EditarGuardaVidas() {
                 <Button variant="outline" asChild>
                     <Link href={`/admin/guarda-vidas/${id}`}>Cancelar</Link>
                 </Button>
-                <Button onClick={() => handleSalvar()}>Salvar Alterações</Button>
+                <Button onClick={handleSalvar}>Salvar Alterações</Button>
             </div>
         </div>
     )

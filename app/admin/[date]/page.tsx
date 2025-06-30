@@ -2,13 +2,21 @@
 
 import React from "react";
 import EscalaDiaria from "@/components/admin/escala/escala-diaria";
-import {alocacoesMock, guardaVidasMock, postosMock} from "@/utils/dados-simulados";
 import {useParams} from "next/navigation";
-import {parseDateStringLocal} from "@/lib/utils";
+import {converterGVParaGVEscala, parseDateStringLocal} from "@/lib/utils";
+import {useGetAllGuardaVidas} from "@/hooks/api/guarda-vidas/use-get-all-guarda-vidas";
+import {useGetPostos} from "@/hooks/api/postos/use-get-all-postos";
+import {useGetAlocacoesPorData} from "@/hooks/api/alocacao-diaria/use-get-alocacoes-por-data";
+import {GuardaVidasEscala} from "@/types/guarda-vidas";
 
 export default function EscalaDiariaPage() {
     const params = useParams();
     const dateParam = params.date as string | undefined;
+    const {data: guardaVidas} = useGetAllGuardaVidas();
+    const {data: postos} = useGetPostos();
+    const {data: alocacoes} = useGetAlocacoesPorData(new Date(dateParam ?? ""));
+    const guardaVidasEscala: GuardaVidasEscala[] = converterGVParaGVEscala(guardaVidas);
+
 
     if (!dateParam) {
         return <div>Carregando...</div>;
@@ -19,9 +27,9 @@ export default function EscalaDiariaPage() {
     return (
         <EscalaDiaria
             data={dataObjeto}
-            postos={postosMock}
-            alocacoes={alocacoesMock}
-            guardaVidas={guardaVidasMock}
+            postos={postos ?? []}
+            alocacoesProp={alocacoes ?? []}
+            guardaVidas={guardaVidasEscala}
         />
     );
 }

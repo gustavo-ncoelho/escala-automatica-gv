@@ -11,6 +11,7 @@ import BackButton from "@/components/utils/back-button";
 import {formatarDiaSemana, obterNomePosto} from "@/lib/utils";
 import {useGetGuardaVidasById} from "@/hooks/api/guarda-vidas/use-get-guarda-vidas-by-id";
 import {Badge} from "@/components/ui/badge";
+import {useGetPostos} from "@/hooks/api/postos/use-get-all-postos";
 
 export default function DetalhesGuardaVidas () {
 
@@ -18,6 +19,7 @@ export default function DetalhesGuardaVidas () {
     const id = params.id as string;
 
     const {data: guardaVida} = useGetGuardaVidasById(id);
+    const {data: postos} = useGetPostos();
 
     return (
         <div className="space-y-6">
@@ -101,7 +103,7 @@ export default function DetalhesGuardaVidas () {
                                     .map((pref) => (
                                         <div key={pref.postoId} className="space-y-2">
                                             <div className="flex items-center justify-between text-sm">
-                                                <div className="font-medium">{obterNomePosto(pref.postoId)}</div>
+                                                {postos && <div className="font-medium">{obterNomePosto(pref.postoId, postos)}</div>}
                                                 <div
                                                     className="text-muted-foreground">Prioridade: {pref.prioridade}/10
                                                 </div>

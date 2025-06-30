@@ -4,30 +4,27 @@ import {useState} from "react"
 import {GuardaVidasEscala} from "@/types/guarda-vidas"
 import EscalaMensal from "@/components/admin/escala/escala-mensal";
 import {Calendar, Eye, Grid3X3} from "lucide-react";
-import {converterGVParaGVEscala, gerarArrayDeDatasDoMes, getNomeMes} from "@/lib/utils";
+import {
+    anosParaSelecionar,
+    converterGVParaGVEscala,
+    dataAtual,
+    gerarArrayDeDatasDoMes,
+    getNomeMes,
+    mesesParaSelecionar
+} from "@/lib/utils";
 import {Button} from "@/components/ui/button";
 import VisaoGeral from "@/components/admin/escala/visao-geral";
-import {guardaVidasMock} from "@/utils/dados-simulados";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
+import {useGetAllGuardaVidas} from "@/hooks/api/guarda-vidas/use-get-all-guarda-vidas";
 
 export default function EscalaPage() {
 
-    const dataAtual = new Date();
+    const {data: guardaVidas} = useGetAllGuardaVidas();
     const [anoSelecionado, setAnoSelecionado] = useState<number>(dataAtual.getFullYear());
     const [mesSelecionado, setMesSelecionado] = useState<number>(dataAtual.getMonth() + 1);
     const [modoAtual, setModoAtual] = useState<string>("mensal");
-    const guardaVidasEscala: GuardaVidasEscala[] = converterGVParaGVEscala(guardaVidasMock);
+    const guardaVidasEscala: GuardaVidasEscala[] = converterGVParaGVEscala(guardaVidas);
     const diasArray = gerarArrayDeDatasDoMes(mesSelecionado, anoSelecionado);
-
-    const anosParaSelecionar = Array.from({ length: 5 }, (_, i) => dataAtual.getFullYear() - 2 + i);
-    const mesesParaSelecionar = [
-        { valor: 1, nome: 'Janeiro' }, { valor: 2, nome: 'Fevereiro' },
-        { valor: 3, nome: 'Março' }, { valor: 4, nome: 'Abril' },
-        { valor: 5, nome: 'Maio' }, { valor: 6, nome: 'Junho' },
-        { valor: 7, nome: 'Julho' }, { valor: 8, nome: 'Agosto' },
-        { valor: 9, nome: 'Setembro' }, { valor: 10, nome: 'Outubro' },
-        { valor: 11, nome: 'Novembro' }, { valor: 12, nome: 'Dezembro' },
-    ];
 
     const handleDayClick = (dia: number) => {
         console.log(`Clicou no dia ${dia}`)
