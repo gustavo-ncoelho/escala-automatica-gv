@@ -2,41 +2,24 @@ import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card"
 import {Badge} from "@/components/ui/badge"
 import {Calendar} from "lucide-react"
 import {GuardaVidasEscala, Posto} from "@/types/guarda-vidas";
-import {AlocacaoDiaria} from "@/types/alocacao-diaria";
-import {isSameDay} from "date-fns";
 import BackButton from "@/components/utils/back-button";
-import {existeAlocacaoNoDia, gerarEscalaDiaria} from "@/lib/utils";
+import {gerarEscalaDiaria, getGuardaVidasPorPosto, parseDateStringLocal} from "@/lib/utils";
 import {Button} from "@/components/ui/button";
-import {useRouter} from "next/navigation";
-import {useState} from "react";
+import {useGetAlocacoesPorData} from "@/hooks/api/alocacao-diaria/use-get-alocacoes-por-data";
+import {useSalvarEscalaDiaria} from "@/hooks/api/alocacao-diaria/use-salvar-escala-diaria";
+import {toast} from "sonner";
 
 interface EscalaDiariaProps {
-    data: Date
+    data: string
     postos: Posto[]
-    alocacoesProp: AlocacaoDiaria[]
     guardaVidas: GuardaVidasEscala[]
 }
 
-export default function EscalaDiaria({data, postos, alocacoesProp, guardaVidas}: EscalaDiariaProps) {
+export default function EscalaDiaria({data, postos, guardaVidas}: EscalaDiariaProps) {
 
-    const router = useRouter();
-
-    const dataDoDia = new Date(data);
-
-    const [alocacoes, setAlocacoes] = useState<AlocacaoDiaria[]>(alocacoesProp ?? []);
-
-    const getGuardaVidasPorPosto = (postoId: string) => {
-        const alocacoesPosto = alocacoes.filter(
-            (alocacao) => {
-                return alocacao.postoId === postoId && isSameDay(alocacao.data, dataDoDia);
-            }
-        );
-
-        return alocacoesPosto.map((alocacao) => {
-            const guardaVida = guardaVidas.find((gv) => gv.id === alocacao.guardaVidasId);
-            return guardaVida?.nome || "Não encontrado";
-        });
-    }
+    const dataDoDia = parseDateStringLocal(data);
+    const {data: alocacoes} = useGetAlocacoesPorData(dataDoDia);
+    const {mutateAsync: salvarEscala} = useSalvarEscalaDiaria();
 
     const formatarData = (data: Date) => {
         return data.toLocaleDateString("pt-BR", {
@@ -46,8 +29,14 @@ export default function EscalaDiaria({data, postos, alocacoesProp, guardaVidas}:
         })
     }
 
-    const handleGerarEscala = () => {
-        setAlocacoes(gerarEscalaDiaria(postos,guardaVidas,dataDoDia))
+    const handleGerarEscala = async () => {
+        try {
+            const escalaNova = gerarEscalaDiaria(postos, guardaVidas, dataDoDia);
+            await salvarEscala(escalaNova);
+        } catch (error) {
+            console.error(error);
+            toast.error("Houve um erro ao gerar escala");
+        }
     }
 
     return (
@@ -56,34 +45,40 @@ export default function EscalaDiaria({data, postos, alocacoesProp, guardaVidas}:
                 <div className="flex items-center justify-center gap-6 mb-2">
                     <BackButton href={"/admin"}/>
                     <div className={"flex items-center gap-3"}>
-                        <Calendar className="h-6 w-6" />
+                        <Calendar className="h-6 w-6"/>
                         <h1 className="text-3xl font-bold">{formatarData(dataDoDia)}</h1>
                     </div>
                 </div>
             </div>
 
-            {!existeAlocacaoNoDia(dataDoDia, alocacoes) &&
+            {!alocacoes &&
                 <div className={"w-full py-40 flex items-center justify-center"}>
-                    <Button onClick={handleGerarEscala} variant={"outline"} size={"default"} className={"text-3xl font-semibold p-8"}>
+                    <Button onClick={handleGerarEscala} variant={"outline"} size={"default"}
+                            className={"text-3xl font-semibold p-8"}>
                         Gerar escala
                     </Button>
                 </div>
             }
 
-            {existeAlocacaoNoDia(dataDoDia, alocacoes) &&
+            {alocacoes &&
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {postos.map((posto) => {
-                        const guardaVidasAlocados = getGuardaVidasPorPosto(posto.id);
+                        const guardaVidasAlocados = getGuardaVidasPorPosto(posto.id, alocacoes, dataDoDia, guardaVidas); //TODO PROBLEMA ESTÁ NESSA FUNÇÃO <<----------
                         const ocupacao = guardaVidasAlocados.length;
                         const slotsVazios = posto.alocacaoMaxima - ocupacao;
+
+                        console.log("alocacoes ", alocacoes);
+                        console.log("guardaVidasAlocados ", guardaVidasAlocados);
 
                         return (
                             <Card key={posto.id} className="border shadow-lg flex flex-col space-y-5">
                                 <CardHeader className="pb-2">
                                     <div className="flex items-center justify-between">
                                         <div className="flex items-center gap-3">
-                                            <div className="w-12 h-12 border bg-black text-white rounded-lg flex items-center justify-center">
-                                                <span className="text-xl font-bold">{posto.nome.includes("Lagoa") ? "L" : posto.numero}</span>
+                                            <div
+                                                className="w-12 h-12 border bg-black text-white rounded-lg flex items-center justify-center">
+                                                <span
+                                                    className="text-xl font-bold">{posto.nome.includes("Lagoa") ? "L" : posto.numero}</span>
                                             </div>
                                             <div>
                                                 <CardTitle className="text-lg">{posto.nome}</CardTitle>
@@ -102,14 +97,17 @@ export default function EscalaDiaria({data, postos, alocacoesProp, guardaVidas}:
                                     <div className="border rounded-md overflow-hidden">
 
                                         {guardaVidasAlocados.map((nome) => (
-                                            <div key={`${posto.id}-${nome}`} className="border-b last:border-b-0 p-2 min-h-[40px]">
+                                            <div key={`${posto.id}-${nome}`}
+                                                 className="border-b last:border-b-0 p-2 min-h-[40px]">
                                                 <span className="text-sm text-foreground">{nome}</span>
                                             </div>
                                         ))}
 
-                                        {Array.from({ length: slotsVazios > 0 ? slotsVazios : 0 }).map((_, i) => (
-                                            <div key={`${posto.id}-empty-${i}`} className="border-b last:border-b-0 p-2 min-h-[40px]">
-                                                <span className="text-muted-foreground/30 text-sm italic">- - - - - - -</span>
+                                        {Array.from({length: slotsVazios > 0 ? slotsVazios : 0}).map((_, i) => (
+                                            <div key={`${posto.id}-empty-${i}`}
+                                                 className="border-b last:border-b-0 p-2 min-h-[40px]">
+                                                <span
+                                                    className="text-muted-foreground/30 text-sm italic">- - - - - - -</span>
                                             </div>
                                         ))}
                                     </div>

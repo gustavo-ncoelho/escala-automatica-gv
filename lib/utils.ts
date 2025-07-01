@@ -115,20 +115,14 @@ export const filtrarAlocacoesPorMes = (mes: number, ano: number, todasAsAlocacoe
     });
 };
 
-export function obterNomeGuardaVidas(id: string): string {
-    const gv = guardaVidasMock.find((g) => g.id === id)
+export function obterNomeGuardaVidas(id: string, guardaVidas: Usuario[]): string {
+    const gv = guardaVidas.find((g) => g.id === id)
     return gv ? gv.nome : "Desconhecido"
-}
+};
 
 export function obterNomePosto(id: string, postos: Posto[]): string {
     const posto = postos.find((p) => p.id === id)
     return posto ? posto.nome : "Desconhecido"
-}
-
-export const existeAlocacaoNoDia = (dataAlvo: Date, alocacoes: AlocacaoDiaria[]): boolean => {
-    return alocacoes.some(alocacao =>
-        isSameDay(new Date(alocacao.data), dataAlvo)
-    );
 };
 
 export const converterGVParaGVEscala = (listaDeGuardaVidas?: Usuario[]): GuardaVidasEscala[] => {
@@ -138,7 +132,7 @@ export const converterGVParaGVEscala = (listaDeGuardaVidas?: Usuario[]): GuardaV
 
     return listaDeGuardaVidas.map(guardaVida => {
         return {
-            id: guardaVida.id,
+            id: guardaVida.perfilGuardaVidas?.id ?? "",
             nome: guardaVida.nome,
             preferenciasPostos: guardaVida.perfilGuardaVidas?.preferenciasPostos,
             diasIndisponiveis: guardaVida.perfilGuardaVidas?.diasIndisponiveis,
@@ -157,6 +151,19 @@ export const guardaVidaTrabalhaEm = (guardaVida: GuardaVidasEscala, dataDoDia: D
     }
 
     return !guardaVida.diasIndisponiveis?.some(dia => isSameDay(new Date(dia.data), dataDoDia));
+};
+
+export const getGuardaVidasPorPosto = (postoId: string, alocacoes: AlocacaoDiaria[], dataDoDia: Date, guardaVidas: GuardaVidasEscala[]) => {
+    const alocacoesPosto = alocacoes.filter(
+        (alocacao) => {
+            return alocacao.postoId === postoId && isSameDay(alocacao.data, dataDoDia);
+        }
+    );
+
+    return alocacoesPosto.map((alocacao) => {
+        const guardaVida = guardaVidas.find((gv) => gv.id === alocacao.guardaVidasId);
+        return guardaVida?.nome || "Não encontrado";
+    });
 };
 
 export const gerarEscalaDiaria = (listaDePostos: Posto[], listaDeGuardaVidas: GuardaVidasEscala[], dataAlvo: Date): AlocacaoDiaria[] => {
