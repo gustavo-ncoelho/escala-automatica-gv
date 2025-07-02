@@ -16,13 +16,14 @@ import {Button} from "@/components/ui/button";
 import VisaoGeral from "@/components/admin/escala/visao-geral";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
 import {useGetAllGuardaVidas} from "@/hooks/api/guarda-vidas/use-get-all-guarda-vidas";
+import {useAppContext} from "@/contexts/app-context";
 
 export default function EscalaPage() {
 
     const {data: guardaVidas} = useGetAllGuardaVidas();
+    const {adminEscalaMode, setAdminEscalaMode} = useAppContext();
     const [anoSelecionado, setAnoSelecionado] = useState<number>(dataAtual.getFullYear());
     const [mesSelecionado, setMesSelecionado] = useState<number>(dataAtual.getMonth() + 1);
-    const [modoAtual, setModoAtual] = useState<string>("mensal");
     const guardaVidasEscala: GuardaVidasEscala[] = converterGVParaGVEscala(guardaVidas);
     const diasArray = gerarArrayDeDatasDoMes(mesSelecionado, anoSelecionado);
 
@@ -66,16 +67,16 @@ export default function EscalaPage() {
 
                 <div className="flex gap-2">
                     <Button
-                        variant={modoAtual === "mensal" ? "default" : "outline"}
-                        onClick={() => setModoAtual("mensal")}
+                        variant={adminEscalaMode === "mensal" ? "default" : "outline"}
+                        onClick={() => setAdminEscalaMode("mensal")}
                         className="flex items-center gap-2"
                     >
                         <Grid3X3 className="h-4 w-4" />
                         Escala Mensal
                     </Button>
                     <Button
-                        variant={modoAtual === "geral" ? "default" : "outline"}
-                        onClick={() => setModoAtual("geral")}
+                        variant={adminEscalaMode === "geral" ? "default" : "outline"}
+                        onClick={() => setAdminEscalaMode("geral")}
                         className="flex items-center gap-2"
                     >
                         <Eye className="h-4 w-4" />
@@ -84,11 +85,11 @@ export default function EscalaPage() {
                 </div>
             </div>
 
-            {modoAtual === "mensal" &&
+            {adminEscalaMode === "mensal" &&
                 <EscalaMensal diasDoMes={diasArray} guardaVidas={guardaVidasEscala}/>
             }
 
-            {modoAtual === "geral" &&
+            {adminEscalaMode === "geral" &&
                 <VisaoGeral diasDoMes={diasArray} guardaVidas={guardaVidasEscala}/>
             }
         </>

@@ -24,6 +24,17 @@ export const parseDateStringLocal = (dateString: string): Date => {
     return new Date(year, month - 1, day);
 };
 
+export const normalizeDateToLocal = (dateInput: string | Date | null | undefined): Date => {
+    if (!dateInput) return new Date(NaN);
+
+    const date = new Date(dateInput);
+
+    const year = date.getUTCFullYear();
+    const month = date.getUTCMonth();
+    const day = date.getUTCDate();
+    return new Date(year, month, day);
+};
+
 export const gerarArrayDeDatasDoMes = (mes: number, ano: number): Date[] => {
     const diasNoMes = new Date(ano, mes, 0).getDate();
 

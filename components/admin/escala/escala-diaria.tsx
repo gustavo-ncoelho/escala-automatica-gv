@@ -51,7 +51,7 @@ export default function EscalaDiaria({data, postos, guardaVidas}: EscalaDiariaPr
                 </div>
             </div>
 
-            {!alocacoes &&
+            {alocacoes && alocacoes.length === 0 &&
                 <div className={"w-full py-40 flex items-center justify-center"}>
                     <Button onClick={handleGerarEscala} variant={"outline"} size={"default"}
                             className={"text-3xl font-semibold p-8"}>
@@ -60,7 +60,7 @@ export default function EscalaDiaria({data, postos, guardaVidas}: EscalaDiariaPr
                 </div>
             }
 
-            {alocacoes &&
+            {alocacoes && alocacoes.length > 0 &&
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {postos.map((posto) => {
                         const guardaVidasAlocados = getGuardaVidasPorPosto(posto.id, alocacoes, dataDoDia, guardaVidas); //TODO PROBLEMA ESTÁ NESSA FUNÇÃO <<----------

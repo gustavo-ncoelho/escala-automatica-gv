@@ -5,7 +5,7 @@ import {Api} from '@/lib/api/escala-gv-api-client';
 import {HttpError} from '@/lib/errors/errors';
 import {format} from 'date-fns';
 import {AlocacaoDiaria} from "@/types/alocacao-diaria";
-
+import {normalizeDateToLocal} from "@/lib/utils";
 
 const fetchAlocacoesPorData = async (dataAlvo: Date): Promise<AlocacaoDiaria[]> => {
     const dataFormatada = format(dataAlvo, 'yyyy-MM-dd');
@@ -23,9 +23,10 @@ export const useGetAlocacoesPorData = (dataAlvo: Date) => {
         select: (data) => {
             if (!data) return [];
 
-            return data.map(alocacao => ({
+            return data.map(alocacao => (
+                {
                 ...alocacao,
-                data: new Date(alocacao.data),
+                data: normalizeDateToLocal(alocacao.data),
             }));
         }
     });
