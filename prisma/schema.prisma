@@ -40,9 +40,22 @@ model Posto {
   numero           Int
   alocacaoMaxima   Int                   @map("alocacao_maxima")
   localizacao      String?
+  movimento        Int
+  diasFechados     String[]             @map("dias_fechados")
+  datasFechadas    DataFechadaPosto[]
   preferencias     PreferenciaPosto[]
   alocacoes        AlocacaoDiaria[]
   @@map("postos")
+}
+
+model DataFechadaPosto {
+  id        String    @id @default(uuid())
+  data      DateTime  @db.Date
+  motivo    String?
+  postoId   String    @map("posto_id")
+  posto     Posto     @relation(fields: [postoId], references: [id], onDelete: Cascade)
+
+  @@map("datas_fechadas_posto")
 }
 
 model AlocacaoDiaria {
