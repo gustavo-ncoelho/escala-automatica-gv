@@ -1,10 +1,7 @@
 "use client"
 
 import {useParams, useRouter} from "next/navigation"
-import {PostoCriacao} from "@/types/guarda-vidas";
 import PostosForm from "@/components/admin/postos/postos-form";
-import {useUpdatePosto} from "@/hooks/api/postos/use-update-posto";
-import { toast } from "sonner";
 import {useGetPostoById} from "@/hooks/api/postos/use-get-posto-by-id";
 
 export default function EditarPostoPage() {
@@ -13,26 +10,6 @@ export default function EditarPostoPage() {
     const id = params.id as string;
     const router = useRouter();
     const {data: posto} = useGetPostoById(id);
-    const {mutateAsync: atualizarPosto} = useUpdatePosto();
-
-
-    const handleSubmit = async (id: string, data: PostoCriacao) => {
-        try {
-            await atualizarPosto({id, data});
-            toast.success("Posto alterado com sucesso!");
-        } catch (error) {
-            console.error(error);
-            toast.error("Erro ao alterar posto");
-        }
-
-
-        router.push("/admin/postos")
-    }
-
-    const handleCancel = () => {
-        router.push("/admin/postos")
-    }
-
 
     if (!posto) {
         return (
@@ -50,7 +27,7 @@ export default function EditarPostoPage() {
 
     return (
         <>
-            <PostosForm posto={posto} onSubmitUpdate={handleSubmit} onCancel={handleCancel} isEditing={true}/>
+            <PostosForm posto={posto} isEditing={true}/>
         </>
     )
 }

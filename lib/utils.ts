@@ -102,6 +102,9 @@ export const formatarDiaSemana = (dia: string) => {
     return comHifen.charAt(0).toUpperCase() + comHifen.slice(1);
 };
 
+export const formatarDia = (dia: string) => dia.replace('_', '-').charAt(0).toUpperCase() + dia.slice(1, 3);
+
+
 export const contarGuardaVidasPorDia = (targetDate: Date, alocacoes: AlocacaoDiaria[]): number => {
     if (!targetDate || !alocacoes) {
         return 0;

@@ -3,6 +3,7 @@
 import React from "react";
 import { ControllerRenderProps } from "react-hook-form";
 import { Input } from "@/components/ui/input";
+import { format } from "date-fns";
 
 interface DateInputProps {
     field: ControllerRenderProps<any, any>;
@@ -22,10 +23,20 @@ export const DateInput = ({ field, placeholder }: DateInputProps) => {
         field.onChange(value);
     };
 
+    let displayValue = "";
+    if (field.value) {
+        if (field.value instanceof Date) {
+            displayValue = format(field.value, "dd/MM/yyyy");
+        }
+        else {
+            displayValue = field.value;
+        }
+    }
+
     return (
         <Input
             placeholder={placeholder || "DD/MM/AAAA"}
-            value={field.value || ""}
+            value={displayValue}
             onChange={handleDateChange}
         />
     );

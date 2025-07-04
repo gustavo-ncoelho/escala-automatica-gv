@@ -100,7 +100,6 @@ export default function EditarGuardaVidas() {
                 });
                 toast.success("Guarda-vidas atualizado com sucesso!");
                 router.push(`/admin/guarda-vidas`);
-                router.refresh();
             } catch (error) {
                 const errorMessage = error instanceof Error ? error.message : "Ocorreu um erro desconhecido";
                 toast.error(`Falha ao atualizar: ${errorMessage}`);

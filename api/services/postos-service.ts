@@ -8,12 +8,18 @@ export async function getPostos() {
         orderBy: {
             numero: 'asc',
         },
+        include: {
+            datasFechadas: true,
+        }
     });
 }
 
 export async function getPostoById(id: string) {
     return prisma.posto.findUniqueOrThrow({
         where: { id },
+        include: {
+            datasFechadas: true,
+        }
     });
 }
 
@@ -26,13 +32,30 @@ export async function createPosto(data: PostoCriacao) {
         throw new Error("Já existe um posto com este nome ou número.");
     }
 
-    return prisma.posto.create({ data });
+    const { datasFechadas, ...postoData } = data;
+
+    return prisma.posto.create({
+        data: {
+            ...postoData,
+            datasFechadas: {
+                create: datasFechadas
+            }
+        }
+    });
 }
 
 export async function updatePosto(id: string, data: UpdatePostoData) {
+    const { datasFechadas, ...postoData } = data;
+
     return prisma.posto.update({
         where: { id },
-        data,
+        data: {
+            ...postoData,
+            datasFechadas: {
+                deleteMany: {},
+                create: datasFechadas
+            }
+        },
     });
 }
 

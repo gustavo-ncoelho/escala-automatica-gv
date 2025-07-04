@@ -46,5 +46,13 @@ export type Posto = {
     nome: string
     numero: number;
     alocacaoMaxima: number;
-    localizacao: string
+    localizacao?: string;
+    datasFechadas: DataFechadaPosto[];
+    diasFechados: DiaDaSemana[];
+    movimento: number;
+}
+
+export type DataFechadaPosto = {
+    data: Date
+    motivo?: string
 }
