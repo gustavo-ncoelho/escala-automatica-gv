@@ -97,7 +97,6 @@ export default function LifeguardForm() {
                 data_admissao: parse(data.dataAdmissao, "dd/MM/yyyy", new Date()),
                 cargo: "GUARDA_VIDAS"
             });
-            console.log(data.dataAdmissao)
             toast.success("Guarda Vidas cadastrado com sucesso");
             router.push("/admin/guarda-vidas")
         } catch (error) {

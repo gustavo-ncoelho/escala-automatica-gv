@@ -156,8 +156,9 @@ export const converterGVParaGVEscala = (listaDeGuardaVidas?: Usuario[]): GuardaV
     });
 };
 
+const diasDaSemanaMap: DiaDaSemana[] = [ "domingo", "segunda", "terca_feira", "quarta_feira", "quinta_feira", "sexta_feira", "sabado"];
+
 export const guardaVidaTrabalhaEm = (guardaVida: GuardaVidasEscala, dataDoDia: Date): boolean => {
-    const diasDaSemanaMap: DiaDaSemana[] = [ "domingo", "segunda", "terca_feira", "quarta_feira", "quinta_feira", "sexta_feira", "sabado"];
     const nomeDoDiaDaSemana = diasDaSemanaMap[dataDoDia.getDay()];
 
     if (guardaVida.diasDeFolga?.includes(nomeDoDiaDaSemana)) {
@@ -165,6 +166,20 @@ export const guardaVidaTrabalhaEm = (guardaVida: GuardaVidasEscala, dataDoDia: D
     }
 
     return !guardaVida.diasIndisponiveis?.some(dia => isSameDay(new Date(dia.data), dataDoDia));
+};
+
+const postoEstaAberto = (posto: Posto, dataDoDia: Date): boolean => {
+    const nomeDoDiaDaSemana = diasDaSemanaMap[dataDoDia.getDay()];
+    if (posto.diasFechados?.includes(nomeDoDiaDaSemana)) return false;
+    if (posto.datasFechadas?.some(dia => isSameDay(new Date(dia.data), dataDoDia))) return false;
+    return true;
+};
+
+const calcularScore = (gv: GuardaVidasEscala, postoId: string) => {
+    const preferencia = gv.preferenciasPostos?.find(p => p.postoId === postoId);
+    const prioridadeScore = (preferencia?.prioridade ?? 0) * 10;
+    const diasTrabalhadosScore = 100 - (gv.estatisticas?.diasTrabalhadosNaTemporada ?? 0);
+    return prioridadeScore + diasTrabalhadosScore;
 };
 
 export const getGuardaVidasPorPosto = (postoId: string, alocacoes: AlocacaoDiaria[], dataDoDia: Date, guardaVidas: GuardaVidasEscala[]) => {
@@ -180,45 +195,81 @@ export const getGuardaVidasPorPosto = (postoId: string, alocacoes: AlocacaoDiari
     });
 };
 
-export const gerarEscalaDiaria = (listaDePostos: Posto[], listaDeGuardaVidas: GuardaVidasEscala[], dataAlvo: Date): AlocacaoDiaria[] => {
+export const gerarEscalaDiaria = (
+    listaDePostos: Posto[],
+    listaDeGuardaVidas: GuardaVidasEscala[],
+    dataAlvo: Date
+): AlocacaoDiaria[] => {
+    console.group("--- INÍCIO DA GERAÇÃO DE ESCALA ---");
+    console.log("Data Alvo:", dataAlvo.toLocaleDateString('pt-BR'));
+
     let escala: AlocacaoDiaria[] = [];
     const gvAlocados: Set<string> = new Set();
+
     const gvDisponiveis = listaDeGuardaVidas.filter(gv => guardaVidaTrabalhaEm(gv, dataAlvo));
+    const postosAbertos = listaDePostos.filter(p => postoEstaAberto(p, dataAlvo));
+
+    console.log(`Encontrados ${gvDisponiveis.length} GVs disponíveis e ${postosAbertos.length} postos abertos.`);
 
     const gvNaoAlocados = () => gvDisponiveis.filter(gv => !gvAlocados.has(gv.id));
 
-    const calcularScore = (gv: GuardaVidasEscala, postoId: string) => {
-        const preferencia = gv.preferenciasPostos?.find(p => p.postoId === postoId);
-        const prioridadeScore = (preferencia?.prioridade ?? 0) * 10;
-        const diasTrabalhadosScore = 100 - (gv.estatisticas?.diasTrabalhadosNaTemporada ?? 0);
-        return prioridadeScore + diasTrabalhadosScore;
-    };
-
+    console.group("Fase 1: Alocações Obrigatórias (Prioridade 10)");
     gvDisponiveis.forEach(gv => {
         const pref10 = gv.preferenciasPostos?.find(p => p.prioridade === 10);
-        const posto = pref10 ? listaDePostos.find(p => p.id === pref10.postoId) : undefined;
-        const vagasOcupadas = escala.filter(a => a.postoId === posto?.id).length;
-        if (posto && vagasOcupadas < posto.alocacaoMaxima) {
-            escala.push({ id: uuid(), data: dataAlvo, guardaVidasId: gv.id, postoId: posto.id });
-            gvAlocados.add(gv.id);
+        if (pref10) {
+            const posto = postosAbertos.find(p => p.id === pref10.postoId);
+            const vagasOcupadas = escala.filter(a => a.postoId === posto?.id).length;
+            if (posto && vagasOcupadas < posto.alocacaoMaxima) {
+                console.log(`Alocando ${gv.nome} no posto ${posto.nome} (Prioridade 10)`);
+                escala.push({ id: uuid(), data: dataAlvo, guardaVidasId: gv.id, postoId: posto.id });
+                gvAlocados.add(gv.id);
+            }
         }
     });
+    console.groupEnd();
 
-    const postosPriorizados = [...listaDePostos].sort((a, b) => b.alocacaoMaxima - a.alocacaoMaxima);
+    console.group("Fase 2: Alocação em Rodadas");
+    const postosPriorizados = [...postosAbertos].sort((a, b) => b.movimento - a.movimento);
+    let continuarAlocando = true;
+    let rodada = 1;
 
-    for (const posto of postosPriorizados) {
-        let vagasOcupadas = escala.filter(a => a.postoId === posto.id).length;
-        while (vagasOcupadas < posto.alocacaoMaxima && gvNaoAlocados().length > 0) {
-            const candidatos = gvNaoAlocados()
-                .map(gv => ({ gv, score: calcularScore(gv, posto.id) }))
-                .sort((a, b) => b.score - a.score);
-            if (candidatos.length === 0) break;
-            const melhorCandidato = candidatos[0].gv;
-            escala.push({ id: uuid(), data: dataAlvo, guardaVidasId: melhorCandidato.id, postoId: posto.id });
-            gvAlocados.add(melhorCandidato.id);
-            vagasOcupadas++;
+    while (continuarAlocando) {
+        console.log(`--- Rodada ${rodada} ---`);
+        let alocouAlguemNestaRodada = false;
+
+        if (gvNaoAlocados().length === 0) {
+            console.log("Não há mais GVs disponíveis. Finalizando alocação em rodadas.");
+            break;
         }
+
+        for (const posto of postosPriorizados) {
+            const vagasOcupadas = escala.filter(a => a.postoId === posto.id).length;
+
+            if (vagasOcupadas < posto.alocacaoMaxima && gvNaoAlocados().length > 0) {
+                const candidatos = gvNaoAlocados()
+                    .map(gv => ({ gv, score: calcularScore(gv, posto.id) }))
+                    .sort((a, b) => b.score - a.score);
+
+                if (candidatos.length > 0) {
+                    const melhorCandidato = candidatos[0].gv;
+                    console.log(`Alocando ${melhorCandidato.nome} no posto ${posto.nome} (Score: ${candidatos[0].score})`);
+                    escala.push({ id: uuid(), data: dataAlvo, guardaVidasId: melhorCandidato.id, postoId: posto.id });
+                    gvAlocados.add(melhorCandidato.id);
+                    alocouAlguemNestaRodada = true;
+                }
+            }
+        }
+
+        if (!alocouAlguemNestaRodada) {
+            console.log("Nenhum GV pôde ser alocado nesta rodada. Finalizando.");
+            continuarAlocando = false;
+        }
+        rodada++;
     }
+    console.groupEnd();
+
+    console.group("Fase 3: Verificação e Consolidação Final");
+    console.log("Escala intermediária antes da verificação:", escala);
 
     const contagemFinalPorPosto = escala.reduce((acc, alocacao) => {
         acc[alocacao.postoId] = (acc[alocacao.postoId] || 0) + 1;
@@ -229,9 +280,37 @@ export const gerarEscalaDiaria = (listaDePostos: Posto[], listaDeGuardaVidas: Gu
         .filter(([, count]) => count === 1)
         .map(([postoId]) => postoId);
 
+    console.log("Postos com apenas 1 GV (serão removidos):", postosInvalidos);
+
     if (postosInvalidos.length > 0) {
+        const gvsRemovidos = escala.filter(alocacao => postosInvalidos.includes(alocacao.postoId)).map(a => a.guardaVidasId);
+        gvsRemovidos.forEach(id => gvAlocados.delete(id));
+
         escala = escala.filter(alocacao => !postosInvalidos.includes(alocacao.postoId));
+        console.log("GVs devolvidos ao pool:", gvsRemovidos);
+        console.log("Tentando realocar GVs removidos...");
+
+        for (const posto of postosPriorizados) {
+            if (postosInvalidos.includes(posto.id)) continue;
+            let vagasOcupadas = escala.filter(a => a.postoId === posto.id).length;
+            while(vagasOcupadas < posto.alocacaoMaxima && gvNaoAlocados().length > 0) {
+                const candidatos = gvNaoAlocados()
+                    .map(gv => ({ gv, score: calcularScore(gv, posto.id) }))
+                    .sort((a, b) => b.score - a.score);
+
+                if (candidatos.length === 0) break;
+                const melhorCandidato = candidatos[0].gv;
+                console.log(`Realocando ${melhorCandidato.nome} no posto ${posto.nome}`);
+                escala.push({ id: uuid(), data: dataAlvo, guardaVidasId: melhorCandidato.id, postoId: posto.id });
+                gvAlocados.add(melhorCandidato.id);
+                vagasOcupadas++;
+            }
+        }
     }
+    console.groupEnd();
+
+    console.log("--- ESCALA FINAL GERADA ---", escala);
+    console.groupEnd();
 
     return escala;
 };

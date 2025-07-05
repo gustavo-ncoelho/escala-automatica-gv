@@ -67,9 +67,6 @@ export default function EscalaDiaria({data, postos, guardaVidas}: EscalaDiariaPr
                         const ocupacao = guardaVidasAlocados.length;
                         const slotsVazios = posto.alocacaoMaxima - ocupacao;
 
-                        console.log("alocacoes ", alocacoes);
-                        console.log("guardaVidasAlocados ", guardaVidasAlocados);
-
                         return (
                             <Card key={posto.id} className="border shadow-lg flex flex-col space-y-5">
                                 <CardHeader className="pb-2">

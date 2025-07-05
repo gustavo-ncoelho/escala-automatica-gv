@@ -75,8 +75,6 @@ export default function PostosForm({posto, isEditing = false}: PostoFormProps) {
     });
 
     async function handleFormSubmit(data: z.infer<typeof postoSchema>) {
-        console.log("DATA CRUA: ", data);
-
         const dataParaApi = {
             nome: data.nome,
             numero: data.numero,
@@ -91,8 +89,6 @@ export default function PostosForm({posto, isEditing = false}: PostoFormProps) {
                     data: new Date(`${dia.data}T12:00:00Z`)
                 }))
         };
-
-        console.log("DATA FORMATADA: ", dataParaApi);
 
         if (isEditing && posto) {
             try {

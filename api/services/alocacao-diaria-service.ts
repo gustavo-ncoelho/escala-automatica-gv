@@ -33,8 +33,6 @@ export async function getAlocacoesPorGuardaVidas(guardaVidasId: string) {
 
 export async function salvarEscalaDiaria(novasAlocacoes: AlocacaoDiariaCriacao[]) {
     if (novasAlocacoes.length === 0) {
-
-        console.log("Nenhuma alocação para salvar.");
         return;
     }
 
