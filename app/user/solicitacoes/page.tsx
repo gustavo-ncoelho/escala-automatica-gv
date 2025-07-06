@@ -8,15 +8,15 @@ import Link from "next/link"
 
 export default function SolicitacoesPage() {
 
-    const minhasSolicitacoes = solicitacoes.filter((s) => s.guardaVidasId === 1) // ID do guarda-vidas logado
+    const minhasSolicitacoes = solicitacoes.filter((s) => s.guardaVidasId === 1)
 
     const solicitacoesPendentes = minhasSolicitacoes.filter((s) => s.status === "pendente")
     const solicitacoesAprovadas = minhasSolicitacoes.filter((s) => s.status === "aprovada")
     const solicitacoesRejeitadas = minhasSolicitacoes.filter((s) => s.status === "rejeitada")
 
     return (
-        <div className="space-y-6">
-            <div className="flex items-center justify-between">
+        <div className="space-y-6 flex-1 flex flex-col">
+            <div className="flex items-center justify-between px-4">
                 <div>
                     <h1 className="text-2xl font-bold tracking-tight md:text-3xl">Solicitações</h1>
                 </div>
@@ -28,7 +28,7 @@ export default function SolicitacoesPage() {
                 </Button>
             </div>
 
-            <Card>
+            <Card className={"flex-1 rounded-none"}>
                 <CardContent className="p-4 md:p-6">
                     <Tabs defaultValue="pendentes">
                         <TabsList className="grid w-full grid-cols-3">

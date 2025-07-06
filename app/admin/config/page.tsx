@@ -31,7 +31,6 @@ export default function ConfigPage() {
     }
 
     const currentThemeObject = themes.find((t) => t.value === selectedTheme)
-    const CurrentIcon = currentThemeObject?.icon
 
     return (
         <div className="min-h-screen">

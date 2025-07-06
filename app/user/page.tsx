@@ -1,22 +1,18 @@
 "use client"
 
-import {Button} from "@/components/ui/button"
 import {Card, CardContent} from "@/components/ui/card"
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select"
 import {CalendarioMensal} from "@/components/user/calendario/calendario-mensal"
-import {ListaEscalas} from "@/components/user/calendario/lista-escalas"
-import {CalendarDays, List} from "lucide-react"
-import {useEffect, useState} from "react"
+import {useState} from "react"
 import {useAuthContext} from "@/contexts/auth-context";
-import {useGetAlocacoesPorGuardaVidas} from "@/hooks/api/alocacao-diaria/use-get-alocacoes-por-guarda-vidas";
 import {useGetGuardaVidasById} from "@/hooks/api/guarda-vidas/use-get-guarda-vidas-by-id";
-import {GuardaVidasEscala} from "@/types/guarda-vidas";
 import {converterGVParaGVEscala} from "@/lib/utils";
+import {useGetAlocacoesPorGuardaVidas} from "@/hooks/api/alocacao-diaria/use-get-alocacoes-por-guarda-vidas";
 
 export default function CalendarioPage() {
-    const [visualizacao, setVisualizacao] = useState<"calendario" | "lista">("calendario");
-    const [mes, setMes] = useState("7");
-    const [ano, setAno] = useState("2023");
+    const dataAtual = new Date();
+    const [mes, setMes] = useState(String(dataAtual.getMonth() + 1));
+    const [ano, setAno] = useState(String(dataAtual.getFullYear()));
 
     const {usuario} = useAuthContext();
 
@@ -67,32 +63,16 @@ export default function CalendarioPage() {
                                     </SelectContent>
                                 </Select>
                             </div>
-
-                            <div className="flex gap-2">
-                                <Button
-                                    variant={visualizacao === "calendario" ? "default" : "outline"}
-                                    size="icon"
-                                    onClick={() => setVisualizacao("calendario")}
-                                >
-                                    <CalendarDays className="h-4 w-4"/>
-                                    <span className="sr-only">Visualização de Calendário</span>
-                                </Button>
-                                <Button
-                                    variant={visualizacao === "lista" ? "default" : "outline"}
-                                    size="icon"
-                                    onClick={() => setVisualizacao("lista")}
-                                >
-                                    <List className="h-4 w-4"/>
-                                    <span className="sr-only">Visualização de Lista</span>
-                                </Button>
-                            </div>
                         </div>
 
-                        {(visualizacao === "calendario" && usuarioGuardaVidas) ? (
-                            <CalendarioMensal mes={Number.parseInt(mes)} ano={Number.parseInt(ano)} guardaVida={converterGVParaGVEscala(usuarioGuardaVidas)}/>
-                        ) : (
-                            <ListaEscalas mes={Number.parseInt(mes)} ano={Number.parseInt(ano)}/>
-                        )}
+                        {usuarioGuardaVidas &&
+                            <CalendarioMensal
+                                mes={Number.parseInt(mes)}
+                                ano={Number.parseInt(ano)}
+                                guardaVida={converterGVParaGVEscala(usuarioGuardaVidas)}
+                                alocacoes={alocacoes ?? []}
+                            />
+                        }
                     </div>
                 </CardContent>
             </Card>
