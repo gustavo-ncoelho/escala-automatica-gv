@@ -6,7 +6,7 @@ import {deleteGuardaVidas, getGuardaVidasById, updateGuardaVidas} from "@/api/se
 export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
     try {
         const user = await getUser();
-        if (user?.cargo !== 'COMANDANTE') {
+        if (user?.cargo !== 'COMANDANTE' && user?.id !== params.id) {
             return NextResponse.json({ error: "Acesso não autorizado" }, { status: 403 });
         }
 

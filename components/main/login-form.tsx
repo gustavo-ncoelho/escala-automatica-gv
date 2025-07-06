@@ -8,6 +8,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import {useLogin} from "@/hooks/api/auth/use-login";
+import {useAuthContext} from "@/contexts/auth-context";
 
 const loginSchema = z.object({
     email: z.string().min(1, { message: "Email é obrigatório" }).email({ message: "Email inválido" }),
@@ -17,6 +18,7 @@ const loginSchema = z.object({
 export default function LoginForm() {
 
     const { mutate, isPending, error } = useLogin();
+    const {atualizarSessao} = useAuthContext();
 
     const form = useForm<z.infer<typeof loginSchema>>({
         resolver: zodResolver(loginSchema),
@@ -31,7 +33,11 @@ export default function LoginForm() {
             email: data.email,
             senha: data.senha
         }
-        mutate(loginPayload)
+        mutate(loginPayload,{
+            onSuccess: () => {
+                atualizarSessao();
+            }
+        });
     }
 
     return (

@@ -16,7 +16,7 @@ export default async function UserLayout({children,}: Readonly<{ children: React
     return (
         <div className="flex min-h-screen flex-col bg-muted/30">
             <Cabecalho/>
-            <main className="flex-1 p-4 pb-16 md:p-6">{children}</main>
+            <main className="flex-1 flex flex-col py-4">{children}</main>
             <BarraNavegacao/>
         </div>
     )

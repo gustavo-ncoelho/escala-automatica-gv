@@ -6,7 +6,7 @@ import EscalaMensal from "@/components/admin/escala/escala-mensal";
 import {Calendar, Eye, Grid3X3} from "lucide-react";
 import {
     anosParaSelecionar,
-    converterGVParaGVEscala,
+    converterListaGVParaListaGVEscala,
     dataAtual,
     gerarArrayDeDatasDoMes,
     getNomeMes,
@@ -24,7 +24,7 @@ export default function EscalaPage() {
     const {adminEscalaMode, setAdminEscalaMode} = useAppContext();
     const [anoSelecionado, setAnoSelecionado] = useState<number>(dataAtual.getFullYear());
     const [mesSelecionado, setMesSelecionado] = useState<number>(dataAtual.getMonth() + 1);
-    const guardaVidasEscala: GuardaVidasEscala[] = converterGVParaGVEscala(guardaVidas);
+    const guardaVidasEscala: GuardaVidasEscala[] = converterListaGVParaListaGVEscala(guardaVidas);
     const diasArray = gerarArrayDeDatasDoMes(mesSelecionado, anoSelecionado);
 
     const handleDayClick = (dia: number) => {

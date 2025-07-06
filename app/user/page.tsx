@@ -6,8 +6,12 @@ import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/c
 import {CalendarioMensal} from "@/components/user/calendario/calendario-mensal"
 import {ListaEscalas} from "@/components/user/calendario/lista-escalas"
 import {CalendarDays, List} from "lucide-react"
-import {useState} from "react"
+import {useEffect, useState} from "react"
 import {useAuthContext} from "@/contexts/auth-context";
+import {useGetAlocacoesPorGuardaVidas} from "@/hooks/api/alocacao-diaria/use-get-alocacoes-por-guarda-vidas";
+import {useGetGuardaVidasById} from "@/hooks/api/guarda-vidas/use-get-guarda-vidas-by-id";
+import {GuardaVidasEscala} from "@/types/guarda-vidas";
+import {converterGVParaGVEscala} from "@/lib/utils";
 
 export default function CalendarioPage() {
     const [visualizacao, setVisualizacao] = useState<"calendario" | "lista">("calendario");
@@ -16,15 +20,19 @@ export default function CalendarioPage() {
 
     const {usuario} = useAuthContext();
 
+    const {data: usuarioGuardaVidas} = useGetGuardaVidasById(usuario?.id ?? "");
+    const {data: alocacoes} = useGetAlocacoesPorGuardaVidas(usuario?.id ?? "");
+
+
     return (
-        <div className="space-y-6">
-            <div>
+        <div className="space-y-6 flex flex-col flex-1">
+            <div className={"px-4"}>
                 <h1 className="text-2xl font-bold tracking-tight md:text-3xl">Olá, {usuario?.nome}</h1>
                 <p className="text-muted-foreground">Visualize sua escala mensal de trabalho.</p>
             </div>
 
-            <Card>
-                <CardContent className="p-4 md:p-6">
+            <Card className={"rounded-none flex-1 flex flex-col"}>
+                <CardContent className="p-4 md:p-6 flex-1 flex-col flex">
                     <div className="flex flex-col gap-4">
                         <div className="flex flex-wrap items-center justify-between gap-4">
                             <div className="flex flex-wrap items-center gap-2">
@@ -80,8 +88,8 @@ export default function CalendarioPage() {
                             </div>
                         </div>
 
-                        {visualizacao === "calendario" ? (
-                            <CalendarioMensal mes={Number.parseInt(mes)} ano={Number.parseInt(ano)}/>
+                        {(visualizacao === "calendario" && usuarioGuardaVidas) ? (
+                            <CalendarioMensal mes={Number.parseInt(mes)} ano={Number.parseInt(ano)} guardaVida={converterGVParaGVEscala(usuarioGuardaVidas)}/>
                         ) : (
                             <ListaEscalas mes={Number.parseInt(mes)} ano={Number.parseInt(ano)}/>
                         )}

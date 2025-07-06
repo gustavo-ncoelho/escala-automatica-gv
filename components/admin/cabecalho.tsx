@@ -11,14 +11,20 @@ import {Menu, Bell, User} from "lucide-react"
 import {Sheet, SheetContent, SheetTrigger} from "@/components/ui/sheet"
 import {BarraLateral} from "./barra-lateral"
 import {useLogout} from "@/hooks/api/auth/use-logout";
+import {useAuthContext} from "@/contexts/auth-context";
 
 export function Cabecalho() {
 
-    const {mutate} = useLogout();
+    const {mutateAsync} = useLogout();
+    const {atualizarSessao} = useAuthContext();
 
-
-    const handleLogout = () => {
-        mutate();
+    const handleLogout = async () => {
+        try {
+            await mutateAsync();
+            atualizarSessao();
+        } catch (error) {
+            console.error("Não foi possível encerrar a sessão.");
+        }
     }
 
 

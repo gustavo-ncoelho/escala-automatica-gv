@@ -10,15 +10,21 @@ import {
 import {User, LifeBuoy} from "lucide-react"
 import Link from "next/link"
 import {useLogout} from "@/hooks/api/auth/use-logout";
+import {useAuthContext} from "@/contexts/auth-context";
 
 export function Cabecalho() {
 
-    const {mutate} = useLogout();
+    const {mutateAsync} = useLogout();
+    const {atualizarSessao} = useAuthContext();
 
-    const handleLogout = () => {
-        mutate();
+    const handleLogout = async () => {
+        try {
+            await mutateAsync();
+            atualizarSessao();
+        } catch (error) {
+            console.error("Não foi possível encerrar a sessão.");
+        }
     }
-
     return (
         <header className="sticky top-0 z-10 flex h-14 items-center gap-4 border-b bg-background px-4 sm:h-16">
             <Link href="/user" className="flex items-center gap-2 font-semibold">

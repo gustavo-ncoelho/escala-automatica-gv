@@ -45,33 +45,33 @@ export const gerarArrayDeDatasDoMes = (mes: number, ano: number): Date[] => {
 };
 
 export const diasDaSemanaOpcoes = [
-    { id: "segunda", label: "Segunda-feira" },
-    { id: "terca_feira", label: "Terça-feira" },
-    { id: "quarta_feira", label: "Quarta-feira" },
-    { id: "quinta_feira", label: "Quinta-feira" },
-    { id: "sexta_feira", label: "Sexta-feira" },
-    { id: "sabado", label: "Sábado" },
-    { id: "domingo", label: "Domingo" },
+    {id: "segunda", label: "Segunda-feira"},
+    {id: "terca_feira", label: "Terça-feira"},
+    {id: "quarta_feira", label: "Quarta-feira"},
+    {id: "quinta_feira", label: "Quinta-feira"},
+    {id: "sexta_feira", label: "Sexta-feira"},
+    {id: "sabado", label: "Sábado"},
+    {id: "domingo", label: "Domingo"},
 ] as const;
 
 export const dataAtual = new Date();
 
-export const anosParaSelecionar = Array.from({ length: 5 }, (_, i) => dataAtual.getFullYear() - 2 + i);
+export const anosParaSelecionar = Array.from({length: 5}, (_, i) => dataAtual.getFullYear() - 2 + i);
 
 
 export const mesesParaSelecionar = [
-    { valor: 1, nome: 'Janeiro' },
-    { valor: 2, nome: 'Fevereiro' },
-    { valor: 3, nome: 'Março' },
-    { valor: 4, nome: 'Abril' },
-    { valor: 5, nome: 'Maio' },
-    { valor: 6, nome: 'Junho' },
-    { valor: 7, nome: 'Julho' },
-    { valor: 8, nome: 'Agosto' },
-    { valor: 9, nome: 'Setembro' },
-    { valor: 10, nome: 'Outubro' },
-    { valor: 11, nome: 'Novembro' },
-    { valor: 12, nome: 'Dezembro' },
+    {valor: 1, nome: 'Janeiro'},
+    {valor: 2, nome: 'Fevereiro'},
+    {valor: 3, nome: 'Março'},
+    {valor: 4, nome: 'Abril'},
+    {valor: 5, nome: 'Maio'},
+    {valor: 6, nome: 'Junho'},
+    {valor: 7, nome: 'Julho'},
+    {valor: 8, nome: 'Agosto'},
+    {valor: 9, nome: 'Setembro'},
+    {valor: 10, nome: 'Outubro'},
+    {valor: 11, nome: 'Novembro'},
+    {valor: 12, nome: 'Dezembro'},
 ];
 
 export const getNomeMes = (mes: number) => {
@@ -141,7 +141,7 @@ export function obterNomePosto(postos: Posto[], id?: string): string {
     return posto ? posto.nome : "Desconhecido"
 };
 
-export const converterGVParaGVEscala = (listaDeGuardaVidas?: Usuario[]): GuardaVidasEscala[] => {
+export const converterListaGVParaListaGVEscala = (listaDeGuardaVidas?: Usuario[]): GuardaVidasEscala[] => {
     if (!listaDeGuardaVidas) {
         return [];
     }
@@ -158,7 +158,18 @@ export const converterGVParaGVEscala = (listaDeGuardaVidas?: Usuario[]): GuardaV
     });
 };
 
-const diasDaSemanaMap: DiaDaSemana[] = [ "domingo", "segunda", "terca_feira", "quarta_feira", "quinta_feira", "sexta_feira", "sabado"];
+export const converterGVParaGVEscala = (guardaVida: Usuario): GuardaVidasEscala => {
+    return {
+        id: guardaVida.perfilGuardaVidas?.id ?? "",
+        nome: guardaVida.nome,
+        preferenciasPostos: guardaVida.perfilGuardaVidas?.preferenciasPostos,
+        diasIndisponiveis: guardaVida.perfilGuardaVidas?.diasIndisponiveis,
+        estatisticas: guardaVida.perfilGuardaVidas?.estatisticas,
+        diasDeFolga: guardaVida.perfilGuardaVidas?.diasDeFolga
+    };
+};
+
+const diasDaSemanaMap: DiaDaSemana[] = ["domingo", "segunda", "terca_feira", "quarta_feira", "quinta_feira", "sexta_feira", "sabado"];
 
 export const guardaVidaTrabalhaEm = (guardaVida: GuardaVidasEscala, dataDoDia: Date): boolean => {
     const nomeDoDiaDaSemana = diasDaSemanaMap[dataDoDia.getDay()];
@@ -219,7 +230,7 @@ export const gerarEscalaDiaria = (listaDePostos: Posto[], listaDeGuardaVidas: Gu
             const posto = postosAbertos.find(p => p.id === pref10.postoId);
             if (posto && escala.filter(a => a.postoId === posto.id).length < posto.alocacaoMaxima) {
                 console.log(`Alocando ${gv.nome} no posto ${posto.nome} (Prioridade 10)`);
-                escala.push({ id: uuid(), data: dataAlvo, guardaVidasId: gv.id, postoId: posto.id });
+                escala.push({id: uuid(), data: dataAlvo, guardaVidasId: gv.id, postoId: posto.id});
                 gvAlocados.add(gv.id);
             }
         }
@@ -233,11 +244,14 @@ export const gerarEscalaDiaria = (listaDePostos: Posto[], listaDeGuardaVidas: Gu
         for (const posto of postosPriorizados) {
             const vagasOcupadas = escala.filter(a => a.postoId === posto.id).length;
             if (vagasOcupadas < i + 1 && gvNaoAlocados().length > 0) {
-                const candidatos = gvNaoAlocados().map(gv => ({ gv, score: calcularScore(gv, posto.id) })).sort((a, b) => b.score - a.score);
+                const candidatos = gvNaoAlocados().map(gv => ({
+                    gv,
+                    score: calcularScore(gv, posto.id)
+                })).sort((a, b) => b.score - a.score);
                 if (candidatos.length > 0) {
                     const melhorCandidato = candidatos[0].gv;
                     console.log(`Alocando ${melhorCandidato.nome} no posto ${posto.nome} para garantir o mínimo.`);
-                    escala.push({ id: uuid(), data: dataAlvo, guardaVidasId: melhorCandidato.id, postoId: posto.id });
+                    escala.push({id: uuid(), data: dataAlvo, guardaVidasId: melhorCandidato.id, postoId: posto.id});
                     gvAlocados.add(melhorCandidato.id);
                 }
             }
@@ -268,18 +282,21 @@ export const gerarEscalaDiaria = (listaDePostos: Posto[], listaDeGuardaVidas: Gu
     // Fase 4: Preencher vagas restantes até o máximo
     console.group("Fase 4: Preenchimento até a Alocação Máxima");
     let continuarAlocando = true;
-    while(continuarAlocando) {
+    while (continuarAlocando) {
         let alocouAlguemNestaRodada = false;
         if (gvNaoAlocados().length === 0) break;
 
         for (const posto of postosPriorizados) {
             const vagasOcupadas = escala.filter(a => a.postoId === posto.id).length;
             if (vagasOcupadas < posto.alocacaoMaxima && gvNaoAlocados().length > 0) {
-                const candidatos = gvNaoAlocados().map(gv => ({ gv, score: calcularScore(gv, posto.id) })).sort((a, b) => b.score - a.score);
+                const candidatos = gvNaoAlocados().map(gv => ({
+                    gv,
+                    score: calcularScore(gv, posto.id)
+                })).sort((a, b) => b.score - a.score);
                 if (candidatos.length > 0) {
                     const melhorCandidato = candidatos[0].gv;
                     console.log(`Preenchendo vaga em ${posto.nome} com ${melhorCandidato.nome}`);
-                    escala.push({ id: uuid(), data: dataAlvo, guardaVidasId: melhorCandidato.id, postoId: posto.id });
+                    escala.push({id: uuid(), data: dataAlvo, guardaVidasId: melhorCandidato.id, postoId: posto.id});
                     gvAlocados.add(melhorCandidato.id);
                     alocouAlguemNestaRodada = true;
                 }
@@ -295,11 +312,14 @@ export const gerarEscalaDiaria = (listaDePostos: Posto[], listaDeGuardaVidas: Gu
         console.log(`Sobraram ${gvNaoAlocados().length} GVs. Iniciando alocação de reforço.`);
         for (const posto of postosPriorizados) {
             if (gvNaoAlocados().length === 0) break;
-            const candidatos = gvNaoAlocados().map(gv => ({ gv, score: calcularScore(gv, posto.id) })).sort((a, b) => b.score - a.score);
+            const candidatos = gvNaoAlocados().map(gv => ({
+                gv,
+                score: calcularScore(gv, posto.id)
+            })).sort((a, b) => b.score - a.score);
             if (candidatos.length > 0) {
                 const melhorCandidato = candidatos[0].gv;
                 console.log(`Alocando REFORÇO ${melhorCandidato.nome} no posto ${posto.nome}`);
-                escala.push({ id: uuid(), data: dataAlvo, guardaVidasId: melhorCandidato.id, postoId: posto.id });
+                escala.push({id: uuid(), data: dataAlvo, guardaVidasId: melhorCandidato.id, postoId: posto.id});
                 gvAlocados.add(melhorCandidato.id);
             }
         }
