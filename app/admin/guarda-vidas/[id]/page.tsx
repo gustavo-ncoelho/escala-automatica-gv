@@ -103,7 +103,7 @@ export default function DetalhesGuardaVidas () {
                                     .map((pref) => (
                                         <div key={pref.postoId} className="space-y-2">
                                             <div className="flex items-center justify-between text-sm">
-                                                {postos && <div className="font-medium">{obterNomePosto(pref.postoId, postos)}</div>}
+                                                {postos && <div className="font-medium">{obterNomePosto(postos, pref.postoId)}</div>}
                                                 <div
                                                     className="text-muted-foreground">Prioridade: {pref.prioridade}/10
                                                 </div>

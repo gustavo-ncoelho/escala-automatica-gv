@@ -3,7 +3,7 @@
 import React from "react";
 import EscalaDiaria from "@/components/admin/escala/escala-diaria";
 import {useParams} from "next/navigation";
-import {converterGVParaGVEscala, parseDateStringLocal} from "@/lib/utils";
+import {converterGVParaGVEscala} from "@/lib/utils";
 import {useGetAllGuardaVidas} from "@/hooks/api/guarda-vidas/use-get-all-guarda-vidas";
 import {useGetPostos} from "@/hooks/api/postos/use-get-all-postos";
 import {GuardaVidasEscala} from "@/types/guarda-vidas";

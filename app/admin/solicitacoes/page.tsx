@@ -1,12 +1,21 @@
+"use client";
+
 import {Card, CardContent} from "@/components/ui/card"
 import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs"
 import {ListaSolicitacoes} from "@/components/admin/solicitacoes/lista-solicitacoes"
-import {solicitacoes} from "@/utils/dados-simulados"
+import {useGetAllSolicitacoes} from "@/hooks/api/solicitacoes/use-get-all-solicitacoes";
+import {useGetAllGuardaVidas} from "@/hooks/api/guarda-vidas/use-get-all-guarda-vidas";
+import {useGetPostos} from "@/hooks/api/postos/use-get-all-postos";
 
 export default function SolicitacoesPage() {
-    const solicitacoesPendentes = solicitacoes.filter((s) => s.status === "pendente")
-    const solicitacoesAprovadas = solicitacoes.filter((s) => s.status === "aprovada")
-    const solicitacoesRejeitadas = solicitacoes.filter((s) => s.status === "rejeitada")
+
+    const {data: solicitacoes} = useGetAllSolicitacoes();
+    const {data: guardaVidas} = useGetAllGuardaVidas();
+    const {data: postos} = useGetPostos();
+
+    const solicitacoesPendentes = solicitacoes ? solicitacoes.filter((s) => s.status === "pendente") : [];
+    const solicitacoesAprovadas = solicitacoes ? solicitacoes.filter((s) => s.status === "aprovada") : [];
+    const solicitacoesRejeitadas = solicitacoes ? solicitacoes.filter((s) => s.status === "rejeitada") : [];
 
     return (
         <div className="space-y-6">
@@ -17,26 +26,28 @@ export default function SolicitacoesPage() {
 
             <Card>
                 <CardContent className="p-6">
-                    <Tabs defaultValue="pendentes">
-                        <TabsList className="grid w-full grid-cols-3">
-                            <TabsTrigger value="pendentes">Pendentes ({solicitacoesPendentes.length})</TabsTrigger>
-                            <TabsTrigger value="rejeitadas">Rejeitadas</TabsTrigger>
-                            <TabsTrigger value="aprovadas">Aprovadas</TabsTrigger>
-                        </TabsList>
+                    {guardaVidas && postos &&
+                        <Tabs defaultValue="pendentes">
+                            <TabsList className="grid w-full grid-cols-3">
+                                <TabsTrigger value="pendentes">Pendentes ({solicitacoesPendentes.length})</TabsTrigger>
+                                <TabsTrigger value="rejeitadas">Rejeitadas</TabsTrigger>
+                                <TabsTrigger value="aprovadas">Aprovadas</TabsTrigger>
+                            </TabsList>
 
-                        <TabsContent value="pendentes" className="mt-6">
-                            <ListaSolicitacoes solicitacoes={solicitacoesPendentes}/>
-                        </TabsContent>
+                            <TabsContent value="pendentes" className="mt-6">
+                                <ListaSolicitacoes solicitacoes={solicitacoesPendentes} guardaVidas={guardaVidas} postos={postos}/>
+                            </TabsContent>
 
-                        <TabsContent value="aprovadas" className="mt-6">
-                            <ListaSolicitacoes solicitacoes={solicitacoesAprovadas}/>
-                        </TabsContent>
+                            <TabsContent value="aprovadas" className="mt-6">
+                                <ListaSolicitacoes solicitacoes={solicitacoesAprovadas} guardaVidas={guardaVidas} postos={postos}/>
+                            </TabsContent>
 
-                        <TabsContent value="rejeitadas" className="mt-6">
-                            <ListaSolicitacoes solicitacoes={solicitacoesRejeitadas}/>
-                        </TabsContent>
+                            <TabsContent value="rejeitadas" className="mt-6">
+                                <ListaSolicitacoes solicitacoes={solicitacoesRejeitadas} guardaVidas={guardaVidas} postos={postos}/>
+                            </TabsContent>
 
-                    </Tabs>
+                        </Tabs>
+                    }
                 </CardContent>
             </Card>
         </div>

@@ -7,12 +7,16 @@ import {formatarData} from "@/utils/dados-simulados"
 import {Calendar, Check, Clock, X} from "lucide-react"
 import {useState} from "react"
 import {obterNomeGuardaVidas, obterNomePosto} from "@/lib/utils";
+import {Usuario} from "@/types/auth/usuario";
+import {Posto} from "@/types/guarda-vidas";
 
 interface ListaSolicitacoesProps {
     solicitacoes: Solicitacao[]
+    guardaVidas: Usuario[];
+    postos: Posto[];
 }
 
-export function ListaSolicitacoes({solicitacoes}: ListaSolicitacoesProps) {
+export function ListaSolicitacoes({solicitacoes, guardaVidas, postos}: ListaSolicitacoesProps) {
     const [solicitacaoSelecionada, setSolicitacaoSelecionada] = useState<Solicitacao | null>(null)
 
     const getStatusIcon = (status: string) => {
@@ -66,7 +70,7 @@ export function ListaSolicitacoes({solicitacoes}: ListaSolicitacoesProps) {
                                 {getStatusIcon(solicitacao.status)}
                             </div>
                             <div>
-                                <h3 className="font-semibold">{obterNomeGuardaVidas(solicitacao.guardaVidasId)}</h3>
+                                <h3 className="font-semibold">{obterNomeGuardaVidas(solicitacao.guardaVidasId, guardaVidas)}</h3>
                                 <p className="text-sm text-muted-foreground">
                                     Solicitação #{solicitacao.id} - {getStatusText(solicitacao.status)}
                                 </p>
@@ -79,10 +83,10 @@ export function ListaSolicitacoes({solicitacoes}: ListaSolicitacoesProps) {
                                     <div className="text-sm">
                                         <div className="font-medium">Data Original</div>
                                         <div>{solicitacao.dataOriginal ? formatarData(solicitacao.dataOriginal) : "N/A"}</div>
-                                        {solicitacao.postoOriginal && (
+                                        {solicitacao.postoOriginal &&
                                             <div
-                                                className="text-muted-foreground">{obterNomePosto(solicitacao.postoOriginal)}</div>
-                                        )}
+                                                className="text-muted-foreground">{obterNomePosto(postos, solicitacao?.postoSolicitado)}</div>
+                                        }
                                     </div>
                                 </div>
 
@@ -101,7 +105,7 @@ export function ListaSolicitacoes({solicitacoes}: ListaSolicitacoesProps) {
                                         <Calendar className="h-4 w-4 mt-0.5 text-muted-foreground"/>
                                         <div className="text-sm">
                                             <div className="font-medium">Posto Solicitado</div>
-                                            <div>{obterNomePosto(solicitacao.postoSolicitado)}</div>
+                                            <div>{obterNomePosto(postos, solicitacao?.postoSolicitado)}</div>
                                         </div>
                                     </div>
                                 )}

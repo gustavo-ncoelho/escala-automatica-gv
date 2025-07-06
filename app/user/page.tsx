@@ -19,7 +19,7 @@ export default function CalendarioPage() {
     return (
         <div className="space-y-6">
             <div>
-                <h1 className="text-2xl font-bold tracking-tight md:text-3xl">Olá, {usuario?.login}</h1>
+                <h1 className="text-2xl font-bold tracking-tight md:text-3xl">Olá, {usuario?.nome}</h1>
                 <p className="text-muted-foreground">Visualize sua escala mensal de trabalho.</p>
             </div>
 
