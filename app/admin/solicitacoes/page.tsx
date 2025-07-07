@@ -13,9 +13,9 @@ export default function SolicitacoesPage() {
     const {data: guardaVidas} = useGetAllGuardaVidas();
     const {data: postos} = useGetPostos();
 
-    const solicitacoesPendentes = solicitacoes ? solicitacoes.filter((s) => s.status === "pendente") : [];
-    const solicitacoesAprovadas = solicitacoes ? solicitacoes.filter((s) => s.status === "aprovada") : [];
-    const solicitacoesRejeitadas = solicitacoes ? solicitacoes.filter((s) => s.status === "rejeitada") : [];
+    const solicitacoesPendentes = solicitacoes ? solicitacoes.filter((s) => s.status === "PENDENTE") : [];
+    const solicitacoesAprovadas = solicitacoes ? solicitacoes.filter((s) => s.status === "APROVADA") : [];
+    const solicitacoesRejeitadas = solicitacoes ? solicitacoes.filter((s) => s.status === "REJEITADA") : [];
 
     return (
         <div className="space-y-6">

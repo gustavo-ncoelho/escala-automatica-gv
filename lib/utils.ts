@@ -74,6 +74,11 @@ export const mesesParaSelecionar = [
     {valor: 12, nome: 'Dezembro'},
 ];
 
+export function formatarData(data?: Date): string {
+    if (!data) return "--/--/----";
+    return data.toLocaleDateString("pt-BR")
+}
+
 export const getNomeMes = (mes: number) => {
     const meses = [
         "Janeiro",
@@ -134,9 +139,9 @@ export function obterNomeGuardaVidas(id: string, guardaVidas: Usuario[]): string
     return gv ? gv.nome : "Desconhecido"
 };
 
-export function obterNomePosto(postos: Posto[], id?: string): string {
+export function obterNomePosto(postos?: Posto[], id?: string): string {
     if (!id) return "Não encontrado";
-    if (postos.length === 0) return "";
+    if (postos?.length === 0 || !postos) return "";
     const posto = postos.find((p) => p.id === id)
     return posto ? posto.nome : "Desconhecido"
 };

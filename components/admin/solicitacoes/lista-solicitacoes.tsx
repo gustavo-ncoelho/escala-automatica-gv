@@ -3,7 +3,7 @@
 import {Button} from "@/components/ui/button"
 import {Card, CardContent, CardFooter, CardHeader} from "@/components/ui/card"
 import type {Solicitacao} from "@/types/solicitacao"
-import {formatarData} from "@/utils/dados-simulados"
+import {formatarData} from "@/lib/utils"
 import {Calendar, Check, Clock, X} from "lucide-react"
 import {useState} from "react"
 import {obterNomeGuardaVidas, obterNomePosto} from "@/lib/utils";
@@ -21,11 +21,11 @@ export function ListaSolicitacoes({solicitacoes, guardaVidas, postos}: ListaSoli
 
     const getStatusIcon = (status: string) => {
         switch (status) {
-            case "pendente":
+            case "PENDENTE":
                 return <Clock className="h-5 w-5 text-yellow-500"/>
-            case "aprovada":
+            case "APROVADA":
                 return <Check className="h-5 w-5 text-green-500"/>
-            case "rejeitada":
+            case "REJEITADA":
                 return <X className="h-5 w-5 text-red-500"/>
             default:
                 return null
@@ -34,12 +34,12 @@ export function ListaSolicitacoes({solicitacoes, guardaVidas, postos}: ListaSoli
 
     const getStatusText = (status: string) => {
         switch (status) {
-            case "pendente":
-                return "Pendente"
-            case "aprovada":
-                return "Aprovada"
-            case "rejeitada":
-                return "Rejeitada"
+            case "PENDENTE":
+                return "PENDENTE"
+            case "APROVADA":
+                return "APROVADA"
+            case "REJEITADA":
+                return "REJEITADA"
             default:
                 return status
         }
@@ -118,7 +118,7 @@ export function ListaSolicitacoes({solicitacoes, guardaVidas, postos}: ListaSoli
                         </CardContent>
                     </div>
                     <CardFooter className="mt-auto">
-                        {solicitacao.status === "pendente" ? (
+                        {solicitacao.status === "PENDENTE" ? (
                             <div className="flex justify-between gap-2 w-full">
                                 <Button variant="outline" size="sm" className="flex"
                                         onClick={() => handleRejeitar(solicitacao)}

@@ -26,11 +26,6 @@ export async function POST(req: NextRequest) {
 
         const body = await req.json();
 
-
-        if (user.id !== body.guardaVidasId) {
-            return NextResponse.json({ error: "Você não pode criar uma solicitação para outro usuário." }, { status: 403 });
-        }
-
         const novaSolicitacao = await createSolicitacao(body);
         return NextResponse.json(novaSolicitacao, { status: 201 });
     } catch (error) {

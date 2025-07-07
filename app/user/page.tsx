@@ -17,7 +17,7 @@ export default function CalendarioPage() {
     const {usuario} = useAuthContext();
 
     const {data: usuarioGuardaVidas} = useGetGuardaVidasById(usuario?.id ?? "");
-    const {data: alocacoes} = useGetAlocacoesPorGuardaVidas(usuario?.id ?? "");
+    const {data: alocacoes} = useGetAlocacoesPorGuardaVidas(usuarioGuardaVidas?.perfilGuardaVidas?.id ?? "");
 
 
     return (

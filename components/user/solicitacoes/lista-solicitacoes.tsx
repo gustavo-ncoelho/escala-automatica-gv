@@ -1,22 +1,25 @@
 import {Badge} from "@/components/ui/badge"
 import type {Solicitacao} from "@/types/solicitacao"
-import {formatarData} from "@/utils/dados-simulados"
 import {Check, Clock, X} from "lucide-react"
 import Link from "next/link"
-import {cn, obterNomePosto} from "@/lib/utils";
+import {cn, formatarData, obterNomePosto} from "@/lib/utils";
+import {useGetPostos} from "@/hooks/api/postos/use-get-all-postos";
 
 interface ListaSolicitacoesProps {
     solicitacoes: Solicitacao[]
 }
 
 export function ListaSolicitacoes({solicitacoes}: ListaSolicitacoesProps) {
+
+    const {data: postos} = useGetPostos();
+
     const getStatusIcon = (status: string) => {
         switch (status) {
-            case "pendente":
+            case "PENDENTE":
                 return <Clock className="h-5 w-5 text-yellow-500"/>
-            case "aprovada":
+            case "APROVADA":
                 return <Check className="h-5 w-5 text-green-500"/>
-            case "rejeitada":
+            case "REJEITADA":
                 return <X className="h-5 w-5 text-red-500"/>
             default:
                 return null
@@ -25,12 +28,12 @@ export function ListaSolicitacoes({solicitacoes}: ListaSolicitacoesProps) {
 
     const getStatusText = (status: string) => {
         switch (status) {
-            case "pendente":
-                return "Pendente"
-            case "aprovada":
-                return "Aprovada"
-            case "rejeitada":
-                return "Rejeitada"
+            case "PENDENTE":
+                return "PENDENTE"
+            case "APROVADA":
+                return "APROVADA"
+            case "REJEITADA":
+                return "REJEITADA"
             default:
                 return status
         }
@@ -38,9 +41,9 @@ export function ListaSolicitacoes({solicitacoes}: ListaSolicitacoesProps) {
 
     const getTipoSolicitacaoText = (solicitacao: Solicitacao) => {
         switch (solicitacao.tipo) {
-            case "preferencia_posto":
+            case "PREFERENCIA_POSTO":
                 return "Alteração de Posto"
-            case "dia_indisponivel":
+            case "DIA_INDISPONIVEL":
                 return "Dia Indisponível"
             default:
                 return "Solicitação"
@@ -60,9 +63,9 @@ export function ListaSolicitacoes({solicitacoes}: ListaSolicitacoesProps) {
                     className="flex items-start gap-4 p-4 rounded-lg border hover:bg-muted/50 transition-colors"
                 >
                     <div className={cn("flex h-12 w-12 items-center justify-center rounded-full bg-muted",
-                        solicitacao.status === "pendente" && "bg-yellow-200/10 border-yellow-300 border",
-                        solicitacao.status === "aprovada" && "bg-green-200/10 border-green-300 border",
-                        solicitacao.status === "rejeitada" && "bg-red-200/10 border-red-300 border"
+                        solicitacao.status === "PENDENTE" && "bg-yellow-200/10 border-yellow-300 border",
+                        solicitacao.status === "APROVADA" && "bg-green-200/10 border-green-300 border",
+                        solicitacao.status === "REJEITADA" && "bg-red-200/10 border-red-300 border"
                     )}>
                         {getStatusIcon(solicitacao.status)}
                     </div>
@@ -73,17 +76,17 @@ export function ListaSolicitacoes({solicitacoes}: ListaSolicitacoesProps) {
                         </div>
 
                         <div className="text-sm text-muted-foreground mt-1 space-y-2">
-                            {solicitacao.tipo === "preferencia_posto" && solicitacao.postoSolicitado && (
+                            {solicitacao.tipo === "PREFERENCIA_POSTO" && solicitacao.postoSolicitado && (
                                 <div className="flex items-start gap-2 mt-2">
                                     <span className={"font-semibold"}>Novo posto: </span>
-                                    <p>{obterNomePosto(solicitacao.postoSolicitado)}</p>
+                                    <p>{obterNomePosto(postos,solicitacao?.postoSolicitado)}</p>
                                 </div>
                             )}
 
-                            {solicitacao.tipo === "dia_indisponivel" && solicitacao.dataSolicitada && (
+                            {solicitacao.tipo === "DIA_INDISPONIVEL" && solicitacao.dataSolicitada && (
                                 <div className="flex items-start gap-2 mt-2">
                                     <span className={"font-semibold"}>Data: </span>
-                                    <p>{formatarData(solicitacao.dataSolicitada)}</p>
+                                    <p>{formatarData(new Date(solicitacao.dataSolicitada))}</p>
                                 </div>
                             )}
 
@@ -91,9 +94,10 @@ export function ListaSolicitacoes({solicitacoes}: ListaSolicitacoesProps) {
                                 <div className="font-semibold">Motivo:</div>
                                 <p>{solicitacao.motivo}</p>
                             </div>
+
                             <div className={"flex items-start gap-2"}>
                                 <div className="font-semibold">Criado em:</div>
-                                <p>{formatarData(solicitacao.dataCriacao)}</p>
+                                <p>{formatarData(new Date(solicitacao?.dataSolicitada ?? ""))}</p>
                             </div>
                         </div>
                     </div>

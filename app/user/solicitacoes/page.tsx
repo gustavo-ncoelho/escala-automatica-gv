@@ -1,18 +1,24 @@
+'use client';
+
 import {Button} from "@/components/ui/button"
 import {Card, CardContent} from "@/components/ui/card"
 import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs"
 import {ListaSolicitacoes} from "@/components/user/solicitacoes/lista-solicitacoes"
-import {solicitacoes} from "@/utils/dados-simulados"
 import {Plus} from "lucide-react"
 import Link from "next/link"
+import {useAuthContext} from "@/contexts/auth-context";
+import {useGetGuardaVidasById} from "@/hooks/api/guarda-vidas/use-get-guarda-vidas-by-id";
+import {useGetSolicitacoesByGuardaVidas} from "@/hooks/api/solicitacoes/use-get-solicitacoes-by-guarda-vidas";
 
 export default function SolicitacoesPage() {
 
-    const minhasSolicitacoes = solicitacoes.filter((s) => s.guardaVidasId === 1)
+    const {usuario: usuarioSession} = useAuthContext();
+    const {data: usuario} = useGetGuardaVidasById(usuarioSession?.id ?? "");
+    const {data: solicitacoes} = useGetSolicitacoesByGuardaVidas(usuario?.perfilGuardaVidas?.id ?? "");
 
-    const solicitacoesPendentes = minhasSolicitacoes.filter((s) => s.status === "pendente")
-    const solicitacoesAprovadas = minhasSolicitacoes.filter((s) => s.status === "aprovada")
-    const solicitacoesRejeitadas = minhasSolicitacoes.filter((s) => s.status === "rejeitada")
+    const solicitacoesAprovadas = solicitacoes?.filter((s) => s.status === "APROVADA") ?? []
+    const solicitacoesPendentes = solicitacoes?.filter((s) => s.status === "PENDENTE") ?? []
+    const solicitacoesRejeitadas = solicitacoes?.filter((s) => s.status === "REJEITADA") ?? []
 
     return (
         <div className="space-y-6 flex-1 flex flex-col">

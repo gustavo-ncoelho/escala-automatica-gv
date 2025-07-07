@@ -5,9 +5,6 @@ import { getUser } from "@/lib/session/session";
 export async function GET() {
     try {
         const user = await getUser();
-        if (user?.cargo !== 'COMANDANTE') {
-            return NextResponse.json({ error: "Acesso não autorizado" }, { status: 403 });
-        }
 
         const postos = await getPostos();
         return NextResponse.json(postos);

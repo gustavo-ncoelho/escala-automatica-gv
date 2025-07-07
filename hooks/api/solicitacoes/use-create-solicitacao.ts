@@ -11,8 +11,10 @@ export const useCreateSolicitacao = () => {
     const queryClient = useQueryClient();
     return useMutation<Solicitacao, HttpError, SolicitacaoCriacao>({
         mutationFn: createSolicitacao,
-        onSuccess: async () => {
+        onSuccess: async (data, variables) => {
+            const guardaVidasId = variables.guardaVidasId;
+            await queryClient.invalidateQueries({ queryKey: ['solicitacoes', guardaVidasId] });
             await queryClient.invalidateQueries({ queryKey: ['solicitacoes'] });
-        }
+        },
     });
 };

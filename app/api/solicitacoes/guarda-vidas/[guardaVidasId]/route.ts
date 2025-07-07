@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getAlocacoesPorGuardaVidas } from "@/api/services/alocacao-diaria-service";
+import { getSolicitacoesByGuardaVidas } from "@/api/services/solicitacoes-service";
 import { getUser } from "@/lib/session/session";
 
 export async function GET(req: NextRequest, { params }: { params: { guardaVidasId: string } }) {
@@ -7,9 +7,9 @@ export async function GET(req: NextRequest, { params }: { params: { guardaVidasI
         const user = await getUser();
         const { guardaVidasId } = params;
 
-        const alocacoes = await getAlocacoesPorGuardaVidas(guardaVidasId);
+        const solicitacoes = await getSolicitacoesByGuardaVidas(guardaVidasId);
 
-        return NextResponse.json(alocacoes);
+        return NextResponse.json(solicitacoes);
 
     } catch (error) {
         const errorMessage = error instanceof Error ? error.message : "Ocorreu um erro interno";

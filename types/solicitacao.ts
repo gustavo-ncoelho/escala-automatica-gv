@@ -1,5 +1,5 @@
 export type TipoSolicitacao = "PREFERENCIA_POSTO" | "DIA_INDISPONIVEL"
-export type StatusSolicitacao = "pendente" | "aprovada" | "rejeitada"
+export type StatusSolicitacao = "PENDENTE" | "APROVADA" | "REJEITADA"
 
 export type Solicitacao = {
   id: string
@@ -15,4 +15,4 @@ export type Solicitacao = {
   dataAtualizacao: Date
 }
 
-export type SolicitacaoCriacao = Omit<Solicitacao, "id">;
+export type SolicitacaoCriacao = Omit<Solicitacao, "id" | "dataCriacao" | "dataAtualizacao" | "dataSolicitada">;

@@ -1,163 +1,218 @@
 "use client"
 
-import type React from "react"
-
+import {zodResolver} from "@hookform/resolvers/zod"
+import {useForm} from "react-hook-form"
+import {z} from "zod"
 import {Button} from "@/components/ui/button"
-import {Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle} from "@/components/ui/card"
-import {Label} from "@/components/ui/label"
+import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form"
+import {Textarea} from "@/components/ui/textarea"
+import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card"
 import {RadioGroup, RadioGroupItem} from "@/components/ui/radio-group"
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select"
-import {Textarea} from "@/components/ui/textarea"
-import {outrosGuardaVidas, postos} from "@/utils/dados-simulados"
-import {ArrowLeft} from "lucide-react"
-import Link from "next/link"
+import {Input} from "@/components/ui/input"
+import BackButton from "@/components/utils/back-button"
+import {useCreateSolicitacao} from "@/hooks/api/solicitacoes/use-create-solicitacao"
+import {useAuthContext} from "@/contexts/auth-context"
+import {toast} from "sonner"
 import {useRouter} from "next/navigation"
-import {useState} from "react"
+import {TipoSolicitacao} from "@prisma/client"
+import {useGetGuardaVidasById} from "@/hooks/api/guarda-vidas/use-get-guarda-vidas-by-id";
+import {useGetPostos} from "@/hooks/api/postos/use-get-all-postos";
+import {StatusSolicitacao} from "@/types/solicitacao";
+
+const formSchema = z.object({
+    tipoSolicitacao: z.enum(["PREFERENCIA_POSTO", "DIA_INDISPONIVEL"], {
+        required_error: "Você precisa selecionar um tipo de solicitação.",
+    }),
+    postoSolicitado: z.string().optional(),
+    dataSolicitada: z.string().optional(),
+    motivo: z.string().min(10, {message: "O motivo deve ter pelo menos 10 caracteres."}),
+}).refine((data) => {
+    if (data.tipoSolicitacao === "PREFERENCIA_POSTO") {
+        return !!data.postoSolicitado;
+    }
+    return true;
+}, {
+    message: "Por favor, selecione um posto.",
+    path: ["postoSolicitado"],
+}).refine((data) => {
+    if (data.tipoSolicitacao === "DIA_INDISPONIVEL") {
+        return !!data.dataSolicitada;
+    }
+    return true;
+}, {
+    message: "Por favor, selecione uma data.",
+    path: ["dataSolicitada"],
+});
+
+type FormValues = z.infer<typeof formSchema>;
 
 export default function NovaSolicitacaoPage() {
-    const router = useRouter()
-    const [tipoSolicitacao, setTipoSolicitacao] = useState<string | null>(null)
-    const [postoSelecionado, setPostoSelecionado] = useState<string | null>(null)
-    const [dataIndisponivel, setDataIndisponivel] = useState<string>("")
-    const [colegaSelecionado, setColegaSelecionado] = useState<string | null>(null)
-    const [motivo, setMotivo] = useState<string>("")
+    const router = useRouter();
+    const {usuario: usuarioSession} = useAuthContext();
+    const {data: usuario} = useGetGuardaVidasById(usuarioSession?.id ?? "")
+    const {mutate: criarSolicitacao, isPending} = useCreateSolicitacao();
+    const {data: postos} = useGetPostos();
 
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault()
+    const form = useForm<FormValues>({
+        resolver: zodResolver(formSchema),
+        defaultValues: {
+            motivo: "",
+        },
+    });
 
-        router.push("/user/solicitacoes")
+    const tipoSolicitacao = form.watch("tipoSolicitacao");
+
+    function onSubmit(data: FormValues) {
+        if (!usuario || !usuario.perfilGuardaVidas) {
+            toast.error("Usuário não encontrado. Não é possível criar a solicitação.");
+            return;
+        }
+
+        const payload = {
+            guardaVidasId: usuario.perfilGuardaVidas.id,
+            tipo: data.tipoSolicitacao as TipoSolicitacao,
+            motivo: data.motivo,
+            status: "PENDENTE" as StatusSolicitacao,
+            dataSolicitada: data.dataSolicitada ? new Date(`${data.dataSolicitada}T12:00:00Z`) : undefined,
+            postoSolicitado: data.postoSolicitado,
+        };
+
+        criarSolicitacao(payload, {
+            onSuccess: () => {
+                toast.success("Solicitação enviada com sucesso!");
+                router.push("/user/solicitacoes");
+            },
+            onError: (error) => {
+                toast.error(`Falha ao enviar: ${error.message}`);
+            }
+        });
     }
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-6 px-4">
             <div className="flex items-center gap-4">
-                <Button variant="outline" size="icon" asChild>
-                    <Link href="/user/solicitacoes">
-                        <ArrowLeft className="h-4 w-4"/>
-                        <span className="sr-only">Voltar</span>
-                    </Link>
-                </Button>
+                <BackButton href="/user/solicitacoes"/>
                 <div>
                     <h1 className="text-2xl font-bold tracking-tight md:text-3xl">Nova Solicitação</h1>
                     <p className="text-muted-foreground">Crie uma nova solicitação de ajuste.</p>
                 </div>
             </div>
 
-            <form onSubmit={handleSubmit}>
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Tipo de Solicitação</CardTitle>
-                        <CardDescription>Selecione o tipo de ajuste que deseja solicitar</CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-6">
-                        <RadioGroup value={tipoSolicitacao || ""} onValueChange={setTipoSolicitacao}>
-                            <div className="flex items-start space-x-2">
-                                <RadioGroupItem value="preferencia_posto" id="preferencia_posto"/>
-                                <Label htmlFor="preferencia_posto" className="font-normal cursor-pointer">
-                                    <div className="font-medium">Mudança de Posto Preferido</div>
-                                    <div className="text-sm text-muted-foreground">Solicitar alteração em suas
-                                        preferências de posto
-                                    </div>
-                                </Label>
-                            </div>
-                            <div className="flex items-start space-x-2">
-                                <RadioGroupItem value="dia_indisponivel" id="dia_indisponivel"/>
-                                <Label htmlFor="dia_indisponivel" className="font-normal cursor-pointer">
-                                    <div className="font-medium">Dia Indisponível</div>
-                                    <div className="text-sm text-muted-foreground">Informar um dia em que não poderá
-                                        trabalhar
-                                    </div>
-                                </Label>
-                            </div>
-                        </RadioGroup>
-
-                        {tipoSolicitacao === "preferencia_posto" && (
-                            <div className="space-y-4">
-                                <div className="space-y-2">
-                                    <Label htmlFor="posto">Selecione o Posto</Label>
-                                    <Select value={postoSelecionado || ""} onValueChange={setPostoSelecionado}>
-                                        <SelectTrigger id="posto">
-                                            <SelectValue placeholder="Selecione um posto"/>
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            {postos.map((posto) => (
-                                                <SelectItem key={posto.id} value={posto.id.toString()}>
-                                                    {posto.nome}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-                            </div>
-                        )}
-
-                        {tipoSolicitacao === "dia_indisponivel" && (
-                            <div className="space-y-4">
-                                <div className="space-y-2">
-                                    <Label htmlFor="data">Data Indisponível</Label>
-                                    <input
-                                        type="date"
-                                        id="data"
-                                        className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
-                                        value={dataIndisponivel}
-                                        onChange={(e) => setDataIndisponivel(e.target.value)}
-                                        min={new Date().toISOString().split("T")[0]}
-                                    />
-                                </div>
-                            </div>
-                        )}
-
-                        {tipoSolicitacao === "colega_nao_preferido" && (
-                            <div className="space-y-4">
-                                <div className="space-y-2">
-                                    <Label htmlFor="colega">Selecione o Colega</Label>
-                                    <Select value={colegaSelecionado || ""} onValueChange={setColegaSelecionado}>
-                                        <SelectTrigger id="colega">
-                                            <SelectValue placeholder="Selecione um colega"/>
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            {outrosGuardaVidas.map((gv) => (
-                                                <SelectItem key={gv.id} value={gv.id.toString()}>
-                                                    {gv.nome}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-                            </div>
-                        )}
-
-                        <div className="space-y-2">
-                            <Label htmlFor="motivo">Motivo</Label>
-                            <Textarea
-                                id="motivo"
-                                placeholder="Explique o motivo da sua solicitação..."
-                                value={motivo}
-                                onChange={(e) => setMotivo(e.target.value)}
-                                rows={4}
-                                required
+            <Form {...form}>
+                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Tipo de Solicitação</CardTitle>
+                            <CardDescription>Selecione o tipo de ajuste que deseja solicitar</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <FormField
+                                control={form.control}
+                                name="tipoSolicitacao"
+                                render={({field}) => (
+                                    <FormItem className="space-y-3">
+                                        <FormControl>
+                                            <RadioGroup
+                                                onValueChange={field.onChange}
+                                                defaultValue={field.value}
+                                                className="flex flex-col space-y-1"
+                                            >
+                                                <FormItem className="flex items-center space-x-3 space-y-0">
+                                                    <FormControl><RadioGroupItem
+                                                        value="PREFERENCIA_POSTO"/></FormControl>
+                                                    <FormLabel className="font-normal">Mudança de Posto
+                                                        Preferido</FormLabel>
+                                                </FormItem>
+                                                <FormItem className="flex items-center space-x-3 space-y-0">
+                                                    <FormControl><RadioGroupItem
+                                                        value="DIA_INDISPONIVEL"/></FormControl>
+                                                    <FormLabel className="font-normal">Dia Indisponível</FormLabel>
+                                                </FormItem>
+                                            </RadioGroup>
+                                        </FormControl>
+                                        <FormMessage/>
+                                    </FormItem>
+                                )}
                             />
-                        </div>
-                    </CardContent>
-                    <CardFooter className="flex justify-between">
-                        <Button variant="outline" asChild>
-                            <Link href="/user/solicitacoes">Cancelar</Link>
+                        </CardContent>
+                    </Card>
+
+                    {tipoSolicitacao === "PREFERENCIA_POSTO" && (
+                        <Card>
+                            <CardHeader><CardTitle>Detalhes da Preferência</CardTitle></CardHeader>
+                            <CardContent>
+                                <FormField
+                                    control={form.control}
+                                    name="postoSolicitado"
+                                    render={({field}) => (
+                                        <FormItem>
+                                            <FormLabel>Selecione o Posto</FormLabel>
+                                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                                <FormControl><SelectTrigger><SelectValue
+                                                    placeholder="Selecione um posto"/></SelectTrigger></FormControl>
+                                                <SelectContent>
+                                                    {postos?.map((posto) => (
+                                                        <SelectItem key={posto.id}
+                                                                    value={posto.id.toString()}>{posto.nome}</SelectItem>
+                                                    ))}
+                                                </SelectContent>
+                                            </Select>
+                                            <FormMessage/>
+                                        </FormItem>
+                                    )}
+                                />
+                            </CardContent>
+                        </Card>
+                    )}
+
+                    {tipoSolicitacao === "DIA_INDISPONIVEL" && (
+                        <Card>
+                            <CardHeader><CardTitle>Detalhes da Indisponibilidade</CardTitle></CardHeader>
+                            <CardContent>
+                                <FormField
+                                    control={form.control}
+                                    name="dataSolicitada"
+                                    render={({field}) => (
+                                        <FormItem>
+                                            <FormLabel>Data Indisponível</FormLabel>
+                                            <FormControl><Input type="date" {...field} /></FormControl>
+                                            <FormMessage/>
+                                        </FormItem>
+                                    )}
+                                />
+                            </CardContent>
+                        </Card>
+                    )}
+
+                    <Card>
+                        <CardHeader><CardTitle>Motivo</CardTitle></CardHeader>
+                        <CardContent>
+                            <FormField
+                                control={form.control}
+                                name="motivo"
+                                render={({field}) => (
+                                    <FormItem>
+                                        <FormLabel>Descreva o motivo da sua solicitação</FormLabel>
+                                        <FormControl><Textarea
+                                            placeholder="Explique por que você está solicitando este ajuste..." {...field} /></FormControl>
+                                        <FormMessage/>
+                                    </FormItem>
+                                )}
+                            />
+                        </CardContent>
+                    </Card>
+
+                    <div className="flex justify-end gap-4">
+                        <Button type="button" variant="outline" onClick={() => router.push("/user/solicitacoes")}>
+                            Cancelar
                         </Button>
-                        <Button
-                            type="submit"
-                            disabled={
-                                !tipoSolicitacao ||
-                                (tipoSolicitacao === "preferencia_posto" && !postoSelecionado) ||
-                                (tipoSolicitacao === "dia_indisponivel" && !dataIndisponivel) ||
-                                (tipoSolicitacao === "colega_nao_preferido" && !colegaSelecionado) ||
-                                !motivo.trim()
-                            }
-                        >
-                            Enviar Solicitação
+                        <Button type="submit" disabled={isPending}>
+                            {isPending ? "Enviando..." : "Enviar Solicitação"}
                         </Button>
-                    </CardFooter>
-                </Card>
-            </form>
+                    </div>
+                </form>
+            </Form>
         </div>
     )
 }

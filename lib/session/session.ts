@@ -12,7 +12,7 @@ import {UsuarioPayload} from "@/types/auth/usuario";
 const secretKey = process.env.SESSION_SECRET
 const encodedKey = new TextEncoder().encode(secretKey)
 
-export async function generateTokens(user: Pick<Usuario, 'id' | 'email' | 'nome' | 'cargo'>) {
+export async function generateTokens(user: UsuarioPayload) {
     const authorizationToken = await new SignJWT({
         id: user.id,
         email: user.email,

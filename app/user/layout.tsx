@@ -12,7 +12,6 @@ export default async function UserLayout({children,}: Readonly<{ children: React
         redirect('/');
     }
 
-
     return (
         <div className="flex min-h-screen flex-col bg-muted/30">
             <Cabecalho/>

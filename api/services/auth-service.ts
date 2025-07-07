@@ -64,7 +64,7 @@ export async function loginUser(data: LoginData) {
         throw new Error('Credenciais inválidas.');
     }
 
-    const isPasswordValid = await bcrypt.compare(data.senha, user.senhaHash);
+    const isPasswordValid = bcrypt.compare(data.senha, user.senhaHash);
 
     if (!isPasswordValid) {
         throw new Error('Credenciais inválidas.');

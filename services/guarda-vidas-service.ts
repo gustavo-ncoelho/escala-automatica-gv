@@ -95,7 +95,7 @@ export async function createSolicitacao(
             dataSolicitada,
             postoSolicitado,
             colegaNaoPreferido,
-            status: "pendente"
+            status: "PENDENTE"
         },
     })
     return solicitacao

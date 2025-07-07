@@ -1,12 +1,12 @@
 "use client"
 
-import { Button } from "@/components/ui/button"
-import { Card } from "@/components/ui/card"
-import { ChevronLeft, ChevronRight, MapPin, MapPinHouse, MapPinOff } from "lucide-react"
-import {useEffect, useState } from "react"
-import { isSameDay, isBefore, startOfToday } from "date-fns";
-import { cn, guardaVidaTrabalhaEm } from "@/lib/utils";
-import { GuardaVidasEscala, DiaDaSemana } from "@/types/guarda-vidas";
+import {Button} from "@/components/ui/button"
+import {Card} from "@/components/ui/card"
+import {ChevronLeft, ChevronRight, MapPin, MapPinHouse, MapPinOff} from "lucide-react"
+import {useEffect, useState} from "react"
+import {isSameDay, isBefore, startOfToday} from "date-fns";
+import {cn, guardaVidaTrabalhaEm} from "@/lib/utils";
+import {GuardaVidasEscala, DiaDaSemana} from "@/types/guarda-vidas";
 import {AlocacaoDiaria} from "@/types/alocacao-diaria";
 
 interface CalendarioMensalProps {
@@ -16,14 +16,14 @@ interface CalendarioMensalProps {
     alocacoes: AlocacaoDiaria[];
 }
 
-export function CalendarioMensal({ mes, ano, guardaVida, alocacoes }: CalendarioMensalProps) {
+export function CalendarioMensal({mes, ano, guardaVida, alocacoes}: CalendarioMensalProps) {
     const [currentMonth, setCurrentMonth] = useState(new Date(ano, mes - 1, 1));
 
     const diasNoMes = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 0).getDate();
     const primeiroDiaDoMes = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1);
     const diasAntes = primeiroDiaDoMes.getDay();
 
-    const diasCalendario = Array.from({ length: diasAntes + diasNoMes }, (_, i) => {
+    const diasCalendario = Array.from({length: diasAntes + diasNoMes}, (_, i) => {
         if (i < diasAntes) return null;
         const diaDoMes = i - diasAntes + 1;
         return new Date(currentMonth.getFullYear(), currentMonth.getMonth(), diaDoMes);
@@ -40,7 +40,7 @@ export function CalendarioMensal({ mes, ano, guardaVida, alocacoes }: Calendario
         <Card className="py-4 border-none">
             <div className="flex items-center justify-between mb-4">
                 <h2 className="text-xl font-bold capitalize">
-                    {currentMonth.toLocaleDateString("pt-BR", { month: "long", year: "numeric" })}
+                    {currentMonth.toLocaleDateString("pt-BR", {month: "long", year: "numeric"})}
                 </h2>
                 <div className="flex items-center gap-2">
                     <Button
@@ -84,7 +84,7 @@ export function CalendarioMensal({ mes, ano, guardaVida, alocacoes }: Calendario
                                 "h-14 rounded-md border p-1 flex flex-col justify-between transition-colors",
                                 isHoje && "border-primary border-2",
                                 !trabalha && "bg-primary/10 text-muted-foreground/60",
-                                temAlocacao && "bg-green-500/10",
+                                temAlocacao && trabalha && "bg-green-500/10",
                                 !temAlocacao && trabalha && !jaPassou && "bg-transparent",
                                 jaPassou && "bg-muted/50 text-muted-foreground opacity-60"
                             )}
@@ -96,12 +96,12 @@ export function CalendarioMensal({ mes, ano, guardaVida, alocacoes }: Calendario
                                 {dia.getDate()}
                             </div>
                             <div className={"w-full flex justify-end mb-1 mr-1"}>
-                                {temAlocacao ? (
-                                    <MapPinHouse className={"w-5 h-5 text-green-600"} strokeWidth={1.5}/>
-                                ) : trabalha ? (
-                                    <MapPin className={"w-5 h-5"} strokeWidth={1.5}/>
-                                ) : (
+                                {!trabalha ? (
                                     <MapPinOff className={cn("w-5 h-5 text-muted-foreground/60", jaPassou && "text-muted-foreground")} strokeWidth={1.5}/>
+                                ) : temAlocacao ? (
+                                    <MapPinHouse className={"w-5 h-5 text-green-600"} strokeWidth={1.5}/>
+                                ) : trabalha && (
+                                    <MapPin className={"w-5 h-5"} strokeWidth={1.5}/>
                                 )}
                             </div>
                         </div>

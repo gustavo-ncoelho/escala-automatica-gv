@@ -23,6 +23,17 @@ export async function getSolicitacoes() {
     });
 }
 
+export async function getSolicitacoesByGuardaVidas(guardaVidasId: string) {
+    return prisma.solicitacao.findMany({
+        where: {
+            guardaVidasId: guardaVidasId,
+        },
+        orderBy: {
+            dataCriacao: 'desc'
+        }
+    });
+}
+
 export async function getSolicitacaoById(id: string) {
     return prisma.solicitacao.findUniqueOrThrow({
         where: { id },
