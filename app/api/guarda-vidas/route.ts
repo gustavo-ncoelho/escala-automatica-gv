@@ -5,9 +5,6 @@ import {getGuardaVidas} from "@/api/services/guarda-vidas-service";
 export async function GET() {
     try {
         const user = await getUser();
-        if (user?.cargo !== 'COMANDANTE') {
-            return NextResponse.json({ error: "Acesso não autorizado" }, { status: 403 });
-        }
 
         const guardaVidas = await getGuardaVidas();
 

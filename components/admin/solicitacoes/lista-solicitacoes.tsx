@@ -4,11 +4,12 @@ import {Button} from "@/components/ui/button"
 import {Card, CardContent, CardFooter, CardHeader} from "@/components/ui/card"
 import type {Solicitacao} from "@/types/solicitacao"
 import {formatarData} from "@/lib/utils"
-import {Calendar, Check, Clock, X} from "lucide-react"
-import {useState} from "react"
+import {Calendar, Check, Clock, X} from "lucide-react";
 import {obterNomeGuardaVidas, obterNomePosto} from "@/lib/utils";
 import {Usuario} from "@/types/auth/usuario";
 import {Posto} from "@/types/guarda-vidas";
+import {useUpdateSolicitacaoStatus} from "@/hooks/api/solicitacoes/use-update-solicitacao";
+import { toast } from "sonner"
 
 interface ListaSolicitacoesProps {
     solicitacoes: Solicitacao[]
@@ -17,7 +18,7 @@ interface ListaSolicitacoesProps {
 }
 
 export function ListaSolicitacoes({solicitacoes, guardaVidas, postos}: ListaSolicitacoesProps) {
-    const [solicitacaoSelecionada, setSolicitacaoSelecionada] = useState<Solicitacao | null>(null)
+    const {mutateAsync: atualizarStatusSolicitacao} = useUpdateSolicitacaoStatus();
 
     const getStatusIcon = (status: string) => {
         switch (status) {
@@ -45,12 +46,36 @@ export function ListaSolicitacoes({solicitacoes, guardaVidas, postos}: ListaSoli
         }
     }
 
-    const handleAprovar = (solicitacao: Solicitacao) => {
-        console.log("Aprovando solicitação", solicitacao.id)
+    const handleAprovar = async (solicitacao: Solicitacao) => {
+        try {
+            await atualizarStatusSolicitacao({
+                id: solicitacao.id,
+                data: {
+                    ...solicitacao,
+                    status: "APROVADA"
+                }
+            })
+            toast.success("Solicitação aprovada")
+        } catch (error) {
+            console.log(error);
+            toast.success("Erro ao atualizar status da solicitação")
+        }
     }
 
-    const handleRejeitar = (solicitacao: Solicitacao) => {
-        console.log("Rejeitando solicitação", solicitacao.id)
+    const handleRejeitar = async (solicitacao: Solicitacao) => {
+        try {
+            await atualizarStatusSolicitacao({
+                id: solicitacao.id,
+                data: {
+                    ...solicitacao,
+                    status: "REJEITADA"
+                }
+            })
+            toast.success("Solicitação rejeitada")
+        } catch (error) {
+            console.log(error);
+            toast.success("Erro ao atualizar status da solicitação")
+        }
     }
 
     if (solicitacoes.length === 0) {
@@ -61,7 +86,7 @@ export function ListaSolicitacoes({solicitacoes, guardaVidas, postos}: ListaSoli
     }
 
     return (
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
             {solicitacoes.map((solicitacao) => (
                 <Card key={solicitacao.id} className={"flex flex-col justify-between"}>
                     <div>
@@ -72,7 +97,7 @@ export function ListaSolicitacoes({solicitacoes, guardaVidas, postos}: ListaSoli
                             <div>
                                 <h3 className="font-semibold">{obterNomeGuardaVidas(solicitacao.guardaVidasId, guardaVidas)}</h3>
                                 <p className="text-sm text-muted-foreground">
-                                    Solicitação #{solicitacao.id} - {getStatusText(solicitacao.status)}
+                                    Solicitação #{getStatusText(solicitacao.status)}
                                 </p>
                             </div>
                         </CardHeader>

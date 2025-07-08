@@ -135,7 +135,7 @@ export const filtrarAlocacoesPorMes = (mes: number, ano: number, todasAsAlocacoe
 };
 
 export function obterNomeGuardaVidas(id: string, guardaVidas: Usuario[]): string {
-    const gv = guardaVidas.find((g) => g.id === id)
+    const gv = guardaVidas.find((g) => g?.perfilGuardaVidas?.id === id)
     return gv ? gv.nome : "Desconhecido"
 };
 

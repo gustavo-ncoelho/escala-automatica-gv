@@ -4,10 +4,11 @@ import {Button} from "@/components/ui/button"
 import {Card} from "@/components/ui/card"
 import {ChevronLeft, ChevronRight, MapPin, MapPinHouse, MapPinOff} from "lucide-react"
 import {useEffect, useState} from "react"
-import {isSameDay, isBefore, startOfToday} from "date-fns";
+import {isSameDay, isBefore, startOfToday, format} from "date-fns";
 import {cn, guardaVidaTrabalhaEm} from "@/lib/utils";
 import {GuardaVidasEscala, DiaDaSemana} from "@/types/guarda-vidas";
 import {AlocacaoDiaria} from "@/types/alocacao-diaria";
+import { useRouter } from "next/navigation"
 
 interface CalendarioMensalProps {
     mes: number;
@@ -17,8 +18,9 @@ interface CalendarioMensalProps {
 }
 
 export function CalendarioMensal({mes, ano, guardaVida, alocacoes}: CalendarioMensalProps) {
-    const [currentMonth, setCurrentMonth] = useState(new Date(ano, mes - 1, 1));
 
+    const router = useRouter();
+    const [currentMonth, setCurrentMonth] = useState(new Date(ano, mes - 1, 1));
     const diasNoMes = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 0).getDate();
     const primeiroDiaDoMes = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1);
     const diasAntes = primeiroDiaDoMes.getDay();
@@ -28,6 +30,12 @@ export function CalendarioMensal({mes, ano, guardaVida, alocacoes}: CalendarioMe
         const diaDoMes = i - diasAntes + 1;
         return new Date(currentMonth.getFullYear(), currentMonth.getMonth(), diaDoMes);
     });
+
+    const onDayClick = (dia: Date) => {
+        const dataFormatada = format(dia, 'yyyy-MM-dd');
+
+        router.push(`/user/${dataFormatada}`);
+    }
 
     useEffect(() => {
         setCurrentMonth(new Date(ano, mes - 1, 1));
@@ -88,6 +96,7 @@ export function CalendarioMensal({mes, ano, guardaVida, alocacoes}: CalendarioMe
                                 !temAlocacao && trabalha && !jaPassou && "bg-transparent",
                                 jaPassou && "bg-muted/50 text-muted-foreground opacity-60"
                             )}
+                            onClick={temAlocacao && trabalha ? () => onDayClick(dia) : undefined}
                         >
                             <div className={cn(
                                 `font-medium text-xs`,
