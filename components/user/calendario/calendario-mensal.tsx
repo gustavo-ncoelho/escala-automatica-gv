@@ -5,7 +5,7 @@ import {Card} from "@/components/ui/card"
 import {ChevronLeft, ChevronRight, MapPin, MapPinHouse, MapPinOff} from "lucide-react"
 import {useEffect, useState} from "react"
 import {isSameDay, isBefore, startOfToday, format} from "date-fns";
-import {cn, guardaVidaTrabalhaEm} from "@/lib/utils";
+import {cn, guardaVidaTrabalhaEm, normalizeDateToLocal} from "@/lib/utils";
 import {GuardaVidasEscala, DiaDaSemana} from "@/types/guarda-vidas";
 import {AlocacaoDiaria} from "@/types/alocacao-diaria";
 import { useRouter } from "next/navigation"
@@ -81,7 +81,7 @@ export function CalendarioMensal({mes, ano, guardaVida, alocacoes}: CalendarioMe
                     }
 
                     const trabalha = guardaVidaTrabalhaEm(guardaVida, dia);
-                    const temAlocacao = alocacoes.some((a) => isSameDay(new Date(a.data), dia));
+                    const temAlocacao = alocacoes.some((a) => isSameDay(normalizeDateToLocal(a.data), new Date(dia)));
                     const isHoje = isSameDay(dia, hoje);
                     const jaPassou = isBefore(dia, hoje);
 
