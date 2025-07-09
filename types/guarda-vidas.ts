@@ -13,7 +13,7 @@ export type DiaIndisponivel = {
     motivo?: string
 }
 
-type Estatisticas = {
+export type Estatisticas = {
     diasTrabalhadosNaTemporada: number,
     postoMaisTrabalhado: number,
     diasDaSemanaMaisFolgado: DiaDaSemana | DiaDaSemana[]
@@ -55,4 +55,10 @@ export type Posto = {
 export type DataFechadaPosto = {
     data: Date
     motivo?: string
+}
+
+export type RankingItem = {
+    guardaVidasId: string;
+    nome: string;
+    diasTrabalhados: number;
 }

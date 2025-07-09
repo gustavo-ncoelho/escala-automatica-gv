@@ -12,7 +12,7 @@ import {Textarea} from "@/components/ui/textarea"
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select"
 import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card"
 import {Separator} from "@/components/ui/separator"
-import {diasDaSemanaOpcoes} from "@/lib/utils"
+import {diasDaSemanaOpcoes, normalizeDateToLocal} from "@/lib/utils"
 import BackButton from "@/components/utils/back-button";
 import {useCadastrarUsuario} from "@/hooks/api/auth/use-cadastrar-usuario";
 import {useRouter} from "next/navigation";
@@ -35,7 +35,7 @@ export default function LifeguardForm() {
     });
 
     const diaIndisponivelSchema = z.object({
-        data: z.string({required_error: "Data é obrigatória"}).regex(/^\d{2}\/\d{2}\/\d{4}$/, "Formato inválido (DD/MM/AAAA)"),
+        data: z.string({required_error: "A data é obrigatória."}).min(1, "A data é obrigatória."),
         motivo: z.string().optional(),
     });
 
@@ -92,7 +92,7 @@ export default function LifeguardForm() {
                 ...data,
                 diasIndisponiveis: data.diasIndisponiveis?.map(dia => ({
                     ...dia,
-                    data: parse(dia.data, "dd/MM/yyyy", new Date())
+                    data: normalizeDateToLocal(dia.data)
                 })),
                 data_admissao: parse(data.dataAdmissao, "dd/MM/yyyy", new Date()),
                 cargo: "GUARDA_VIDAS"
@@ -371,52 +371,39 @@ export default function LifeguardForm() {
                             </p>
                         </CardHeader>
                         <CardContent className="space-y-4">
-                            {indisponivelFields.length === 0 && (
-                                <p className="text-sm text-muted-foreground italic">Nenhum dia indisponível
-                                    adicionado.</p>
-                            )}
-
                             {indisponivelFields.map((field, index) => (
-                                <div key={field.id} className="space-y-4 p-4 border rounded-lg">
-                                    <div className="flex items-center justify-between">
-                                        <h4 className="font-medium">Dia Indisponível {index + 1}</h4>
-                                        <Button type="button" variant="trash" size="sm"
-                                                onClick={() => removeIndisponivel(index)}>
-                                            <Trash2 className="h-4 w-4"/>
-                                        </Button>
-                                    </div>
-
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div key={field.id} className="flex items-start gap-4 pt-4 border-t first:pt-0 first:border-t-0">
+                                    <div className="flex-1 grid gap-4">
                                         <FormField
                                             control={form.control}
                                             name={`diasIndisponiveis.${index}.data`}
                                             render={({ field }) => (
                                                 <FormItem>
                                                     <FormLabel>Data</FormLabel>
-                                                    <FormControl><DateInput field={field} /></FormControl>
+                                                    <FormControl>
+                                                        <Input type="date" {...field} />
+                                                    </FormControl>
                                                     <FormMessage />
                                                 </FormItem>
                                             )}
                                         />
-
                                         <FormField
                                             control={form.control}
                                             name={`diasIndisponiveis.${index}.motivo`}
-                                            render={({field}) => (
+                                            render={({ field }) => (
                                                 <FormItem>
                                                     <FormLabel>Motivo (Opcional)</FormLabel>
                                                     <FormControl>
-                                                        <Textarea
-                                                            placeholder="Descreva o motivo da indisponibilidade..."
-                                                            className="resize-none"
-                                                            {...field}
-                                                        />
+                                                        <Input placeholder="Descreva o motivo..." {...field} />
                                                     </FormControl>
-                                                    <FormMessage/>
+                                                    <FormMessage />
                                                 </FormItem>
                                             )}
                                         />
                                     </div>
+                                    <Button type="button" variant="ghost" size="icon" className="mt-7" onClick={() => removeIndisponivel(index)}>
+                                        <Trash2 className="h-4 w-4"/>
+                                    </Button>
                                 </div>
                             ))}
 
@@ -425,12 +412,7 @@ export default function LifeguardForm() {
                                 variant="outline"
                                 size="sm"
                                 className="mt-2"
-                                onClick={() =>
-                                    appendIndisponivel({
-                                        data: "",
-                                        motivo: "",
-                                    })
-                                }
+                                onClick={() => appendIndisponivel({ data: "", motivo: "" })}
                             >
                                 <Plus className="h-4 w-4 mr-2"/>
                                 Adicionar Dia Indisponível

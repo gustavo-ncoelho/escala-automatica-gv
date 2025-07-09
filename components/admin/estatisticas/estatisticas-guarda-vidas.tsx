@@ -1,39 +1,55 @@
-import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card"
-import {Progress} from "@/components/ui/progress"
-import {guardaVidasMock} from "@/utils/dados-simulados"
+"use client";
 
-export function EstatisticasGuardaVidas() {
-    const guardaVidasMaisAtivos = [...guardaVidasMock]
-        .sort((a, b) => b.estatisticas?.diasTrabalhadosNaTemporada ?? 0 - (a.estatisticas?.diasTrabalhadosNaTemporada ?? 0))
-        .slice(0, 5)
+import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card";
+import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow,} from "@/components/ui/table";
+import {TrendingUp} from "lucide-react";
+import {RankingItem} from "@/types/guarda-vidas";
 
-    const guardaVidasMenosAtivos = [...guardaVidasMock]
-        .sort((a, b) => a.estatisticas?.diasTrabalhadosNaTemporada ?? 0 - (b.estatisticas?.diasTrabalhadosNaTemporada ?? 0))
-        .slice(0, 5)
+interface EstatisticasGuardaVidasProps {
+    ranking: RankingItem[];
+}
 
-    const maxDiasTrabalhados = Math.max(...guardaVidasMock.map((gv) => (gv.estatisticas?.diasTrabalhadosNaTemporada ?? 0)))
-
+export function EstatisticasGuardaVidas({ ranking }: EstatisticasGuardaVidasProps) {
     return (
-        <div className="w-3/5 gap-6">
-            <Card>
-                <CardHeader>
-                    <CardTitle>Guarda-Vidas Mais Ativos</CardTitle>
-                    <CardDescription>Guarda-vidas com mais dias trabalhados no mês atual</CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <div className="space-y-6">
-                        {guardaVidasMaisAtivos.map((gv) => (
-                            <div key={gv.id} className="space-y-2">
-                                <div className="flex items-center justify-between text-sm">
-                                    <div className="font-medium">{gv.nome}</div>
-                                    <div className="text-muted-foreground">{gv.estatisticas?.diasTrabalhadosNaTemporada ?? 0} dias</div>
-                                </div>
-                                <Progress value={(gv.estatisticas?.diasTrabalhadosNaTemporada ?? 0 / maxDiasTrabalhados) * 100}/>
-                            </div>
-                        ))}
+        <Card className="w-full">
+            <CardHeader>
+                <div className="flex items-center gap-3">
+                    <TrendingUp className="h-6 w-6" />
+                    <div>
+                        <CardTitle>Ranking de Atividade</CardTitle>
+                        <CardDescription>Classificação de guarda-vidas por dias trabalhados.</CardDescription>
                     </div>
-                </CardContent>
-            </Card>
-        </div>
-    )
+                </div>
+            </CardHeader>
+            <CardContent>
+                <Table>
+                    <TableHeader>
+                        <TableRow>
+                            <TableHead className="w-[50px]">Pos.</TableHead>
+                            <TableHead>Guarda-Vidas</TableHead>
+                            <TableHead className="text-right">Dias Trabalhados</TableHead>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        {ranking && ranking.length > 0 ? (
+                            // O map agora itera sobre a prop 'ranking' diretamente
+                            ranking.map((gv, index) => (
+                                <TableRow key={gv.guardaVidasId}>
+                                    <TableCell className="font-medium">{index + 1}º</TableCell>
+                                    <TableCell>{gv.nome}</TableCell>
+                                    <TableCell className="font-bold flex justify-end pr-4 w-40">{gv.diasTrabalhados}</TableCell>
+                                </TableRow>
+                            ))
+                        ) : (
+                            <TableRow>
+                                <TableCell colSpan={3} className="h-24 text-center text-muted-foreground">
+                                    Nenhum dado de alocação encontrado para gerar estatísticas.
+                                </TableCell>
+                            </TableRow>
+                        )}
+                    </TableBody>
+                </Table>
+            </CardContent>
+        </Card>
+    );
 }

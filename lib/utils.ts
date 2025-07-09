@@ -109,19 +109,6 @@ export const formatarDiaSemana = (dia: string) => {
 
 export const formatarDia = (dia: string) => dia.replace('_', '-').charAt(0).toUpperCase() + dia.slice(1, 3);
 
-
-export const contarGuardaVidasPorDia = (targetDate: Date, alocacoes: AlocacaoDiaria[]): number => {
-    if (!targetDate || !alocacoes) {
-        return 0;
-    }
-
-    const alocacoesDoDia = alocacoes.filter(alocacao =>
-        isSameDay(alocacao.data, targetDate)
-    );
-
-    return alocacoesDoDia.length;
-};
-
 export const filtrarAlocacoesPorMes = (mes: number, ano: number, todasAsAlocacoes: AlocacaoDiaria[]): AlocacaoDiaria[] => {
     return todasAsAlocacoes.filter(alocacao => {
         const dataDaAlocacao = new Date(alocacao.data);
@@ -132,6 +119,17 @@ export const filtrarAlocacoesPorMes = (mes: number, ano: number, todasAsAlocacoe
 
         return mesmoAno && mesmoMes;
     });
+};
+
+export const contarDiasTrabalhadosPorGuardaVida = (alocacoes: AlocacaoDiaria[]): Record<string, number> => {
+
+    return alocacoes.reduce((contagem, alocacao) => {
+        const id = alocacao.guardaVidasId;
+
+        contagem[id] = (contagem[id] || 0) + 1;
+
+        return contagem;
+    }, {} as Record<string, number>);
 };
 
 export function obterNomeGuardaVidas(id: string, guardaVidas: Usuario[]): string {
