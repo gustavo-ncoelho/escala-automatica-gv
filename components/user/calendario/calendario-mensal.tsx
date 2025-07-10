@@ -8,7 +8,7 @@ import {isSameDay, isBefore, startOfToday, format} from "date-fns";
 import {cn, guardaVidaTrabalhaEm, normalizeDateToLocal} from "@/lib/utils";
 import {GuardaVidasEscala, DiaDaSemana} from "@/types/guarda-vidas";
 import {AlocacaoDiaria} from "@/types/alocacao-diaria";
-import { useRouter } from "next/navigation"
+import {useRouter} from "next/navigation"
 
 interface CalendarioMensalProps {
     mes: number;
@@ -92,7 +92,7 @@ export function CalendarioMensal({mes, ano, guardaVida, alocacoes}: CalendarioMe
                                 "h-14 rounded-md border p-1 flex flex-col justify-between transition-colors",
                                 isHoje && "border-primary border-2",
                                 !trabalha && "bg-primary/10 text-muted-foreground/60",
-                                temAlocacao && trabalha && "bg-green-500/10",
+                                temAlocacao && trabalha && !jaPassou && "bg-green-500/10",
                                 !temAlocacao && trabalha && !jaPassou && "bg-transparent",
                                 jaPassou && "bg-muted/50 text-muted-foreground opacity-60"
                             )}
@@ -106,8 +106,10 @@ export function CalendarioMensal({mes, ano, guardaVida, alocacoes}: CalendarioMe
                             </div>
                             <div className={"w-full flex justify-end mb-1 mr-1"}>
                                 {!trabalha ? (
-                                    <MapPinOff className={cn("w-5 h-5 text-muted-foreground/60", jaPassou && "text-muted-foreground")} strokeWidth={1.5}/>
-                                ) : temAlocacao ? (
+                                    <MapPinOff
+                                        className={cn("w-5 h-5 text-muted-foreground/60", jaPassou && "text-muted-foreground")}
+                                        strokeWidth={1.5}/>
+                                ) : (temAlocacao && !jaPassou) ? (
                                     <MapPinHouse className={"w-5 h-5 text-green-600"} strokeWidth={1.5}/>
                                 ) : trabalha && (
                                     <MapPin className={"w-5 h-5"} strokeWidth={1.5}/>
@@ -119,12 +121,16 @@ export function CalendarioMensal({mes, ano, guardaVida, alocacoes}: CalendarioMe
             </div>
             <div className="flex items-center justify-center gap-4 text-sm mt-4">
                 <div className="flex items-center gap-2">
-                    <div className="h-3 w-3 rounded-full border-2 border-primary/90"></div>
+                    <MapPin className={"w-5 h-5"} strokeWidth={1.5}/>
                     <span>Dia de trabalho</span>
                 </div>
                 <div className="flex items-center gap-2">
-                    <div className="h-3 w-3 rounded-full bg-primary/20"></div>
+                    <MapPinOff className={cn("w-5 h-5 text-muted-foreground/60")} strokeWidth={1.5}/>
                     <span>Folgas</span>
+                </div>
+                <div className="flex items-center gap-2">
+                    <MapPinHouse className={"w-5 h-5 text-green-600"} strokeWidth={1.5}/>
+                    <span>Escala liberada</span>
                 </div>
             </div>
         </Card>

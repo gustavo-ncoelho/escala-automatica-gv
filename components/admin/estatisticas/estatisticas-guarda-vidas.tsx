@@ -32,7 +32,6 @@ export function EstatisticasGuardaVidas({ ranking }: EstatisticasGuardaVidasProp
                     </TableHeader>
                     <TableBody>
                         {ranking && ranking.length > 0 ? (
-                            // O map agora itera sobre a prop 'ranking' diretamente
                             ranking.map((gv, index) => (
                                 <TableRow key={gv.guardaVidasId}>
                                     <TableCell className="font-medium">{index + 1}º</TableCell>
