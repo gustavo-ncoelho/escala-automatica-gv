@@ -3,6 +3,7 @@ import {BarraLateral} from "@/components/admin/barra-lateral"
 import {Cabecalho} from "@/components/admin/cabecalho"
 import {getUser} from "@/lib/session/session";
 import {redirect} from "next/navigation";
+import {AdminProvider} from "@/contexts/admin-context";
 
 export default async function AdminLayout({children,}: Readonly<{ children: React.ReactNode }>) {
 
@@ -17,7 +18,11 @@ export default async function AdminLayout({children,}: Readonly<{ children: Reac
             <BarraLateral/>
             <div className="flex flex-col flex-1 overflow-hidden">
                 <Cabecalho/>
-                <main className="flex-1 overflow-auto p-6 bg-muted/30">{children}</main>
+                <main className="flex-1 overflow-auto p-6 bg-muted/30">
+                    <AdminProvider>
+                        {children}
+                    </AdminProvider>
+                </main>
             </div>
         </div>
     )

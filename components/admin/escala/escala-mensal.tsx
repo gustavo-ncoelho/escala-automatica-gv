@@ -12,7 +12,7 @@ interface EscalaMensalProps {
 
 export default function EscalaMensal({ diasDoMes, guardaVidas, onDayClick }: EscalaMensalProps) {
     return (
-        <div className="overflow-x-auto border rounded-lg shadow-sm">
+        <div className="overflow-x-auto border rounded-lg shadow-sm w-full">
             <Table className="min-w-full">
                 <TableHeader>
                     <TableRow>
@@ -45,7 +45,7 @@ export default function EscalaMensal({ diasDoMes, guardaVidas, onDayClick }: Esc
                                         className={cn("text-center p-1 border-r last:border-r-0 cursor-pointer hover:bg-muted/80", isWeekend && "bg-muted/50")}
                                         onClick={() => onDayClick?.(dataDoDia, guardaVida.id)}
                                     >
-                                        <div className={cn("w-6 h-6 bg-green-800 rounded-full mx-auto", !trabalha && "invisible")}>
+                                        <div className={cn("w-6 h-6 bg-green-600 dark:bg-green-800 rounded-full mx-auto", !trabalha && "invisible")}>
                                         </div>
                                     </TableCell>
                                 )

@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import {useLogin} from "@/hooks/api/auth/use-login";
 import {useAuthContext} from "@/contexts/auth-context";
+import FullscreenLoader from "@/components/utils/fullscreen-loader";
 
 const loginSchema = z.object({
     email: z.string().min(1, { message: "Email é obrigatório" }).email({ message: "Email inválido" }),
@@ -42,12 +43,12 @@ export default function LoginForm() {
 
     return (
         <div>
-            <Card className="w-full max-w-md">
-                <CardHeader className="space-y-1">
+            <Card className="w-full">
+                <CardHeader className="space-y-1 max-md:p-4">
                     <CardTitle className="text-2xl font-bold text-center">Login</CardTitle>
                     <CardDescription className="text-center">Entre com suas credenciais para acessar sua conta</CardDescription>
                 </CardHeader>
-                <CardContent>
+                <CardContent className={"max-md:p-4"}>
                     <Form {...form}>
                         <form onSubmit={form.handleSubmit(onSubmit,
                             (errors) => {
@@ -81,16 +82,15 @@ export default function LoginForm() {
                                 )}
                             />
 
-                            {/*<Button type="submit" className="w-full">
-                                Entrar
-                            </Button>*/}
-                            <button type="submit" className="w-full p-2 bg-black text-white rounded-md hover:bg-gray-800">
-                                Entrar (Botão de Teste)
+                            <button type="submit" className="w-full flex items-center justify-center h-11 mt-3 bg-black text-white rounded-md xl:hover:bg-gray-800">
+                                {!isPending && <p>Entrar</p>}
+                                {isPending && <FullscreenLoader className={"size-7"}/>}
                             </button>
                         </form>
                     </Form>
                 </CardContent>
             </Card>
+
         </div>
     )
 }

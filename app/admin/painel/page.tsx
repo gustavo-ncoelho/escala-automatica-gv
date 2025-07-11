@@ -5,11 +5,11 @@ import {useGetRankingDiasTrabalhados} from "@/hooks/api/estatisticas/use-get-ran
 
 export default function PainelPage() {
 
-    const {data: ranking} = useGetRankingDiasTrabalhados();
+    const {data: ranking, isLoading} = useGetRankingDiasTrabalhados();
 
     return (
         <>
-            {ranking && <EstatisticasGuardaVidas ranking={ranking}/>}
+            {ranking && <EstatisticasGuardaVidas ranking={ranking} isLoading={isLoading}/>}
         </>
     )
 }

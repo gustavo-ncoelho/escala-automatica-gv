@@ -9,7 +9,7 @@ export type Solicitacao = {
   postoOriginal?: string
   dataSolicitada?: Date
   postoSolicitado?: string
-  motivo: string
+  motivo?: string
   status: StatusSolicitacao
   dataCriacao: Date
   dataAtualizacao: Date

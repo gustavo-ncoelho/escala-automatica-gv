@@ -7,10 +7,11 @@ import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/c
 import {Plus, Search} from "lucide-react"
 import Link from "next/link"
 import {useGetAllGuardaVidas} from "@/hooks/api/guarda-vidas/use-get-all-guarda-vidas";
+import FullscreenLoader from "@/components/utils/fullscreen-loader";
 
 export default function GuardaVidasPage() {
 
-    const {data: listaGuardaVidas} = useGetAllGuardaVidas();
+    const {data: listaGuardaVidas, isLoading: isLoadingGuardaVidas} = useGetAllGuardaVidas();
 
     const layout = "flex justify-center items-center"
 
@@ -29,84 +30,81 @@ export default function GuardaVidasPage() {
                 </Button>
             </div>
 
-            <Card>
-                <CardContent className="p-6">
-                    <div className="flex items-center gap-4 mb-6">
-                        <div className="relative flex-1">
-                            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground"/>
-                            <Input type="search" placeholder="Buscar guarda-vidas..." className="pl-8"/>
-                        </div>
-                    </div>
-
-                    <Table>
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead>
-                                    <div className={layout}>
-                                        Nome
-                                    </div>
-                                </TableHead>
-                                <TableHead>
-                                    <div className={layout}>
-                                        Email
-                                    </div>
-                                </TableHead>
-                                <TableHead>
-                                    <div className={layout}>
-                                        Telefone
-                                    </div>
-                                </TableHead>
-                                <TableHead>
-                                    <div className={layout}>
-                                        Data de Admissã
-                                    </div>
-                                </TableHead>
-                                <TableHead>
-                                    <div className={layout}>
-                                        Dias Trabalhados
-                                    </div>
-                                </TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {listaGuardaVidas?.map((gv) => (
-                                <TableRow key={gv.id}>
-                                    <TableCell className={"font-medium"}>
+            {!isLoadingGuardaVidas &&
+                <Card>
+                    <CardContent className="pt-1">
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead>
                                         <div className={layout}>
-                                            {gv.nome ?? "--------"}
+                                            Nome
                                         </div>
-                                    </TableCell>
-                                    <TableCell>
+                                    </TableHead>
+                                    <TableHead>
                                         <div className={layout}>
-                                            {gv.email ?? "--------"}
+                                            Email
                                         </div>
-                                    </TableCell>
-                                    <TableCell>
+                                    </TableHead>
+                                    <TableHead>
                                         <div className={layout}>
-                                            {gv.telefone ?? "--------"}
+                                            Telefone
                                         </div>
-                                    </TableCell>
-                                    <TableCell>
+                                    </TableHead>
+                                    <TableHead>
                                         <div className={layout}>
-                                            {gv.perfilGuardaVidas?.dataAdmissao ? new Date(gv.perfilGuardaVidas.dataAdmissao).toLocaleDateString("pt-BR") : "--------"}
+                                            Data de Admissã
                                         </div>
-                                    </TableCell>
-                                    <TableCell>
+                                    </TableHead>
+                                    <TableHead>
                                         <div className={layout}>
-                                            {gv.perfilGuardaVidas?.estatisticas?.diasTrabalhadosNaTemporada ?? "--------"}
+                                            Dias Trabalhados
                                         </div>
-                                    </TableCell>
-                                    <TableCell className="text-right">
-                                        <Button className={layout} variant="ghost" size="sm" asChild>
-                                            <Link href={`/admin/guarda-vidas/${gv.id}`}>Detalhes</Link>
-                                        </Button>
-                                    </TableCell>
+                                    </TableHead>
                                 </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
-                </CardContent>
-            </Card>
+                            </TableHeader>
+                            <TableBody>
+                                {listaGuardaVidas?.map((gv) => (
+                                    <TableRow key={gv.id}>
+                                        <TableCell className={"font-medium"}>
+                                            <div className={layout}>
+                                                {gv.nome ?? "--------"}
+                                            </div>
+                                        </TableCell>
+                                        <TableCell>
+                                            <div className={layout}>
+                                                {gv.email ?? "--------"}
+                                            </div>
+                                        </TableCell>
+                                        <TableCell>
+                                            <div className={layout}>
+                                                {gv.telefone ?? "--------"}
+                                            </div>
+                                        </TableCell>
+                                        <TableCell>
+                                            <div className={layout}>
+                                                {gv.perfilGuardaVidas?.dataAdmissao ? new Date(gv.perfilGuardaVidas.dataAdmissao).toLocaleDateString("pt-BR") : "--------"}
+                                            </div>
+                                        </TableCell>
+                                        <TableCell>
+                                            <div className={layout}>
+                                                {gv.perfilGuardaVidas?.estatisticas?.diasTrabalhadosNaTemporada ?? "--------"}
+                                            </div>
+                                        </TableCell>
+                                        <TableCell className="text-right">
+                                            <Button className={layout} variant="ghost" size="sm" asChild>
+                                                <Link href={`/admin/guarda-vidas/${gv.id}`}>Detalhes</Link>
+                                            </Button>
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    </CardContent>
+                </Card>
+            }
+
+            {isLoadingGuardaVidas && <FullscreenLoader/>}
         </div>
     )
 }

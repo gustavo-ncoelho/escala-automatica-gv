@@ -12,11 +12,12 @@ import {useDeletePosto} from "@/hooks/api/postos/use-delete-posto";
 import { toast } from "sonner"
 import { format } from "date-fns"
 import {formatarDia} from "@/lib/utils";
+import FullscreenLoader from "@/components/utils/fullscreen-loader";
 
 export default function PostosPage() {
     const [searchTerm, setSearchTerm] = useState("")
-    const {mutateAsync: deletarPosto} = useDeletePosto();
-    const {data: postos} = useGetPostos();
+    const {mutateAsync: deletarPosto, isPending: isPendingDelete} = useDeletePosto();
+    const {data: postos, isLoading: isLoadingPostos} = useGetPostos();
 
     const filteredPostos = postos?.filter(
         (posto) =>
@@ -93,7 +94,7 @@ export default function PostosPage() {
                                     <span className="font-medium">Folgas Fixas:</span>
                                     <div className="flex flex-wrap gap-1">
                                         {posto.diasFechados && posto.diasFechados.length > 0 ? (
-                                            posto.diasFechados.map(dia => <Badge key={dia} variant="outline">{formatarDia(dia)}</Badge>)
+                                            posto.diasFechados.map(dia => <Badge key={dia} variant="outline" className={"py-0.5 px-1.5 rounded-md"}>{formatarDia(dia)}</Badge>)
                                         ) : (
                                             <span className="text-muted-foreground italic">Nenhuma</span>
                                         )}
@@ -106,7 +107,7 @@ export default function PostosPage() {
                                     <div className="flex flex-wrap gap-1">
                                         {posto.datasFechadas && posto.datasFechadas.length > 0 ? (
                                             posto.datasFechadas.map((dia, index) => (
-                                                <Badge key={index} variant="destructive">
+                                                <Badge key={index} variant="destructive" className={"py-0.5 px-1.5 rounded-md"}>
                                                     {format(new Date(dia.data), "dd/MM")}
                                                 </Badge>
                                             ))
@@ -152,6 +153,8 @@ export default function PostosPage() {
                     )}
                 </div>
             )}
+
+            {(isPendingDelete || isLoadingPostos) && <FullscreenLoader/>}
         </div>
     )
 }

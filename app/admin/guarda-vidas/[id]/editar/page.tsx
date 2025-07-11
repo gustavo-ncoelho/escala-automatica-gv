@@ -19,17 +19,18 @@ import {Checkbox} from "@/components/ui/checkbox";
 import {diasDaSemanaOpcoes} from "@/lib/utils";
 import {useGetPostos} from "@/hooks/api/postos/use-get-all-postos";
 import {useDeleteGuardaVidas} from "@/hooks/api/guarda-vidas/use-delete-guarda-vidas";
+import FullscreenLoader from "@/components/utils/fullscreen-loader";
 
 export default function EditarGuardaVidas() {
     const params = useParams();
     const router = useRouter();
     const id = params.id as string;
-    const {data: guardaVida, isLoading} = useGetGuardaVidasById(id);
+    const {data: guardaVida, isLoading: isLoadingGuardaVidas} = useGetGuardaVidasById(id);
     const [preferencias, setPreferencias] = useState({} as Record<string, number>);
     const [diasIndisponiveis, setDiasIndisponiveis] = useState([] as { data: string; motivo?: string }[]);
     const [diasDeFolga, setDiasDeFolga] = useState<DiaDaSemana[]>([]);
-    const {mutateAsync: atualizarGuardaVidas} = useUpdateGuardaVidas();
-    const {mutateAsync: deleteGuardaVidas} = useDeleteGuardaVidas();
+    const {mutateAsync: atualizarGuardaVidas, isPending: isPendingUpdate} = useUpdateGuardaVidas();
+    const {mutateAsync: deleteGuardaVidas, isPending: isPendingDelete} = useDeleteGuardaVidas();
     const {data: postos} = useGetPostos();
 
     useEffect(() => {
@@ -61,7 +62,7 @@ export default function EditarGuardaVidas() {
                 setDiasDeFolga(guardaVida.perfilGuardaVidas.diasDeFolga as DiaDaSemana[]);
             }
         }
-    }, [isLoading])
+    }, [isLoadingGuardaVidas])
 
     const handleDeletar = async () => {
         if (guardaVida?.id) {
@@ -287,6 +288,8 @@ export default function EditarGuardaVidas() {
                 </Button>
                 <Button onClick={handleSalvar}>Salvar Alterações</Button>
             </div>
+
+            {(isLoadingGuardaVidas || isPendingDelete || isPendingUpdate) && <FullscreenLoader/>}
         </div>
     )
 }

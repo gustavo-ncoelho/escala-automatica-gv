@@ -19,6 +19,7 @@ import {TipoSolicitacao} from "@prisma/client"
 import {useGetGuardaVidasById} from "@/hooks/api/guarda-vidas/use-get-guarda-vidas-by-id";
 import {useGetPostos} from "@/hooks/api/postos/use-get-all-postos";
 import {StatusSolicitacao} from "@/types/solicitacao";
+import FullscreenLoader from "@/components/utils/fullscreen-loader";
 
 const formSchema = z.object({
     tipoSolicitacao: z.enum(["PREFERENCIA_POSTO", "DIA_INDISPONIVEL"], {
@@ -26,7 +27,7 @@ const formSchema = z.object({
     }),
     postoSolicitado: z.string().optional(),
     dataSolicitada: z.string().optional(),
-    motivo: z.string().min(10, {message: "O motivo deve ter pelo menos 10 caracteres."}),
+    motivo: z.string().optional()
 }).refine((data) => {
     if (data.tipoSolicitacao === "PREFERENCIA_POSTO") {
         return !!data.postoSolicitado;
@@ -50,9 +51,9 @@ type FormValues = z.infer<typeof formSchema>;
 export default function NovaSolicitacaoPage() {
     const router = useRouter();
     const {usuario: usuarioSession} = useAuthContext();
-    const {data: usuario} = useGetGuardaVidasById(usuarioSession?.id ?? "")
-    const {mutate: criarSolicitacao, isPending} = useCreateSolicitacao();
-    const {data: postos} = useGetPostos();
+    const {data: usuario, isLoading: isLoadingGuardaVida} = useGetGuardaVidasById(usuarioSession?.id ?? "")
+    const {mutate: criarSolicitacao, isPending: isPendingSolicitacao} = useCreateSolicitacao();
+    const {data: postos, isLoading: isLoadingPostos} = useGetPostos();
 
     const form = useForm<FormValues>({
         resolver: zodResolver(formSchema),
@@ -207,12 +208,14 @@ export default function NovaSolicitacaoPage() {
                         <Button type="button" variant="outline" onClick={() => router.push("/user/solicitacoes")}>
                             Cancelar
                         </Button>
-                        <Button type="submit" disabled={isPending}>
-                            {isPending ? "Enviando..." : "Enviar Solicitação"}
+                        <Button type="submit" disabled={isPendingSolicitacao}>
+                            Enviar Solicitação
                         </Button>
                     </div>
                 </form>
             </Form>
+
+            {(isLoadingPostos || isLoadingGuardaVida || isPendingSolicitacao) && <FullscreenLoader/>}
         </div>
     )
 }

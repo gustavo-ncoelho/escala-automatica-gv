@@ -9,6 +9,7 @@ import {converterListaGVParaListaGVEscala, formatarData, parseDateStringLocal} f
 import TabelaEscalaDiaria from "@/components/main/tabela-escala-diaria";
 import {useGetAlocacoesPorData} from "@/hooks/api/alocacao-diaria/use-get-alocacoes-por-data";
 import BackButton from "@/components/utils/back-button";
+import FullscreenLoader from "@/components/utils/fullscreen-loader";
 
 export default function EscalaDiariaUserPage () {
     const params = useParams();
@@ -29,13 +30,16 @@ export default function EscalaDiariaUserPage () {
                 <BackButton href={"/user"}/>
                 <h2 className={"text-2xl font-semibold"}>{formatarData(dataDoDia)}</h2>
             </div>
-            {alocacoes &&
+            {alocacoes && guardaVidas && postos &&
                 <TabelaEscalaDiaria
                     postos={postos ?? []}
                     guardaVidas={guardaVidasEscala}
                     alocacoes={alocacoes}
                     dataDoDia={dataDoDia}
                 />
+            }
+            {(!alocacoes || !guardaVidas || !postos) &&
+                <FullscreenLoader/>
             }
         </>
     );

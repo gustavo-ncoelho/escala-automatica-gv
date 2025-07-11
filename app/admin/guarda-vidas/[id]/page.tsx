@@ -12,21 +12,22 @@ import {formatarDiaSemana, obterNomePosto} from "@/lib/utils";
 import {useGetGuardaVidasById} from "@/hooks/api/guarda-vidas/use-get-guarda-vidas-by-id";
 import {Badge} from "@/components/ui/badge";
 import {useGetPostos} from "@/hooks/api/postos/use-get-all-postos";
+import FullscreenLoader from "@/components/utils/fullscreen-loader";
 
 export default function DetalhesGuardaVidas () {
 
     const params = useParams();
     const id = params.id as string;
 
-    const {data: guardaVida} = useGetGuardaVidasById(id);
-    const {data: postos} = useGetPostos();
+    const {data: guardaVida, isLoading: isLoadingGuardaVidas} = useGetGuardaVidasById(id);
+    const {data: postos, isLoading: isLoadingPostos} = useGetPostos();
 
     return (
         <div className="space-y-6">
             <div className="flex items-center gap-4">
                 <BackButton href={"/admin/guarda-vidas"}/>
                 <div>
-                    <h1 className="text-3xl font-bold tracking-tight">{guardaVida?.nome}</h1>
+                    <h1 className="text-3xl font-bold tracking-tight">{guardaVida?.nome ?? "-------"}</h1>
                     <p className="text-muted-foreground">Detalhes e preferências do guarda-vidas.</p>
                 </div>
                 <div className="ml-auto">
@@ -49,18 +50,18 @@ export default function DetalhesGuardaVidas () {
                         <div className={"space-y-3"}>
                           <div className="gap-2 flex">
                             <div className="text-sm font-medium text-muted-foreground">Nome:</div>
-                            <div>{guardaVida?.nome}</div>
+                            <div>{guardaVida?.nome ?? "------------"}</div>
                           </div>
                           <div className="gap-2 flex items-center justify-start">
                             <div className="text-sm font-medium text-muted-foreground">Email:</div>
-                            <div>{guardaVida?.email}</div>
+                            <div>{guardaVida?.email ?? "------------------"}</div>
                           </div>
                         </div>
 
                         <div className={"space-y-3"}>
                           <div className="gap-2 flex items-center justify-start">
                             <div className="text-sm font-medium text-muted-foreground">Telefone:</div>
-                            <div>{guardaVida?.telefone}</div>
+                            <div>{guardaVida?.telefone ?? "-------------"}</div>
                           </div>
                           <div className="gap-2 flex items-center justify-start">
                             <div className="text-sm font-medium text-muted-foreground">Admissão:</div>
@@ -76,7 +77,7 @@ export default function DetalhesGuardaVidas () {
                                         <Badge key={dia} variant="secondary">{formatarDiaSemana(dia)}</Badge>
                                     ))
                                 ) : (
-                                    <p className="text-sm text-muted-foreground italic">Nenhuma folga fixa registrada.</p>
+                                    <p className="text-sm text-muted-foreground italic">{!isLoadingPostos ? "Nenhuma folga fixa registrada." : "-------"}</p>
                                 )}
                             </div>
                         </div>
@@ -153,6 +154,8 @@ export default function DetalhesGuardaVidas () {
                     </Card>
                 </TabsContent>
             </Tabs>
+
+            {(isLoadingPostos || isLoadingGuardaVidas) && <FullscreenLoader/>}
         </div>
     )
 }

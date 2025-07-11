@@ -9,7 +9,7 @@ export default function EditarPostoPage() {
     const params = useParams();
     const id = params.id as string;
     const router = useRouter();
-    const {data: posto} = useGetPostoById(id);
+    const {data: posto, isLoading} = useGetPostoById(id);
 
     if (!posto) {
         return (
@@ -27,7 +27,7 @@ export default function EditarPostoPage() {
 
     return (
         <>
-            <PostosForm posto={posto} isEditing={true}/>
+            <PostosForm posto={posto} isEditing={true} isLoadingPosto={isLoading}/>
         </>
     )
 }

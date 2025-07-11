@@ -10,6 +10,7 @@ import {Usuario} from "@/types/auth/usuario";
 import {Posto} from "@/types/guarda-vidas";
 import {useUpdateSolicitacaoStatus} from "@/hooks/api/solicitacoes/use-update-solicitacao";
 import { toast } from "sonner"
+import FullscreenLoader from "@/components/utils/fullscreen-loader";
 
 interface ListaSolicitacoesProps {
     solicitacoes: Solicitacao[]
@@ -18,7 +19,7 @@ interface ListaSolicitacoesProps {
 }
 
 export function ListaSolicitacoes({solicitacoes, guardaVidas, postos}: ListaSolicitacoesProps) {
-    const {mutateAsync: atualizarStatusSolicitacao} = useUpdateSolicitacaoStatus();
+    const {mutateAsync: atualizarStatusSolicitacao, isPending} = useUpdateSolicitacaoStatus();
 
     const getStatusIcon = (status: string) => {
         switch (status) {
@@ -164,6 +165,8 @@ export function ListaSolicitacoes({solicitacoes, guardaVidas, postos}: ListaSoli
                     </CardFooter>
                 </Card>
             ))}
+
+            {isPending && <FullscreenLoader/>}
         </div>
     )
 }

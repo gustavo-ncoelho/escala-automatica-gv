@@ -9,12 +9,13 @@ import Link from "next/link"
 import {useAuthContext} from "@/contexts/auth-context";
 import {useGetGuardaVidasById} from "@/hooks/api/guarda-vidas/use-get-guarda-vidas-by-id";
 import {useGetSolicitacoesByGuardaVidas} from "@/hooks/api/solicitacoes/use-get-solicitacoes-by-guarda-vidas";
+import FullscreenLoader from "@/components/utils/fullscreen-loader";
 
 export default function SolicitacoesPage() {
 
     const {usuario: usuarioSession} = useAuthContext();
-    const {data: usuario} = useGetGuardaVidasById(usuarioSession?.id ?? "");
-    const {data: solicitacoes} = useGetSolicitacoesByGuardaVidas(usuario?.perfilGuardaVidas?.id ?? "");
+    const {data: usuario, isLoading: isLoadingGuardaVidas} = useGetGuardaVidasById(usuarioSession?.id ?? "");
+    const {data: solicitacoes, isLoading: isLoadingSolicitacoes} = useGetSolicitacoesByGuardaVidas(usuario?.perfilGuardaVidas?.id ?? "");
 
     const solicitacoesAprovadas = solicitacoes?.filter((s) => s.status === "APROVADA") ?? []
     const solicitacoesPendentes = solicitacoes?.filter((s) => s.status === "PENDENTE") ?? []
@@ -34,29 +35,33 @@ export default function SolicitacoesPage() {
                 </Button>
             </div>
 
-            <Card className={"flex-1 rounded-none"}>
-                <CardContent className="p-4 md:p-6">
-                    <Tabs defaultValue="pendentes">
-                        <TabsList className="grid w-full grid-cols-3">
-                            <TabsTrigger value="pendentes">Pendentes ({solicitacoesPendentes.length})</TabsTrigger>
-                            <TabsTrigger value="aprovadas">Aprovadas ({solicitacoesAprovadas.length})</TabsTrigger>
-                            <TabsTrigger value="rejeitadas">Rejeitadas ({solicitacoesRejeitadas.length})</TabsTrigger>
-                        </TabsList>
+            {!isLoadingSolicitacoes && !isLoadingGuardaVidas &&
+                <Card className={"flex-1 rounded-none"}>
+                    <CardContent className="p-4 md:p-6">
+                        <Tabs defaultValue="pendentes">
+                            <TabsList className="grid w-full grid-cols-3">
+                                <TabsTrigger value="pendentes">Pendentes ({solicitacoesPendentes.length})</TabsTrigger>
+                                <TabsTrigger value="aprovadas">Aprovadas ({solicitacoesAprovadas.length})</TabsTrigger>
+                                <TabsTrigger value="rejeitadas">Rejeitadas ({solicitacoesRejeitadas.length})</TabsTrigger>
+                            </TabsList>
 
-                        <TabsContent value="pendentes" className="mt-6">
-                            <ListaSolicitacoes solicitacoes={solicitacoesPendentes}/>
-                        </TabsContent>
+                            <TabsContent value="pendentes" className="mt-6">
+                                <ListaSolicitacoes solicitacoes={solicitacoesPendentes}/>
+                            </TabsContent>
 
-                        <TabsContent value="aprovadas" className="mt-6">
-                            <ListaSolicitacoes solicitacoes={solicitacoesAprovadas}/>
-                        </TabsContent>
+                            <TabsContent value="aprovadas" className="mt-6">
+                                <ListaSolicitacoes solicitacoes={solicitacoesAprovadas}/>
+                            </TabsContent>
 
-                        <TabsContent value="rejeitadas" className="mt-6">
-                            <ListaSolicitacoes solicitacoes={solicitacoesRejeitadas}/>
-                        </TabsContent>
-                    </Tabs>
-                </CardContent>
-            </Card>
+                            <TabsContent value="rejeitadas" className="mt-6">
+                                <ListaSolicitacoes solicitacoes={solicitacoesRejeitadas}/>
+                            </TabsContent>
+                        </Tabs>
+                    </CardContent>
+                </Card>
+            }
+
+            {(isLoadingSolicitacoes || isLoadingGuardaVidas) && <FullscreenLoader/>}
         </div>
     )
 }

@@ -54,7 +54,7 @@ export function Cabecalho() {
     }
 
     return (
-        <header className="sticky top-0 z-10 flex h-14 items-center gap-4 border-b bg-background px-4 sm:h-16">
+        <header className="sticky top-0 z-50 flex h-14 items-center gap-4 border-b shadow-md bg-background px-4 sm:h-16">
             <Link href={usuario?.cargo === 'COMANDANTE' ? '/admin' : '/user'} className="flex items-center gap-2 font-semibold">
                 <LifeBuoy className="h-5 w-5 text-red-500"/>
                 <span>Escala GV</span>

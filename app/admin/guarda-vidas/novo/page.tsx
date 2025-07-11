@@ -20,10 +20,11 @@ import {Checkbox} from "@/components/ui/checkbox"
 import {DateInput} from "@/components/ui/DateInput";
 import {toast} from "sonner"
 import {useGetPostos} from "@/hooks/api/postos/use-get-all-postos";
+import FullscreenLoader from "@/components/utils/fullscreen-loader";
 
 export default function LifeguardForm() {
 
-    const {mutateAsync} = useCadastrarUsuario();
+    const {mutateAsync, isPending} = useCadastrarUsuario();
     const router = useRouter();
 
     const {data:postos} = useGetPostos();
@@ -105,7 +106,7 @@ export default function LifeguardForm() {
     }
 
     return (
-        <div className="container w-full py-8">
+        <div className="container w-full pb-6">
             <div className={"flex items-center gap-4 mb-8"}>
                 <BackButton href={"/admin/guarda-vidas"}/>
 
@@ -430,6 +431,8 @@ export default function LifeguardForm() {
                     </div>
                 </form>
             </Form>
+
+            {isPending && <FullscreenLoader/>}
         </div>
     )
 }

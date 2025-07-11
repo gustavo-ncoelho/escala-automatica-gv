@@ -7,6 +7,7 @@ import {useGetAlocacoesPorData} from "@/hooks/api/alocacao-diaria/use-get-alocac
 import {useSalvarEscalaDiaria} from "@/hooks/api/alocacao-diaria/use-salvar-escala-diaria";
 import {toast} from "sonner";
 import TabelaEscalaDiaria from "@/components/main/tabela-escala-diaria";
+import FullscreenLoader from "@/components/utils/fullscreen-loader";
 
 interface EscalaDiariaProps {
     data: string
@@ -63,13 +64,17 @@ export default function EscalaDiaria({data, postos, guardaVidas}: EscalaDiariaPr
                 </div>
             </div>
 
-            {alocacoes && alocacoes.length === 0 &&
+            {alocacoes && alocacoes.length === 0 && !loadingAlocacoes && !loadingGeracaoEscala &&
                 <div className={"w-full py-40 flex items-center justify-center"}>
                     <Button onClick={handleGerarEscala} variant={"outline"} size={"default"}
                             className={"text-3xl font-semibold p-8"}>
                         Gerar escala
                     </Button>
                 </div>
+            }
+
+            {(loadingAlocacoes || loadingGeracaoEscala || !alocacoes) &&
+                <FullscreenLoader/>
             }
 
             {alocacoes && alocacoes.length > 0 &&

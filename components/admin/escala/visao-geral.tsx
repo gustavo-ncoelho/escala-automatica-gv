@@ -27,7 +27,7 @@ export default function VisaoGeral ({diasDoMes, guardaVidas}: VisaoGeralProps) {
     }
 
     return(
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 lg:grid-cols-10 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 lg:grid-cols-10 gap-4 w-full">
             {diasDoMes.map((dia) => {
                 const diaSemana = dia.toLocaleDateString("pt-BR", { weekday: "short" }).replace('.', '');
                 const quantidadeGuardaVidas = contarTrabalhandoNoDia(dia);

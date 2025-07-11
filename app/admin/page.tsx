@@ -1,13 +1,11 @@
 "use client"
 
-import {useState} from "react"
 import {GuardaVidasEscala} from "@/types/guarda-vidas"
 import EscalaMensal from "@/components/admin/escala/escala-mensal";
 import {Calendar, Eye, Grid3X3} from "lucide-react";
 import {
-    anosParaSelecionar,
+    anosParaSelecionar, cn,
     converterListaGVParaListaGVEscala,
-    dataAtual,
     gerarArrayDeDatasDoMes,
     getNomeMes,
     mesesParaSelecionar
@@ -16,20 +14,15 @@ import {Button} from "@/components/ui/button";
 import VisaoGeral from "@/components/admin/escala/visao-geral";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
 import {useGetAllGuardaVidas} from "@/hooks/api/guarda-vidas/use-get-all-guarda-vidas";
-import {useAppContext} from "@/contexts/app-context";
+import {useAdminContext} from "@/contexts/admin-context";
+import FullscreenLoader from "@/components/utils/fullscreen-loader";
 
 export default function EscalaPage() {
 
-    const {data: guardaVidas} = useGetAllGuardaVidas();
-    const {adminEscalaMode, setAdminEscalaMode} = useAppContext();
-    const [anoSelecionado, setAnoSelecionado] = useState<number>(dataAtual.getFullYear());
-    const [mesSelecionado, setMesSelecionado] = useState<number>(dataAtual.getMonth() + 1);
+    const {data: guardaVidas, isLoading: isLoadingGuardaVidas} = useGetAllGuardaVidas();
+    const {adminEscalaMode, setAdminEscalaMode, anoSelecionado, mesSelecionado, setMesSelecionado, setAnoSelecionado} = useAdminContext();
     const guardaVidasEscala: GuardaVidasEscala[] = converterListaGVParaListaGVEscala(guardaVidas);
     const diasArray = gerarArrayDeDatasDoMes(mesSelecionado, anoSelecionado);
-
-    const handleDayClick = (dia: number) => {
-        console.log(`Clicou no dia ${dia}`)
-    }
 
     return (
         <>
@@ -85,13 +78,17 @@ export default function EscalaPage() {
                 </div>
             </div>
 
-            {adminEscalaMode === "mensal" &&
-                <EscalaMensal diasDoMes={diasArray} guardaVidas={guardaVidasEscala}/>
-            }
+            <div className={cn("flex items-center justify-center w-full", isLoadingGuardaVidas && "h-full pb-36")}>
+                {adminEscalaMode === "mensal" && !isLoadingGuardaVidas &&
+                    <EscalaMensal diasDoMes={diasArray} guardaVidas={guardaVidasEscala}/>
+                }
 
-            {adminEscalaMode === "geral" &&
-                <VisaoGeral diasDoMes={diasArray} guardaVidas={guardaVidasEscala}/>
-            }
+                {adminEscalaMode === "geral" && !isLoadingGuardaVidas &&
+                    <VisaoGeral diasDoMes={diasArray} guardaVidas={guardaVidasEscala}/>
+                }
+
+                {isLoadingGuardaVidas && <FullscreenLoader/>}
+            </div>
         </>
     )
 }

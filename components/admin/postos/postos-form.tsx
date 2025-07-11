@@ -21,6 +21,7 @@ import {useCreatePosto} from "@/hooks/api/postos/use-create-posto";
 import {useUpdatePosto} from "@/hooks/api/postos/use-update-posto";
 import {toast} from "sonner"
 import {useRouter} from "next/navigation"
+import FullscreenLoader from "@/components/utils/fullscreen-loader";
 
 const diaDaSemanaEnum = z.enum(["segunda", "terca_feira", "quarta_feira", "quinta_feira", "sexta_feira", "sabado", "domingo"]);
 
@@ -44,13 +45,14 @@ const postoSchema = z.object({
 interface PostoFormProps {
     posto?: Posto
     isEditing?: boolean
+    isLoadingPosto?: boolean;
 }
 
-export default function PostosForm({posto, isEditing = false}: PostoFormProps) {
+export default function PostosForm({posto, isEditing = false, isLoadingPosto}: PostoFormProps) {
 
     const router = useRouter();
-    const {mutateAsync: criarPosto} = useCreatePosto();
-    const {mutateAsync: atualizarPosto} = useUpdatePosto();
+    const {mutateAsync: criarPosto, isPending: isPendingCreate} = useCreatePosto();
+    const {mutateAsync: atualizarPosto, isPending: isPendingUpdate} = useUpdatePosto();
 
     const form = useForm<z.infer<typeof postoSchema>>({
         resolver: zodResolver(postoSchema),
@@ -112,213 +114,217 @@ export default function PostosForm({posto, isEditing = false}: PostoFormProps) {
     }
 
     return (
-        <Card className="w-full">
-            <CardHeader>
-                <div className="flex gap-6 items-center">
-                    <BackButton href="/admin/postos" />
-                    <div>
-                        <CardTitle>{isEditing ? "Editar Posto" : "Cadastrar Novo Posto"}</CardTitle>
-                        <CardDescription>
-                            {isEditing ? "Atualize as informações do posto" : "Preencha os dados para um novo posto"}
-                        </CardDescription>
+        <>
+            <Card className="w-full">
+                <CardHeader>
+                    <div className="flex gap-6 items-center">
+                        <BackButton href="/admin/postos" />
+                        <div>
+                            <CardTitle>{isEditing ? "Editar Posto" : "Cadastrar Novo Posto"}</CardTitle>
+                            <CardDescription>
+                                {isEditing ? "Atualize as informações do posto" : "Preencha os dados para um novo posto"}
+                            </CardDescription>
+                        </div>
                     </div>
-                </div>
-            </CardHeader>
-            <CardContent>
-                <Form {...form}>
-                    <form onSubmit={form.handleSubmit(handleFormSubmit)} className="space-y-8">
-                        <Card>
-                            <CardHeader><CardTitle>Informações Gerais</CardTitle></CardHeader>
-                            <CardContent className="space-y-6">
-                                <FormField
-                                    control={form.control}
-                                    name="nome"
-                                    render={({field}) => (
-                                        <FormItem>
-                                            <FormLabel>Nome do Posto</FormLabel>
-                                            <FormControl><Input
-                                                placeholder="Ex: Posto Central" {...field} /></FormControl>
-                                            <FormMessage/>
-                                        </FormItem>
-                                    )}
-                                />
-                                <FormField
-                                    control={form.control}
-                                    name="numero"
-                                    render={({field}) => (
-                                        <FormItem>
-                                            <FormLabel>Número</FormLabel>
-                                            <FormControl><Input type="number"
-                                                                placeholder="1" {...field} /></FormControl>
-                                            <FormMessage/>
-                                        </FormItem>
-                                    )}
-                                />
+                </CardHeader>
+                <CardContent>
+                    <Form {...form}>
+                        <form onSubmit={form.handleSubmit(handleFormSubmit)} className="space-y-8">
+                            <Card>
+                                <CardHeader><CardTitle>Informações Gerais</CardTitle></CardHeader>
+                                <CardContent className="space-y-6">
+                                    <FormField
+                                        control={form.control}
+                                        name="nome"
+                                        render={({field}) => (
+                                            <FormItem>
+                                                <FormLabel>Nome do Posto</FormLabel>
+                                                <FormControl><Input
+                                                    placeholder="Ex: Posto Central" {...field} /></FormControl>
+                                                <FormMessage/>
+                                            </FormItem>
+                                        )}
+                                    />
+                                    <FormField
+                                        control={form.control}
+                                        name="numero"
+                                        render={({field}) => (
+                                            <FormItem>
+                                                <FormLabel>Número</FormLabel>
+                                                <FormControl><Input type="number"
+                                                                    placeholder="1" {...field} /></FormControl>
+                                                <FormMessage/>
+                                            </FormItem>
+                                        )}
+                                    />
 
 
-                                <FormField
-                                    control={form.control}
-                                    name="alocacaoMaxima"
-                                    render={({field}) => (
-                                        <FormItem>
-                                            <FormLabel>Alocação Máxima</FormLabel>
-                                            <FormControl><Input type="number"
-                                                                placeholder="4" {...field} /></FormControl>
-                                            <p className="text-sm text-muted-foreground">Máximo de guarda-vidas
-                                                alocados.</p>
-                                            <FormMessage/>
-                                        </FormItem>
-                                    )}
-                                />
+                                    <FormField
+                                        control={form.control}
+                                        name="alocacaoMaxima"
+                                        render={({field}) => (
+                                            <FormItem>
+                                                <FormLabel>Alocação Máxima</FormLabel>
+                                                <FormControl><Input type="number"
+                                                                    placeholder="4" {...field} /></FormControl>
+                                                <p className="text-sm text-muted-foreground">Máximo de guarda-vidas
+                                                    alocados.</p>
+                                                <FormMessage/>
+                                            </FormItem>
+                                        )}
+                                    />
 
-                                <FormField
-                                    control={form.control}
-                                    name="localizacao"
-                                    render={({field}) => (
-                                        <FormItem>
-                                            <FormLabel>Localização (Opcional)</FormLabel>
-                                            <FormControl><Textarea
-                                                placeholder="Ex: Praia de Copacabana - Setor A" {...field} /></FormControl>
-                                            <FormMessage/>
-                                        </FormItem>
-                                    )}
-                                />
+                                    <FormField
+                                        control={form.control}
+                                        name="localizacao"
+                                        render={({field}) => (
+                                            <FormItem>
+                                                <FormLabel>Localização (Opcional)</FormLabel>
+                                                <FormControl><Textarea
+                                                    placeholder="Ex: Praia de Copacabana - Setor A" {...field} /></FormControl>
+                                                <FormMessage/>
+                                            </FormItem>
+                                        )}
+                                    />
 
-                                <FormField
-                                    control={form.control}
-                                    name="movimento"
-                                    render={({field}) => (
-                                        <FormItem>
-                                            <div className="flex justify-between items-center">
-                                                <FormLabel>Nível de Movimento</FormLabel>
-                                                <span className="text-sm font-medium">{field.value}/10</span>
-                                            </div>
-                                            <FormControl>
-                                                <Slider
-                                                    min={1} max={10} step={1}
-                                                    defaultValue={[field.value]}
-                                                    onValueChange={(value) => field.onChange(value[0])}
-                                                />
-                                            </FormControl>
-                                            <FormMessage/>
-                                        </FormItem>
-                                    )}
-                                />
-                            </CardContent>
-                        </Card>
+                                    <FormField
+                                        control={form.control}
+                                        name="movimento"
+                                        render={({field}) => (
+                                            <FormItem>
+                                                <div className="flex justify-between items-center">
+                                                    <FormLabel>Nível de Movimento</FormLabel>
+                                                    <span className="text-sm font-medium">{field.value}/10</span>
+                                                </div>
+                                                <FormControl>
+                                                    <Slider
+                                                        min={1} max={10} step={1}
+                                                        defaultValue={[field.value]}
+                                                        onValueChange={(value) => field.onChange(value[0])}
+                                                    />
+                                                </FormControl>
+                                                <FormMessage/>
+                                            </FormItem>
+                                        )}
+                                    />
+                                </CardContent>
+                            </Card>
 
-                        <Card>
-                            <CardHeader><CardTitle>Fechamentos Programados</CardTitle></CardHeader>
-                            <CardContent className="space-y-6">
-                                <FormField
-                                    control={form.control}
-                                    name="diasFechados"
-                                    render={() => (
-                                        <FormItem>
-                                            <FormLabel>Dias da Semana (Folgas Fixas)</FormLabel>
-                                            <FormDescription>Marque os dias em que o posto não abre.</FormDescription>
-                                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-2">
-                                                {diasDaSemanaOpcoes.map((dia) => (
+                            <Card>
+                                <CardHeader><CardTitle>Fechamentos Programados</CardTitle></CardHeader>
+                                <CardContent className="space-y-6">
+                                    <FormField
+                                        control={form.control}
+                                        name="diasFechados"
+                                        render={() => (
+                                            <FormItem>
+                                                <FormLabel>Dias da Semana (Folgas Fixas)</FormLabel>
+                                                <FormDescription>Marque os dias em que o posto não abre.</FormDescription>
+                                                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-2">
+                                                    {diasDaSemanaOpcoes.map((dia) => (
+                                                        <FormField
+                                                            key={dia.id}
+                                                            control={form.control}
+                                                            name="diasFechados"
+                                                            render={({field}) => (
+                                                                <FormItem className="flex items-center space-x-3 space-y-0">
+                                                                    <FormControl>
+                                                                        <Checkbox
+                                                                            checked={field.value?.includes(dia.id as DiaDaSemana)}
+                                                                            onCheckedChange={(checked) => {
+                                                                                const diaId = dia.id as DiaDaSemana;
+                                                                                return checked
+                                                                                    ? field.onChange([...(field.value || []), diaId])
+                                                                                    : field.onChange(field.value?.filter(value => value !== diaId))
+                                                                            }}
+                                                                        />
+                                                                    </FormControl>
+                                                                    <FormLabel
+                                                                        className="font-normal">{dia.label}</FormLabel>
+                                                                </FormItem>
+                                                            )}
+                                                        />
+                                                    ))}
+                                                </div>
+                                                <FormMessage/>
+                                            </FormItem>
+                                        )}
+                                    />
+
+                                    <Separator/>
+
+                                    <div className="space-y-4">
+                                        <FormLabel>Datas Específicas</FormLabel>
+                                        <FormDescription>
+                                            Adicione datas em que o posto estará fechado (ex: feriados, eventos).
+                                        </FormDescription>
+
+                                        {fields.map((field, index) => (
+                                            <div key={field.id} className="flex items-start gap-4 pt-4 border-t">
+                                                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted mt-7">
+                                                    <Calendar className="h-5 w-5"/>
+                                                </div>
+                                                <div className="flex-1 grid gap-2">
                                                     <FormField
-                                                        key={dia.id}
                                                         control={form.control}
-                                                        name="diasFechados"
-                                                        render={({field}) => (
-                                                            <FormItem className="flex items-center space-x-3 space-y-0">
+                                                        name={`datasFechadas.${index}.data`}
+                                                        render={({ field }) => (
+                                                            <FormItem>
+                                                                <FormLabel>Data</FormLabel>
                                                                 <FormControl>
-                                                                    <Checkbox
-                                                                        checked={field.value?.includes(dia.id as DiaDaSemana)}
-                                                                        onCheckedChange={(checked) => {
-                                                                            const diaId = dia.id as DiaDaSemana;
-                                                                            return checked
-                                                                                ? field.onChange([...(field.value || []), diaId])
-                                                                                : field.onChange(field.value?.filter(value => value !== diaId))
-                                                                        }}
-                                                                    />
+                                                                    <Input type="date" {...field} />
                                                                 </FormControl>
-                                                                <FormLabel
-                                                                    className="font-normal">{dia.label}</FormLabel>
+                                                                <FormMessage />
                                                             </FormItem>
                                                         )}
                                                     />
-                                                ))}
+                                                    <FormField
+                                                        control={form.control}
+                                                        name={`datasFechadas.${index}.motivo`}
+                                                        render={({ field }) => (
+                                                            <FormItem>
+                                                                <FormLabel>Motivo (Opcional)</FormLabel>
+                                                                <FormControl>
+                                                                    <Input placeholder="Descreva o motivo..." {...field} />
+                                                                </FormControl>
+                                                                <FormMessage />
+                                                            </FormItem>
+                                                        )}
+                                                    />
+                                                </div>
+                                                <Button type="button" variant="ghost" size="icon" className="mt-7" onClick={() => remove(index)}>
+                                                    <Trash2 className="h-4 w-4"/>
+                                                </Button>
                                             </div>
-                                            <FormMessage/>
-                                        </FormItem>
-                                    )}
-                                />
+                                        ))}
 
-                                <Separator/>
+                                        <Button
+                                            type="button"
+                                            variant="outline"
+                                            size="sm"
+                                            className="mt-2"
+                                            onClick={() => append({ data: "", motivo: "" })}
+                                        >
+                                            <Plus className="h-4 w-4 mr-2"/> Adicionar Data
+                                        </Button>
+                                    </div>
+                                </CardContent>
+                            </Card>
 
-                                <div className="space-y-4">
-                                    <FormLabel>Datas Específicas</FormLabel>
-                                    <FormDescription>
-                                        Adicione datas em que o posto estará fechado (ex: feriados, eventos).
-                                    </FormDescription>
+                            <div className="flex gap-4 pt-4">
+                                <Button type="submit"className="flex-1">
+                                    {isEditing ? "Atualizar Posto" : "Cadastrar Posto"}
+                                </Button>
+                                <Button type="button" variant="outline" onClick={() => router.push("/admin/postos")} className="flex-1">
+                                    Cancelar
+                                </Button>
+                            </div>
+                        </form>
+                    </Form>
+                </CardContent>
+            </Card>
 
-                                    {fields.map((field, index) => (
-                                        <div key={field.id} className="flex items-start gap-4 pt-4 border-t">
-                                            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted mt-7">
-                                                <Calendar className="h-5 w-5"/>
-                                            </div>
-                                            <div className="flex-1 grid gap-2">
-                                                <FormField
-                                                    control={form.control}
-                                                    name={`datasFechadas.${index}.data`}
-                                                    render={({ field }) => (
-                                                        <FormItem>
-                                                            <FormLabel>Data</FormLabel>
-                                                            <FormControl>
-                                                                <Input type="date" {...field} />
-                                                            </FormControl>
-                                                            <FormMessage />
-                                                        </FormItem>
-                                                    )}
-                                                />
-                                                <FormField
-                                                    control={form.control}
-                                                    name={`datasFechadas.${index}.motivo`}
-                                                    render={({ field }) => (
-                                                        <FormItem>
-                                                            <FormLabel>Motivo (Opcional)</FormLabel>
-                                                            <FormControl>
-                                                                <Input placeholder="Descreva o motivo..." {...field} />
-                                                            </FormControl>
-                                                            <FormMessage />
-                                                        </FormItem>
-                                                    )}
-                                                />
-                                            </div>
-                                            <Button type="button" variant="ghost" size="icon" className="mt-7" onClick={() => remove(index)}>
-                                                <Trash2 className="h-4 w-4"/>
-                                            </Button>
-                                        </div>
-                                    ))}
-
-                                    <Button
-                                        type="button"
-                                        variant="outline"
-                                        size="sm"
-                                        className="mt-2"
-                                        onClick={() => append({ data: "", motivo: "" })}
-                                    >
-                                        <Plus className="h-4 w-4 mr-2"/> Adicionar Data
-                                    </Button>
-                                </div>
-                            </CardContent>
-                        </Card>
-
-                        <div className="flex gap-4 pt-4">
-                            <Button type="submit"className="flex-1">
-                                {isEditing ? "Atualizar Posto" : "Cadastrar Posto"}
-                            </Button>
-                            <Button type="button" variant="outline" onClick={() => router.push("/admin/postos")} className="flex-1">
-                                Cancelar
-                            </Button>
-                        </div>
-                    </form>
-                </Form>
-            </CardContent>
-        </Card>
+            {(isLoadingPosto || isPendingCreate || isPendingUpdate) && <FullscreenLoader/>}
+        </>
     )
 }

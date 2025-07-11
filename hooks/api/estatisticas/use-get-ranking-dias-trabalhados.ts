@@ -3,7 +3,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { Api } from '@/lib/api/escala-gv-api-client';
 import { HttpError } from '@/lib/errors/errors';
-import {Usuario} from "@/types/auth/usuario";
 import {RankingItem} from "@/types/guarda-vidas";
 
 const fetchRankingDiasTrabalhados = async (): Promise<RankingItem[]> => {

@@ -72,7 +72,7 @@ export function ListaSolicitacoes({solicitacoes}: ListaSolicitacoesProps) {
                     <div className="flex-1">
                         <div className="flex items-start gap-2">
                             <div className="font-medium">{getTipoSolicitacaoText(solicitacao)}</div>
-                            <Badge variant="outline">{getStatusText(solicitacao.status)}</Badge>
+                            <Badge variant="outline" className={"rounded-md py-0.5 px-1.5"}>{getStatusText(solicitacao.status)}</Badge>
                         </div>
 
                         <div className="text-sm text-muted-foreground mt-1 space-y-2">
