@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import {updatePosto, deletePosto, getPostoById} from "@/api/services/postos-service";
 import { getUser } from "@/lib/session/session";
 
+export const dynamic = 'force-dynamic';
+
 export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
     try {
         const user = await getUser();

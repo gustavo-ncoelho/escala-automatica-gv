@@ -2,13 +2,14 @@ import { NextRequest, NextResponse } from "next/server";
 import { getUser } from "@/lib/session/session";
 import {deleteGuardaVidas, getGuardaVidasById, updateGuardaVidas} from "@/api/services/guarda-vidas-service";
 
+export const dynamic = 'force-dynamic';
 
 export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
     try {
-        /*const user = await getUser();
+        const user = await getUser();
         if (user?.cargo !== 'COMANDANTE' && user?.id !== params.id) {
             return NextResponse.json({ error: "Acesso não autorizado" }, { status: 403 });
-        }*/
+        }
 
         const { id } = params;
         const guardaVidas = await getGuardaVidasById(id);
