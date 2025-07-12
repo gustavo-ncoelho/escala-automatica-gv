@@ -1,10 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import {updatePosto, deletePosto, getPostoById} from "@/api/services/postos-service";
 import { getUser } from "@/lib/session/session";
+import { headers } from "next/headers";
 
 export const dynamic = 'force-dynamic';
 
 export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
+    headers();
     try {
         const user = await getUser();
         if (user?.cargo !== 'COMANDANTE') {
