@@ -1,12 +1,11 @@
 'use server'
 
 import 'server-only'
-import { jwtVerify, SignJWT } from 'jose'
-import { SessionPayload } from "@/types/auth/session-payload";
-import { cookies } from "next/headers";
-import { jwtDecode } from "jwt-decode";
-import { isServer } from "@/lib/utils";
-import {Usuario} from "@prisma/client";
+import {jwtVerify, SignJWT} from 'jose'
+import {SessionPayload} from "@/types/auth/session-payload";
+import {cookies} from "next/headers";
+import {jwtDecode} from "jwt-decode";
+import {isServer} from "@/lib/utils";
 import {UsuarioPayload} from "@/types/auth/usuario";
 
 const secretKey = process.env.SESSION_SECRET
@@ -68,8 +67,8 @@ export async function createSession({authorizationToken, refreshToken}: {
     const cookieStore = await cookies()
 
     cookieStore.set('session', session, {
-        httpOnly: process.env.NEXT_PUBLIC_COOKIE_SECURE === 'true',
-        secure: process.env.NEXT_PUBLIC_COOKIE_SECURE === 'true',
+        httpOnly: process.env.NODE_ENV === 'production',
+        secure: process.env.NODE_ENV === 'production',
         expires: expiresAt,
         sameSite: 'lax',
         path: '/',
