@@ -1,15 +1,15 @@
 "use client"
 
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
-import { z } from "zod"
-import { Button } from "@/components/ui/button"
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import {zodResolver} from "@hookform/resolvers/zod"
+import {useForm} from "react-hook-form"
+import {z} from "zod"
+import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form"
+import {Input} from "@/components/ui/input"
+import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card"
 import {useLogin} from "@/hooks/api/auth/use-login";
 import {useAuthContext} from "@/contexts/auth-context";
-import FullscreenLoader from "@/components/utils/fullscreen-loader";
+import {cn} from "@/lib/utils";
+import {Loader2} from "lucide-react"
 
 const loginSchema = z.object({
     email: z.string().min(1, { message: "Email é obrigatório" }).email({ message: "Email inválido" }),
@@ -84,7 +84,7 @@ export default function LoginForm() {
 
                             <button type="submit" className="w-full flex items-center justify-center h-11 mt-3 bg-black text-white rounded-md xl:hover:bg-gray-800">
                                 {!isPending && <p>Entrar</p>}
-                                {isPending && <FullscreenLoader className={"size-7"}/>}
+                                {isPending && <Loader2 className={cn("animate-spin size-10 stroke-1 text-red-500")}/>}
                             </button>
                         </form>
                     </Form>

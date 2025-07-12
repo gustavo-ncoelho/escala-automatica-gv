@@ -67,8 +67,8 @@ export async function createSession({authorizationToken, refreshToken}: {
     const cookieStore = await cookies()
 
     cookieStore.set('session', session, {
-        httpOnly: process.env.NODE_ENV === 'production',
-        secure: process.env.NODE_ENV === 'production',
+        httpOnly: true,
+        secure: process.env.COOKIE_SECURE === 'true',
         expires: expiresAt,
         sameSite: 'lax',
         path: '/',
