@@ -1,0 +1,20 @@
+{
+  "rewrites": [
+    {
+      "source": "/api/guarda-vidas/:id",
+      "destination": "/api/guarda-vidas/[id]"
+    },
+    {
+      "source": "/api/postos/:id",
+      "destination": "/api/postos/[id]"
+    },
+    {
+      "source": "/api/solicitacoes/:id",
+      "destination": "/api/solicitacoes/[id]"
+    },
+    {
+      "source": "/api/alocacoes/:guardaVidasId",
+      "destination": "/api/alocacoes/[guardaVidasId]"
+    }
+  ]
+}
