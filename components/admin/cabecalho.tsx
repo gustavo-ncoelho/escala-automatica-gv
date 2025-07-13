@@ -29,7 +29,7 @@ export function Cabecalho() {
 
 
     return (
-        <header className="sticky top-0 z-50 flex h-16 items-center gap-4 border-b bg-background shadow-md px-4 lg:h-[64px]">
+        <header className="sticky top-0 z-48 flex h-16 items-center gap-4 border-b bg-background shadow-md px-4 lg:h-[64px]">
             <Sheet>
                 <SheetTrigger asChild>
                     <Button variant="outline" size="icon" className="lg:hidden">

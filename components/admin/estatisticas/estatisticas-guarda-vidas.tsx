@@ -1,8 +1,7 @@
 "use client";
 
-import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card";
+import {Card, CardContent} from "@/components/ui/card";
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow,} from "@/components/ui/table";
-import {TrendingUp} from "lucide-react";
 import {RankingItem} from "@/types/guarda-vidas";
 import FullscreenLoader from "@/components/utils/fullscreen-loader";
 
@@ -15,16 +14,7 @@ export function EstatisticasGuardaVidas({ ranking, isLoading }: EstatisticasGuar
     return (
         <>
             <Card className="w-full">
-                <CardHeader>
-                    <div className="flex items-center gap-3">
-                        <TrendingUp className="h-6 w-6" />
-                        <div>
-                            <CardTitle>Ranking de Atividade</CardTitle>
-                            <CardDescription>Classificação de guarda-vidas por dias trabalhados.</CardDescription>
-                        </div>
-                    </div>
-                </CardHeader>
-                <CardContent>
+                <CardContent className={"pt-2.5"}>
                     <Table>
                         <TableHeader>
                             <TableRow>

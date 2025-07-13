@@ -1,7 +1,7 @@
 import {Calendar, Loader2, RefreshCw} from "lucide-react"
 import {GuardaVidasEscala, Posto} from "@/types/guarda-vidas";
 import BackButton from "@/components/utils/back-button";
-import {gerarEscalaDiaria, parseDateStringLocal} from "@/lib/utils";
+import {gerarEscalaDiaria, parseDateStringLocal, verificarSeEHoje, verificarSeJaPassou} from "@/lib/utils";
 import {Button} from "@/components/ui/button";
 import {useGetAlocacoesPorData} from "@/hooks/api/alocacao-diaria/use-get-alocacoes-por-data";
 import {useSalvarEscalaDiaria} from "@/hooks/api/alocacao-diaria/use-salvar-escala-diaria";
@@ -20,6 +20,8 @@ export default function EscalaDiaria({data, postos, guardaVidas}: EscalaDiariaPr
     const dataDoDia = parseDateStringLocal(data);
     const {data: alocacoes, isLoading: loadingAlocacoes} = useGetAlocacoesPorData(dataDoDia);
     const {mutateAsync: salvarEscala, isPending: loadingGeracaoEscala} = useSalvarEscalaDiaria();
+    const isHoje = verificarSeEHoje(dataDoDia);
+    const jaPassou = verificarSeJaPassou(dataDoDia);
 
     const formatarData = (data: Date) => {
         return data.toLocaleDateString("pt-BR", {
@@ -51,7 +53,7 @@ export default function EscalaDiaria({data, postos, guardaVidas}: EscalaDiariaPr
                         </div>
                     </div>
 
-                    {alocacoes && alocacoes.length > 0 && (
+                    {alocacoes && alocacoes.length > 0 && !isHoje && !jaPassou && (
                         <Button onClick={handleGerarEscala} variant="outline" disabled={loadingGeracaoEscala || loadingAlocacoes}>
                             {(loadingGeracaoEscala || loadingAlocacoes) ? (
                                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -64,7 +66,7 @@ export default function EscalaDiaria({data, postos, guardaVidas}: EscalaDiariaPr
                 </div>
             </div>
 
-            {alocacoes && alocacoes.length === 0 && !loadingAlocacoes && !loadingGeracaoEscala &&
+            {alocacoes && alocacoes.length === 0 && !loadingAlocacoes && !loadingGeracaoEscala && !jaPassou &&
                 <div className={"w-full py-40 flex items-center justify-center"}>
                     <Button onClick={handleGerarEscala} variant={"outline"} size={"default"}
                             className={"text-3xl font-semibold p-8"}>

@@ -27,7 +27,7 @@ export default function SolicitacoesPage() {
                 <div>
                     <h1 className="text-2xl font-bold tracking-tight md:text-3xl">Solicitações</h1>
                 </div>
-                <Button asChild className={"bg-gray-300 text-black"}>
+                <Button asChild>
                     <Link href="/user/solicitacoes/nova">
                         <Plus className="mr-2 h-4 w-4"/>
                         Nova Solicitação

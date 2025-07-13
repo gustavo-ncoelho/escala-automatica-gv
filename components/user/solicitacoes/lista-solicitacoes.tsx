@@ -90,10 +90,12 @@ export function ListaSolicitacoes({solicitacoes}: ListaSolicitacoesProps) {
                                 </div>
                             )}
 
-                            <div className={"flex items-start gap-2"}>
-                                <div className="font-semibold">Motivo:</div>
-                                <p>{solicitacao.motivo}</p>
-                            </div>
+                            {solicitacao.motivo &&
+                                <div className={"flex items-start gap-2"}>
+                                    <div className="font-semibold">Motivo:</div>
+                                    <p>{solicitacao.motivo}</p>
+                                </div>
+                            }
 
                             <div className={"flex items-start gap-2"}>
                                 <div className="font-semibold">Criado em:</div>

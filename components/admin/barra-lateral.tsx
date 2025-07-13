@@ -44,7 +44,7 @@ export function BarraLateral() {
     const pathname = usePathname()
 
     return (
-        <div className="hidden border-r bg-background z-50 lg:block lg:w-64">
+        <div className="hidden border-r bg-background z-48 lg:block lg:w-64">
             <div className="flex h-full flex-col gap-2">
                 <div className="flex min-h-16 items-center border-b shadow-md px-4">
                     <Link href="/admin" className="flex items-center gap-2 font-semibold">

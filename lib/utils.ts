@@ -1,7 +1,7 @@
 import {clsx, type ClassValue} from "clsx"
 import {twMerge} from "tailwind-merge"
 import {AlocacaoDiaria} from "@/types/alocacao-diaria";
-import {isSameDay} from "date-fns";
+import {isBefore, isSameDay, startOfToday} from "date-fns";
 import {DiaDaSemana, GuardaVidas, GuardaVidasEscala, Posto} from "@/types/guarda-vidas";
 import {v4 as uuid} from "uuid";
 import {guardaVidasMock} from "@/utils/dados-simulados";
@@ -58,7 +58,6 @@ export const dataAtual = new Date();
 
 export const anosParaSelecionar = Array.from({length: 5}, (_, i) => dataAtual.getFullYear() - 2 + i);
 
-
 export const mesesParaSelecionar = [
     {valor: 1, nome: 'Janeiro'},
     {valor: 2, nome: 'Fevereiro'},
@@ -101,6 +100,18 @@ const getDiasNoMes = (mes: number, ano: number) => {
     return new Date(ano, mes, 0).getDate()
 };
 
+export const existeAlocacaoNoDia = (dia: Date, alocacoes: AlocacaoDiaria[]): boolean => {
+    return alocacoes.some(a => isSameDay(new Date(a.data), dia));
+};
+
+export const verificarSeEHoje = (dia: Date): boolean => {
+    return isSameDay(dia, startOfToday());
+};
+
+export const verificarSeJaPassou = (dia: Date): boolean => {
+    return isBefore(dia, startOfToday());
+};
+
 export const formatarDiaSemana = (dia: string) => {
     if (!dia) return '';
     const comHifen = dia.replace('_', '-');
@@ -108,18 +119,6 @@ export const formatarDiaSemana = (dia: string) => {
 };
 
 export const formatarDia = (dia: string) => dia.replace('_', '-').charAt(0).toUpperCase() + dia.slice(1, 3);
-
-export const filtrarAlocacoesPorMes = (mes: number, ano: number, todasAsAlocacoes: AlocacaoDiaria[]): AlocacaoDiaria[] => {
-    return todasAsAlocacoes.filter(alocacao => {
-        const dataDaAlocacao = new Date(alocacao.data);
-
-        const mesmoAno = dataDaAlocacao.getFullYear() === ano;
-
-        const mesmoMes = dataDaAlocacao.getMonth() === mes - 1;
-
-        return mesmoAno && mesmoMes;
-    });
-};
 
 export const contarDiasTrabalhadosPorGuardaVida = (alocacoes: AlocacaoDiaria[]): Record<string, number> => {
 

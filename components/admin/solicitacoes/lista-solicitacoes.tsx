@@ -4,12 +4,12 @@ import {Button} from "@/components/ui/button"
 import {Card, CardContent, CardFooter, CardHeader} from "@/components/ui/card"
 import type {Solicitacao} from "@/types/solicitacao"
 import {formatarData} from "@/lib/utils"
-import {Calendar, Check, Clock, X} from "lucide-react";
+import {BookOpenCheck, Calendar, Check, Clock, TowerControl, X} from "lucide-react";
 import {obterNomeGuardaVidas, obterNomePosto} from "@/lib/utils";
 import {Usuario} from "@/types/auth/usuario";
 import {Posto} from "@/types/guarda-vidas";
 import {useUpdateSolicitacaoStatus} from "@/hooks/api/solicitacoes/use-update-solicitacao";
-import { toast } from "sonner"
+import {toast} from "sonner"
 import FullscreenLoader from "@/components/utils/fullscreen-loader";
 
 interface ListaSolicitacoesProps {
@@ -20,6 +20,17 @@ interface ListaSolicitacoesProps {
 
 export function ListaSolicitacoes({solicitacoes, guardaVidas, postos}: ListaSolicitacoesProps) {
     const {mutateAsync: atualizarStatusSolicitacao, isPending} = useUpdateSolicitacaoStatus();
+
+    const getTipoSolicitacaoText = (solicitacao: Solicitacao) => {
+        switch (solicitacao.tipo) {
+            case "PREFERENCIA_POSTO":
+                return "Alteração de Posto"
+            case "DIA_INDISPONIVEL":
+                return "Dia Indisponível"
+            default:
+                return "Solicitação"
+        }
+    }
 
     const getStatusIcon = (status: string) => {
         switch (status) {
@@ -87,62 +98,59 @@ export function ListaSolicitacoes({solicitacoes, guardaVidas, postos}: ListaSoli
     }
 
     return (
-        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+        <div className="grid gap-4 grid-cols-1 md:grid-cols-2 xl:grid-cols-3">
             {solicitacoes.map((solicitacao) => (
-                <Card key={solicitacao.id} className={"flex flex-col justify-between"}>
-                    <div>
-                        <CardHeader className="flex flex-row items-center gap-4 pb-2">
-                            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted">
-                                {getStatusIcon(solicitacao.status)}
+                <Card key={solicitacao.id} className={"flex flex-col justify-between gap-2.5"}>
+                    <CardHeader className="flex flex-row items-center gap-4 pb-2">
+                        <div className={"w-full flex items-center justify-between"}>
+                            <div className={"flex items-center gap-3"}>
+                                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted">
+                                    {getStatusIcon(solicitacao.status)}
+                                </div>
+                                <div>
+                                    <h3 className="font-semibold">{obterNomeGuardaVidas(solicitacao.guardaVidasId, guardaVidas)}</h3>
+                                    <p className="text-sm text-muted-foreground">
+                                        {getStatusText(solicitacao.status)}
+                                    </p>
+                                </div>
                             </div>
-                            <div>
-                                <h3 className="font-semibold">{obterNomeGuardaVidas(solicitacao.guardaVidasId, guardaVidas)}</h3>
-                                <p className="text-sm text-muted-foreground">
-                                    Solicitação #{getStatusText(solicitacao.status)}
-                                </p>
-                            </div>
-                        </CardHeader>
-                        <CardContent className="pb-2">
-                            <div className="space-y-2">
+                            <div>{getTipoSolicitacaoText(solicitacao)}</div>
+                        </div>
+                    </CardHeader>
+                    <CardContent className="pb-2">
+                        <div className="space-y-4">
+                            {solicitacao.dataSolicitada && (
                                 <div className="flex items-start gap-2">
                                     <Calendar className="h-4 w-4 mt-0.5 text-muted-foreground"/>
                                     <div className="text-sm">
-                                        <div className="font-medium">Data Original</div>
-                                        <div>{solicitacao.dataOriginal ? formatarData(solicitacao.dataOriginal) : "N/A"}</div>
-                                        {solicitacao.postoOriginal &&
-                                            <div
-                                                className="text-muted-foreground">{obterNomePosto(postos, solicitacao?.postoSolicitado)}</div>
-                                        }
+                                        <div className="font-medium">Data Solicitada</div>
+                                        <div>{formatarData(solicitacao.dataSolicitada)}</div>
                                     </div>
                                 </div>
+                            )}
 
-                                {solicitacao.dataSolicitada && (
-                                    <div className="flex items-start gap-2">
-                                        <Calendar className="h-4 w-4 mt-0.5 text-muted-foreground"/>
-                                        <div className="text-sm">
-                                            <div className="font-medium">Data Solicitada</div>
-                                            <div>{formatarData(solicitacao.dataSolicitada)}</div>
-                                        </div>
+                            {solicitacao.postoSolicitado && !solicitacao.dataSolicitada && (
+                                <div className="flex items-start gap-2">
+                                    <TowerControl className="h-4 w-4 mt-0.5 text-muted-foreground"/>
+                                    <div className="text-sm">
+                                        <div className="font-medium">Posto Solicitado</div>
+                                        <div>{obterNomePosto(postos, solicitacao?.postoSolicitado)}</div>
                                     </div>
-                                )}
-
-                                {solicitacao.postoSolicitado && !solicitacao.dataSolicitada && (
-                                    <div className="flex items-start gap-2">
-                                        <Calendar className="h-4 w-4 mt-0.5 text-muted-foreground"/>
-                                        <div className="text-sm">
-                                            <div className="font-medium">Posto Solicitado</div>
-                                            <div>{obterNomePosto(postos, solicitacao?.postoSolicitado)}</div>
-                                        </div>
-                                    </div>
-                                )}
-
-                                <div className="text-sm">
-                                    <div className="font-medium">Motivo</div>
-                                    <div className="text-muted-foreground">{solicitacao.motivo}</div>
                                 </div>
-                            </div>
-                        </CardContent>
-                    </div>
+                            )}
+
+                            {solicitacao.motivo &&
+                                <div className="flex items-start gap-2">
+                                    <BookOpenCheck className="h-4 w-4 mt-0.5 text-muted-foreground"/>
+                                    <div className="text-sm">
+                                        <div className="font-medium">Motivo</div>
+                                        <div>{solicitacao.motivo}</div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </CardContent>
+
                     <CardFooter className="mt-auto">
                         {solicitacao.status === "PENDENTE" ? (
                             <div className="flex justify-between gap-2 w-full">

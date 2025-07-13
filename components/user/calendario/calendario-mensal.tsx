@@ -92,7 +92,7 @@ export function CalendarioMensal({mes, ano, guardaVida, alocacoes}: CalendarioMe
                                 "h-14 rounded-md border p-1 flex flex-col justify-between transition-colors",
                                 isHoje && "border-primary border-2",
                                 !trabalha && "bg-primary/10 text-muted-foreground/60",
-                                temAlocacao && trabalha && !jaPassou && "bg-green-500/10",
+                                temAlocacao && trabalha && !jaPassou && "bg-green-500/40 dark:bg-green-500/10",
                                 !temAlocacao && trabalha && !jaPassou && "bg-transparent",
                                 jaPassou && "bg-muted/50 text-muted-foreground opacity-60"
                             )}

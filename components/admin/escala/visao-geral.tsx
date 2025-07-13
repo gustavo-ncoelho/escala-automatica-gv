@@ -3,16 +3,18 @@
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { GuardaVidasEscala } from "@/types/guarda-vidas";
-import {guardaVidaTrabalhaEm} from "@/lib/utils";
+import {cn, existeAlocacaoNoDia, guardaVidaTrabalhaEm, verificarSeEHoje, verificarSeJaPassou} from "@/lib/utils";
 import {format} from "date-fns";
 import {useRouter} from "next/navigation";
+import {AlocacaoDiaria} from "@/types/alocacao-diaria";
 
 interface VisaoGeralProps {
     diasDoMes: Date[];
     guardaVidas: GuardaVidasEscala[];
+    alocacoes: AlocacaoDiaria[]
 }
 
-export default function VisaoGeral ({diasDoMes, guardaVidas}: VisaoGeralProps) {
+export default function VisaoGeral ({diasDoMes, guardaVidas, alocacoes}: VisaoGeralProps) {
 
     const router = useRouter();
 
@@ -31,11 +33,18 @@ export default function VisaoGeral ({diasDoMes, guardaVidas}: VisaoGeralProps) {
             {diasDoMes.map((dia) => {
                 const diaSemana = dia.toLocaleDateString("pt-BR", { weekday: "short" }).replace('.', '');
                 const quantidadeGuardaVidas = contarTrabalhandoNoDia(dia);
+                const temAlocacao = existeAlocacaoNoDia(dia, alocacoes);
+                const isHoje = verificarSeEHoje(dia);
+                const jaPassou = verificarSeJaPassou(dia);
 
                 return (
                     <Card
                         key={dia.toISOString()}
-                        className={`cursor-pointer transition-all hover:shadow-lg hover:scale-105 border`}
+                        className={cn(`cursor-pointer transition-all hover:shadow-lg hover:scale-105 border`,
+                            temAlocacao && !jaPassou && "bg-green-500/40 border-green-500/45 dark:bg-green-500/10 dark:border-green-500/10",
+                            isHoje && "border-2 border-foreground dark:border-foreground",
+                            jaPassou && "bg-muted/50 text-muted-foreground opacity-60"
+                        )}
                         onClick={() => onDayClick?.(dia)}
                     >
                         <CardHeader className="pb-2 pt-3">
@@ -46,7 +55,7 @@ export default function VisaoGeral ({diasDoMes, guardaVidas}: VisaoGeralProps) {
                         </CardHeader>
                         <CardContent className="pb-3">
                             <div className="text-center flex items-center justify-center flex-col">
-                                <p className={"font-semibold text-lg py-1"}>
+                                <p className={"font-semibold text-lg pt-1"}>
                                     {quantidadeGuardaVidas}
                                 </p>
                                 <p className="text-xs">

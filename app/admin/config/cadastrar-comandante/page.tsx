@@ -7,6 +7,8 @@ import {z} from "zod"
 import {Button} from "@/components/ui/button"
 import {Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form"
 import {Input} from "@/components/ui/input"
+import {Card, CardContent, CardHeader} from "@/components/ui/card";
+import BackButton from "@/components/utils/back-button";
 
 const formSchema = z.object({
     nome: z.string().min(2, {
@@ -52,78 +54,82 @@ export default function CadastrarComandantePage() {
     }
 
     return (
-        <div className="max-w-md mx-auto p-6 space-y-6">
-            <div className="space-y-2 text-center">
+        <div className={"space-y-4"}>
+            <div className="flex items-center gap-5">
+                <BackButton href={"/admin/config"}/>
                 <h1 className="text-3xl font-bold">Cadastrar Comandante</h1>
             </div>
+            <Card>
+                <CardContent className={"pt-4"}>
+                    <Form {...form}>
+                        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                            <FormField
+                                control={form.control}
+                                name="nome"
+                                render={({field}) => (
+                                    <FormItem>
+                                        <FormLabel>Nome completo</FormLabel>
+                                        <FormControl>
+                                            <Input placeholder="Digite seu nome completo" {...field} />
+                                        </FormControl>
+                                        <FormDescription>Este será seu nome de exibição público.</FormDescription>
+                                        <FormMessage/>
+                                    </FormItem>
+                                )}
+                            />
 
-            <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                    <FormField
-                        control={form.control}
-                        name="nome"
-                        render={({field}) => (
-                            <FormItem>
-                                <FormLabel>Nome completo</FormLabel>
-                                <FormControl>
-                                    <Input placeholder="Digite seu nome completo" {...field} />
-                                </FormControl>
-                                <FormDescription>Este será seu nome de exibição público.</FormDescription>
-                                <FormMessage/>
-                            </FormItem>
-                        )}
-                    />
+                            <FormField
+                                control={form.control}
+                                name="email"
+                                render={({field}) => (
+                                    <FormItem>
+                                        <FormLabel>Email</FormLabel>
+                                        <FormControl>
+                                            <Input type="email" placeholder="exemplo@email.com" {...field} />
+                                        </FormControl>
+                                        <FormDescription>Usaremos este email para entrar em contato com você.</FormDescription>
+                                        <FormMessage/>
+                                    </FormItem>
+                                )}
+                            />
 
-                    <FormField
-                        control={form.control}
-                        name="email"
-                        render={({field}) => (
-                            <FormItem>
-                                <FormLabel>Email</FormLabel>
-                                <FormControl>
-                                    <Input type="email" placeholder="exemplo@email.com" {...field} />
-                                </FormControl>
-                                <FormDescription>Usaremos este email para entrar em contato com você.</FormDescription>
-                                <FormMessage/>
-                            </FormItem>
-                        )}
-                    />
+                            <FormField
+                                control={form.control}
+                                name="telefone"
+                                render={({field}) => (
+                                    <FormItem>
+                                        <FormLabel>Telefone</FormLabel>
+                                        <FormControl>
+                                            <Input type="tel" placeholder="(11) 99999-9999" {...field} />
+                                        </FormControl>
+                                        <FormDescription>Inclua o DDD do seu telefone.</FormDescription>
+                                        <FormMessage/>
+                                    </FormItem>
+                                )}
+                            />
 
-                    <FormField
-                        control={form.control}
-                        name="telefone"
-                        render={({field}) => (
-                            <FormItem>
-                                <FormLabel>Telefone</FormLabel>
-                                <FormControl>
-                                    <Input type="tel" placeholder="(11) 99999-9999" {...field} />
-                                </FormControl>
-                                <FormDescription>Inclua o DDD do seu telefone.</FormDescription>
-                                <FormMessage/>
-                            </FormItem>
-                        )}
-                    />
+                            <FormField
+                                control={form.control}
+                                name="senha"
+                                render={({field}) => (
+                                    <FormItem>
+                                        <FormLabel>Senha</FormLabel>
+                                        <FormControl>
+                                            <Input type="password" placeholder="Digite uma senha segura" {...field} />
+                                        </FormControl>
+                                        <FormDescription>A senha deve ter pelo menos 8 caracteres.</FormDescription>
+                                        <FormMessage/>
+                                    </FormItem>
+                                )}
+                            />
 
-                    <FormField
-                        control={form.control}
-                        name="senha"
-                        render={({field}) => (
-                            <FormItem>
-                                <FormLabel>Senha</FormLabel>
-                                <FormControl>
-                                    <Input type="password" placeholder="Digite uma senha segura" {...field} />
-                                </FormControl>
-                                <FormDescription>A senha deve ter pelo menos 8 caracteres.</FormDescription>
-                                <FormMessage/>
-                            </FormItem>
-                        )}
-                    />
-
-                    <Button type="submit" className="w-full">
-                        Criar Conta
-                    </Button>
-                </form>
-            </Form>
+                            <Button type="submit">
+                                Cadastrar Comandante
+                            </Button>
+                        </form>
+                    </Form>
+                </CardContent>
+            </Card>
         </div>
     )
 }

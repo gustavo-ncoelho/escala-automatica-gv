@@ -402,7 +402,7 @@ export default function LifeguardForm() {
                                             )}
                                         />
                                     </div>
-                                    <Button type="button" variant="ghost" size="icon" className="mt-7" onClick={() => removeIndisponivel(index)}>
+                                    <Button type="button" variant="trash" size="icon" className="mt-7" onClick={() => removeIndisponivel(index)}>
                                         <Trash2 className="h-4 w-4"/>
                                     </Button>
                                 </div>

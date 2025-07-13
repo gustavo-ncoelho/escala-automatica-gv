@@ -16,11 +16,13 @@ import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/c
 import {useGetAllGuardaVidas} from "@/hooks/api/guarda-vidas/use-get-all-guarda-vidas";
 import {useAdminContext} from "@/contexts/admin-context";
 import FullscreenLoader from "@/components/utils/fullscreen-loader";
+import {useGetAlocacoesPorMes} from "@/hooks/api/alocacao-diaria/use-get-alocacacoes-por-mes";
 
 export default function EscalaPage() {
 
     const {data: guardaVidas, isLoading: isLoadingGuardaVidas} = useGetAllGuardaVidas();
     const {adminEscalaMode, setAdminEscalaMode, anoSelecionado, mesSelecionado, setMesSelecionado, setAnoSelecionado} = useAdminContext();
+    const {data: alocacoes, isLoading: isLoadingAlocacoes} = useGetAlocacoesPorMes(mesSelecionado,anoSelecionado);
     const guardaVidasEscala: GuardaVidasEscala[] = converterListaGVParaListaGVEscala(guardaVidas);
     const diasArray = gerarArrayDeDatasDoMes(mesSelecionado, anoSelecionado);
 
@@ -83,11 +85,11 @@ export default function EscalaPage() {
                     <EscalaMensal diasDoMes={diasArray} guardaVidas={guardaVidasEscala}/>
                 }
 
-                {adminEscalaMode === "geral" && !isLoadingGuardaVidas &&
-                    <VisaoGeral diasDoMes={diasArray} guardaVidas={guardaVidasEscala}/>
+                {adminEscalaMode === "geral" && !isLoadingGuardaVidas && !isLoadingAlocacoes &&
+                    <VisaoGeral diasDoMes={diasArray} guardaVidas={guardaVidasEscala} alocacoes={alocacoes ?? []}/>
                 }
 
-                {isLoadingGuardaVidas && <FullscreenLoader/>}
+                {(isLoadingGuardaVidas || isLoadingAlocacoes) && <FullscreenLoader/>}
             </div>
         </>
     )

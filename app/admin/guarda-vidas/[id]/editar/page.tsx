@@ -20,6 +20,7 @@ import {diasDaSemanaOpcoes} from "@/lib/utils";
 import {useGetPostos} from "@/hooks/api/postos/use-get-all-postos";
 import {useDeleteGuardaVidas} from "@/hooks/api/guarda-vidas/use-delete-guarda-vidas";
 import FullscreenLoader from "@/components/utils/fullscreen-loader";
+import ConfirmDeleteModal from "@/components/utils/confirm-delete-modal";
 
 export default function EditarGuardaVidas() {
     const params = useParams();
@@ -28,6 +29,7 @@ export default function EditarGuardaVidas() {
     const {data: guardaVida, isLoading: isLoadingGuardaVidas} = useGetGuardaVidasById(id);
     const [preferencias, setPreferencias] = useState({} as Record<string, number>);
     const [diasIndisponiveis, setDiasIndisponiveis] = useState([] as { data: string; motivo?: string }[]);
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<boolean>(false);
     const [diasDeFolga, setDiasDeFolga] = useState<DiaDaSemana[]>([]);
     const {mutateAsync: atualizarGuardaVidas, isPending: isPendingUpdate} = useUpdateGuardaVidas();
     const {mutateAsync: deleteGuardaVidas, isPending: isPendingDelete} = useDeleteGuardaVidas();
@@ -131,7 +133,7 @@ export default function EditarGuardaVidas() {
                 </div>
 
                 <Button type="button" variant="trash" size="sm"
-                        onClick={handleDeletar}>
+                        onClick={() => setIsDeleteModalOpen(true)}>
                     <Trash2 className="h-4 w-4"/>
                 </Button>
             </div>
@@ -218,7 +220,7 @@ export default function EditarGuardaVidas() {
                                                         setDiasIndisponiveis(novosDias)
                                                     }}
                                                 />
-                                                <Button variant="ghost" size="icon"
+                                                <Button variant="trash" size="icon"
                                                         onClick={() => removerDiaIndisponivel(index)}>
                                                     <Trash className="h-4 w-4"/>
                                                     <span className="sr-only">Remover</span>
@@ -289,7 +291,16 @@ export default function EditarGuardaVidas() {
                 <Button onClick={handleSalvar}>Salvar Alterações</Button>
             </div>
 
-            {(isLoadingGuardaVidas || isPendingDelete || isPendingUpdate) && <FullscreenLoader/>}
+            {isDeleteModalOpen &&
+                <ConfirmDeleteModal
+                    title={"Excluir Guarda Vidas"}
+                    description={"Você tem certeza que deseja excluir este guarda vidas ?"}
+                    cancelFunction={() => setIsDeleteModalOpen(false)}
+                    deleteFunction={handleDeletar}
+                />
+            }
+
+            {(isLoadingGuardaVidas || isPendingUpdate) && <FullscreenLoader/>}
         </div>
     )
 }
