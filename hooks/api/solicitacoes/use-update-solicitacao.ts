@@ -14,6 +14,7 @@ export const useUpdateSolicitacaoStatus = () => {
         onSuccess: async (updatedSolicitacao) => {
             await queryClient.invalidateQueries({ queryKey: ['solicitacoes'] });
             await queryClient.invalidateQueries({ queryKey: ['solicitacao', updatedSolicitacao.id] });
+            await queryClient.invalidateQueries({ queryKey: ['solicitacao', updatedSolicitacao.guardaVidasId] });
         }
     });
 };

@@ -15,7 +15,7 @@ export default function PainelPage() {
                 <div className={"text-3xl font-semibold"}>Ranking de Atividade</div>
                 <div className={"text-muted-foreground"}>Classificação de guarda-vidas por dias trabalhados.</div>
             </div>
-            {ranking && <EstatisticasGuardaVidas ranking={ranking} isLoading={isLoading}/>}
+            <EstatisticasGuardaVidas ranking={ranking} isLoading={isLoading}/>
         </div>
     )
 }

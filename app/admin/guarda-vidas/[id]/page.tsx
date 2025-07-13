@@ -8,7 +8,7 @@ import {Calendar, Edit} from "lucide-react"
 import Link from "next/link"
 import {notFound, useParams} from "next/navigation"
 import BackButton from "@/components/utils/back-button";
-import {formatarDiaSemana, obterNomePosto} from "@/lib/utils";
+import {formatarData, formatarDiaSemana, normalizeDateToLocal, obterNomePosto} from "@/lib/utils";
 import {useGetGuardaVidasById} from "@/hooks/api/guarda-vidas/use-get-guarda-vidas-by-id";
 import {Badge} from "@/components/ui/badge";
 import {useGetPostos} from "@/hooks/api/postos/use-get-all-postos";
@@ -140,7 +140,7 @@ export default function DetalhesGuardaVidas () {
                                             </div>
                                             <div>
                                                 <div
-                                                    className="font-medium">{dia.data.toLocaleDateString("pt-BR")}</div>
+                                                    className="font-medium">{formatarData(dia.data)}</div>
                                                 <div className="text-sm text-muted-foreground">{dia.motivo}</div>
                                             </div>
                                         </div>

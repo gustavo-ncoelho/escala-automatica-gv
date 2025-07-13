@@ -1,12 +1,13 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import {GuardaVidasEscala, Posto} from "@/types/guarda-vidas";
 import {AlocacaoDiaria} from "@/types/alocacao-diaria";
 import {cn, getGuardaVidasPorPosto, postoEstaAberto} from "@/lib/utils";
 import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
 import {Badge} from "@/components/ui/badge";
 import { usePathname } from "next/navigation";
+import {useAuthContext} from "@/contexts/auth-context";
 
 interface TabelaEscalaDiariaProps {
     postos: Posto[];
@@ -18,11 +19,14 @@ interface TabelaEscalaDiariaProps {
 export default function TabelaEscalaDiaria ({postos, guardaVidas, dataDoDia, alocacoes}: TabelaEscalaDiariaProps) {
     const pathname = usePathname();
     const isAdminView = pathname.startsWith("/admin");
+    const {usuario} = useAuthContext();
+    const [guardaVidasLogado, setGuardaVidasLogado] = useState<string | undefined>(usuario?.cargo === "GUARDA_VIDAS" ? usuario.nome : undefined);
+
 
     return (
         <div className={cn("grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 px-4 md:px-0", !isAdminView && "pb-16")}>
             {postos.map((posto) => {
-                const estaAberto = postoEstaAberto(posto, dataDoDia);
+                const estaAberto = postoEstaAberto(posto, dataDoDia) && alocacoes.some((alocacao) => alocacao.postoId === posto.id)
 
                 const guardaVidasAlocados = estaAberto ? getGuardaVidasPorPosto(posto.id, alocacoes, dataDoDia, guardaVidas) : [];
                 const ocupacao = guardaVidasAlocados.length;
@@ -64,12 +68,16 @@ export default function TabelaEscalaDiaria ({postos, guardaVidas, dataDoDia, alo
                             <div className="border rounded-md overflow-hidden">
                                 {estaAberto ? (
                                     <>
-                                        {guardaVidasAlocados.map((nome) => (
-                                            <div key={`${posto.id}-${nome}`}
-                                                 className="border-b last:border-b-0 p-2 min-h-[40px]">
-                                                <span className="text-sm text-foreground">{nome}</span>
+                                        {guardaVidasAlocados.map((nome) => {
+                                            const souEu = guardaVidasLogado === nome;
+
+                                            return (
+                                                <div key={`${posto.id}-${nome}`}
+                                                 className={cn("border-b last:border-b-0 p-2 min-h-[40px]", souEu && "shadow-md bg-green-500/40 dark:bg-green-500/30")}
+                                                >
+                                                <span className={cn("text-sm text-foreground", souEu && "font-semibold")}>{nome}</span>
                                             </div>
-                                        ))}
+                                        )})}
                                         {Array.from({length: slotsVazios > 0 ? slotsVazios : 0}).map((_, i) => (
                                             <div key={`${posto.id}-empty-${i}`}
                                                  className="border-b last:border-b-0 p-2 min-h-[40px]">

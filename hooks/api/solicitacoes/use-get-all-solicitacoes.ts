@@ -2,6 +2,7 @@ import { Solicitacao } from "@/types/solicitacao";
 import {Api} from "@/lib/api/escala-gv-api-client";
 import {useQuery} from "@tanstack/react-query";
 import {HttpError} from "@/lib/errors/errors";
+import {normalizeDateToLocal} from "@/lib/utils";
 
 const fetchSolicitacoes = async (): Promise<Solicitacao[]> => {
     return await Api.get<Solicitacao[]>('/api/solicitacoes');
@@ -16,10 +17,10 @@ export const useGetAllSolicitacoes = () => {
 
             return data.map(solicitacao => ({
                 ...solicitacao,
-                dataCriacao: new Date(solicitacao.dataCriacao),
-                dataAtualizacao: new Date(solicitacao.dataAtualizacao),
-                dataOriginal: solicitacao.dataOriginal ? new Date(solicitacao.dataOriginal) : undefined,
-                dataSolicitada: solicitacao.dataSolicitada ? new Date(solicitacao.dataSolicitada) : undefined,
+                dataCriacao: normalizeDateToLocal(solicitacao.dataCriacao),
+                dataAtualizacao: normalizeDateToLocal(solicitacao.dataAtualizacao),
+                dataOriginal: solicitacao.dataOriginal ? normalizeDateToLocal(solicitacao.dataOriginal) : undefined,
+                dataSolicitada: solicitacao.dataSolicitada ? normalizeDateToLocal(solicitacao.dataSolicitada) : undefined,
             }));
         }
     });

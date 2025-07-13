@@ -7,8 +7,12 @@ import {z} from "zod"
 import {Button} from "@/components/ui/button"
 import {Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form"
 import {Input} from "@/components/ui/input"
-import {Card, CardContent, CardHeader} from "@/components/ui/card";
+import {Card, CardContent} from "@/components/ui/card";
 import BackButton from "@/components/utils/back-button";
+import {PhoneInput} from "@/components/ui/phone-input";
+import {useCadastrarUsuario} from "@/hooks/api/auth/use-cadastrar-usuario";
+import FullscreenLoader from "@/components/utils/fullscreen-loader";
+import { useRouter } from "next/navigation"
 
 const formSchema = z.object({
     nome: z.string().min(2, {
@@ -17,14 +21,9 @@ const formSchema = z.object({
     email: z.string().email({
         message: "Por favor, insira um email válido.",
     }),
-    telefone: z
-        .string()
-        .min(10, {
-            message: "Telefone deve ter pelo menos 10 dígitos.",
-        })
-        .regex(/^[\d\s\-$$$$+]+$/, {
-            message: "Formato de telefone inválido.",
-        }).optional(),
+    telefone: z.string().min(11, {
+        message: "Telefone deve ter pelo menos 10 dígitos.",
+    }),
     senha: z.string().min(6, {
         message: "Senha deve ter pelo menos 6 caracteres.",
     }),
@@ -32,24 +31,29 @@ const formSchema = z.object({
 
 export default function CadastrarComandantePage() {
 
+    const {mutateAsync: cadastrarComandante, isPending: isPendingCadastro} = useCadastrarUsuario();
+    const router = useRouter();
+
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
             nome: "",
             email: "",
+            telefone: "",
             senha: ""
         },
     })
 
-    function onSubmit(values: z.infer<typeof formSchema>) {
-        toast("Formulário enviado com sucesso!", {
-            description: (
-                <pre className="mt-2 w-[320px] rounded-md bg-neutral-950 p-4">
-                    <code className="text-white">
-                        {JSON.stringify(values, null, 2)}
-                    </code>
-                </pre>
-            ),
+    const onSubmit = async (data: z.infer<typeof formSchema>) => {
+        await cadastrarComandante({
+            ...data,
+            cargo: "COMANDANTE"
+        }, {
+            onSuccess: () => {
+                toast.success("Comandante cadastrado com sucesso!");
+                router.push("/admin")
+            },
+            onError: () => toast.error("Houve um erro ao cadastrar, tente novamente em breve"),
         })
     }
 
@@ -87,7 +91,8 @@ export default function CadastrarComandantePage() {
                                         <FormControl>
                                             <Input type="email" placeholder="exemplo@email.com" {...field} />
                                         </FormControl>
-                                        <FormDescription>Usaremos este email para entrar em contato com você.</FormDescription>
+                                        <FormDescription>Usaremos este email para entrar em contato com
+                                            você.</FormDescription>
                                         <FormMessage/>
                                     </FormItem>
                                 )}
@@ -100,7 +105,7 @@ export default function CadastrarComandantePage() {
                                     <FormItem>
                                         <FormLabel>Telefone</FormLabel>
                                         <FormControl>
-                                            <Input type="tel" placeholder="(11) 99999-9999" {...field} />
+                                            <PhoneInput field={field}/>
                                         </FormControl>
                                         <FormDescription>Inclua o DDD do seu telefone.</FormDescription>
                                         <FormMessage/>
@@ -130,6 +135,8 @@ export default function CadastrarComandantePage() {
                     </Form>
                 </CardContent>
             </Card>
+
+            {isPendingCadastro && <FullscreenLoader/>}
         </div>
     )
 }

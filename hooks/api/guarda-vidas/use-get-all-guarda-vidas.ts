@@ -4,6 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { Api } from '@/lib/api/escala-gv-api-client';
 import { HttpError } from '@/lib/errors/errors';
 import {Usuario} from "@/types/auth/usuario";
+import {normalizeDateToLocal} from "@/lib/utils";
 
 const fetchAllGuardaVidas = async (): Promise<Usuario[]> => {
     return await Api.get<Usuario[]>('/api/guarda-vidas');
@@ -24,10 +25,10 @@ export const useGetAllGuardaVidas = () => {
                 dataAtualizacao: user.dataAtualizacao ? new Date(user.dataAtualizacao) : undefined,
                 perfilGuardaVidas: user.perfilGuardaVidas ? {
                     ...user.perfilGuardaVidas,
-                    dataAdmissao: new Date(user.perfilGuardaVidas.dataAdmissao),
+                    dataAdmissao: normalizeDateToLocal(user.perfilGuardaVidas.dataAdmissao),
                     diasIndisponiveis: user.perfilGuardaVidas?.diasIndisponiveis?.map(dia => ({
                         ...dia,
-                        data: new Date(dia.data)
+                        data: normalizeDateToLocal(dia.data)
                     }))
                 } : undefined
             }));

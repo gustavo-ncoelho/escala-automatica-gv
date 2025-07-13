@@ -17,17 +17,18 @@ import BackButton from "@/components/utils/back-button";
 import {useCadastrarUsuario} from "@/hooks/api/auth/use-cadastrar-usuario";
 import {useRouter} from "next/navigation";
 import {Checkbox} from "@/components/ui/checkbox"
-import {DateInput} from "@/components/ui/DateInput";
+import {DateInput} from "@/components/ui/date-input";
 import {toast} from "sonner"
 import {useGetPostos} from "@/hooks/api/postos/use-get-all-postos";
 import FullscreenLoader from "@/components/utils/fullscreen-loader";
+import {PhoneInput} from "@/components/ui/phone-input";
 
 export default function LifeguardForm() {
 
     const {mutateAsync, isPending} = useCadastrarUsuario();
     const router = useRouter();
 
-    const {data:postos} = useGetPostos();
+    const {data: postos} = useGetPostos();
 
     const preferenciaPostoSchema = z.object({
         postoId: z.string(),
@@ -162,7 +163,7 @@ export default function LifeguardForm() {
                                         <FormItem>
                                             <FormLabel>Telefone</FormLabel>
                                             <FormControl>
-                                                <Input placeholder="(00) 00000-0000" {...field} maxLength={11}/>
+                                                <PhoneInput field={field}/>
                                             </FormControl>
                                             <FormMessage/>
                                         </FormItem>
@@ -186,11 +187,13 @@ export default function LifeguardForm() {
                                 <FormField
                                     control={form.control}
                                     name="dataAdmissao"
-                                    render={({ field }) => (
+                                    render={({field}) => (
                                         <FormItem>
                                             <FormLabel>Data de Admissão</FormLabel>
-                                            <FormControl><DateInput field={field} /></FormControl>
-                                            <FormMessage />
+                                            <FormControl>
+                                                <DateInput field={field}/>
+                                            </FormControl>
+                                            <FormMessage/>
                                         </FormItem>
                                     )}
                                 />
@@ -292,7 +295,8 @@ export default function LifeguardForm() {
                                                                 </SelectItem>
                                                             ) : (
                                                                 postos.map((posto) => (
-                                                                    <SelectItem key={posto.id} value={posto.id.toString()}>
+                                                                    <SelectItem key={posto.id}
+                                                                                value={posto.id.toString()}>
                                                                         {posto.nome}
                                                                     </SelectItem>
                                                                 ))
@@ -373,36 +377,38 @@ export default function LifeguardForm() {
                         </CardHeader>
                         <CardContent className="space-y-4">
                             {indisponivelFields.map((field, index) => (
-                                <div key={field.id} className="flex items-start gap-4 pt-4 border-t first:pt-0 first:border-t-0">
+                                <div key={field.id}
+                                     className="flex items-start gap-4 pt-4 border-t first:pt-0 first:border-t-0">
                                     <div className="flex-1 grid gap-4">
                                         <FormField
                                             control={form.control}
                                             name={`diasIndisponiveis.${index}.data`}
-                                            render={({ field }) => (
+                                            render={({field}) => (
                                                 <FormItem>
                                                     <FormLabel>Data</FormLabel>
                                                     <FormControl>
                                                         <Input type="date" {...field} />
                                                     </FormControl>
-                                                    <FormMessage />
+                                                    <FormMessage/>
                                                 </FormItem>
                                             )}
                                         />
                                         <FormField
                                             control={form.control}
                                             name={`diasIndisponiveis.${index}.motivo`}
-                                            render={({ field }) => (
+                                            render={({field}) => (
                                                 <FormItem>
                                                     <FormLabel>Motivo (Opcional)</FormLabel>
                                                     <FormControl>
                                                         <Input placeholder="Descreva o motivo..." {...field} />
                                                     </FormControl>
-                                                    <FormMessage />
+                                                    <FormMessage/>
                                                 </FormItem>
                                             )}
                                         />
                                     </div>
-                                    <Button type="button" variant="trash" size="icon" className="mt-7" onClick={() => removeIndisponivel(index)}>
+                                    <Button type="button" variant="trash" size="icon" className="mt-7"
+                                            onClick={() => removeIndisponivel(index)}>
                                         <Trash2 className="h-4 w-4"/>
                                     </Button>
                                 </div>
@@ -413,7 +419,7 @@ export default function LifeguardForm() {
                                 variant="outline"
                                 size="sm"
                                 className="mt-2"
-                                onClick={() => appendIndisponivel({ data: "", motivo: "" })}
+                                onClick={() => appendIndisponivel({data: "", motivo: ""})}
                             >
                                 <Plus className="h-4 w-4 mr-2"/>
                                 Adicionar Dia Indisponível

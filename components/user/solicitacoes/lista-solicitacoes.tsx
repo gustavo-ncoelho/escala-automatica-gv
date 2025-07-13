@@ -62,11 +62,7 @@ export function ListaSolicitacoes({solicitacoes}: ListaSolicitacoesProps) {
                     href={`/user/solicitacoes/${solicitacao.id}`}
                     className="flex items-start gap-4 p-4 rounded-lg border hover:bg-muted/50 transition-colors"
                 >
-                    <div className={cn("flex h-12 w-12 items-center justify-center rounded-full bg-muted",
-                        solicitacao.status === "PENDENTE" && "bg-yellow-200/10 border-yellow-300 border",
-                        solicitacao.status === "APROVADA" && "bg-green-200/10 border-green-300 border",
-                        solicitacao.status === "REJEITADA" && "bg-red-200/10 border-red-300 border"
-                    )}>
+                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted">
                         {getStatusIcon(solicitacao.status)}
                     </div>
                     <div className="flex-1">
@@ -86,7 +82,7 @@ export function ListaSolicitacoes({solicitacoes}: ListaSolicitacoesProps) {
                             {solicitacao.tipo === "DIA_INDISPONIVEL" && solicitacao.dataSolicitada && (
                                 <div className="flex items-start gap-2 mt-2">
                                     <span className={"font-semibold"}>Data: </span>
-                                    <p>{formatarData(new Date(solicitacao.dataSolicitada))}</p>
+                                    <p>{formatarData(solicitacao.dataSolicitada)}</p>
                                 </div>
                             )}
 
@@ -99,7 +95,7 @@ export function ListaSolicitacoes({solicitacoes}: ListaSolicitacoesProps) {
 
                             <div className={"flex items-start gap-2"}>
                                 <div className="font-semibold">Criado em:</div>
-                                <p>{formatarData(new Date(solicitacao?.dataSolicitada ?? ""))}</p>
+                                <p>{formatarData(solicitacao.dataCriacao)}</p>
                             </div>
                         </div>
                     </div>

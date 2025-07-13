@@ -1,10 +1,9 @@
-import {clsx, type ClassValue} from "clsx"
+import {type ClassValue, clsx} from "clsx"
 import {twMerge} from "tailwind-merge"
 import {AlocacaoDiaria} from "@/types/alocacao-diaria";
 import {isBefore, isSameDay, startOfToday} from "date-fns";
-import {DiaDaSemana, GuardaVidas, GuardaVidasEscala, Posto} from "@/types/guarda-vidas";
+import {DiaDaSemana, GuardaVidasEscala, Posto} from "@/types/guarda-vidas";
 import {v4 as uuid} from "uuid";
-import {guardaVidasMock} from "@/utils/dados-simulados";
 import {Usuario} from "@/types/auth/usuario";
 
 export function cn(...inputs: ClassValue[]) {

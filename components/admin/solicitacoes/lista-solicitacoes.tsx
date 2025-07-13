@@ -4,7 +4,7 @@ import {Button} from "@/components/ui/button"
 import {Card, CardContent, CardFooter, CardHeader} from "@/components/ui/card"
 import type {Solicitacao} from "@/types/solicitacao"
 import {formatarData} from "@/lib/utils"
-import {BookOpenCheck, Calendar, Check, Clock, TowerControl, X} from "lucide-react";
+import {BookOpenCheck, Calendar, CalendarArrowDown, Check, Clock, TowerControl, X} from "lucide-react";
 import {obterNomeGuardaVidas, obterNomePosto} from "@/lib/utils";
 import {Usuario} from "@/types/auth/usuario";
 import {Posto} from "@/types/guarda-vidas";
@@ -148,6 +148,14 @@ export function ListaSolicitacoes({solicitacoes, guardaVidas, postos}: ListaSoli
                                     </div>
                                 </div>
                             }
+
+                            <div className={"flex items-start gap-2 text-sm"}>
+                                <CalendarArrowDown className="h-4 w-4 mt-0.5 text-muted-foreground"/>
+                                <div>
+                                    <div className="font-semibold">Criado em:</div>
+                                    <p>{formatarData(solicitacao.dataCriacao)}</p>
+                                </div>
+                            </div>
                         </div>
                     </CardContent>
 

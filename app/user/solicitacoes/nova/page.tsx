@@ -177,7 +177,9 @@ export default function NovaSolicitacaoPage() {
                                     render={({field}) => (
                                         <FormItem>
                                             <FormLabel>Data Indisponível</FormLabel>
-                                            <FormControl><Input type="date" {...field} /></FormControl>
+                                            <FormControl>
+                                                <Input type="date" {...field} onChange={field.onChange}/>
+                                            </FormControl>
                                             <FormMessage/>
                                         </FormItem>
                                     )}

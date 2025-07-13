@@ -34,7 +34,9 @@ export default function EscalaDiaria({data, postos, guardaVidas}: EscalaDiariaPr
     const handleGerarEscala = async () => {
         try {
             const escalaNova = gerarEscalaDiaria(postos, guardaVidas, dataDoDia);
-            await salvarEscala(escalaNova);
+            await salvarEscala(escalaNova,{
+                onSuccess: () => toast.success("Escala gerada com sucesso!"),
+            });
         } catch (error) {
             console.error(error);
             toast.error("Houve um erro ao gerar escala");
