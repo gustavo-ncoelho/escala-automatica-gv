@@ -9,6 +9,10 @@
       "destination": "/api/postos/[id]"
     },
     {
+      "source": "/api/solicitacoes/guarda-vidas/:guardaVidasId",
+      "destination": "/api/solicitacoes/guarda-vidas/[guardaVidasId]"
+    },
+    {
       "source": "/api/solicitacoes/:id",
       "destination": "/api/solicitacoes/[id]"
     },
