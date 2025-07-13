@@ -1,5 +1,5 @@
-import { NextResponse } from "next/server";
-import { getUser } from "@/lib/session/session";
+import {NextResponse} from "next/server";
+import {getUser} from "@/lib/session/session";
 import {getGuardaVidas} from "@/api/services/guarda-vidas-service";
 
 export async function GET() {

@@ -1,5 +1,5 @@
-import { NextResponse } from "next/server";
-import { getRankingDeAtividade } from "@/api/services/estatisticas-service";
+import {NextResponse} from "next/server";
+import {getRankingDeAtividade} from "@/api/services/estatisticas-service";
 
 export async function GET() {
     try {

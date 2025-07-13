@@ -1,12 +1,12 @@
 "use client";
 
-import React, { useState } from "react";
+import React, {useState} from "react";
 import {GuardaVidasEscala, Posto} from "@/types/guarda-vidas";
 import {AlocacaoDiaria} from "@/types/alocacao-diaria";
 import {cn, getGuardaVidasPorPosto, postoEstaAberto} from "@/lib/utils";
 import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
 import {Badge} from "@/components/ui/badge";
-import { usePathname } from "next/navigation";
+import {usePathname} from "next/navigation";
 import {useAuthContext} from "@/contexts/auth-context";
 
 interface TabelaEscalaDiariaProps {

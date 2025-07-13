@@ -60,7 +60,7 @@ export default function PostosPage() {
                 <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
                     {filteredPostos?.map((posto) => (
                         <div key={posto.id}>
-                            <Card className="hover:shadow-lg transition-shadow">
+                            <Card>
                                 <CardHeader className="pb-3">
                                     <div className="flex justify-between items-start">
                                         <div>

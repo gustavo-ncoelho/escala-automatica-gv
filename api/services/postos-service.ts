@@ -1,4 +1,4 @@
-import { prisma } from '@/lib/prisma';
+import {prisma} from '@/lib/prisma';
 import {PostoCriacao} from "@/types/guarda-vidas";
 
 export type UpdatePostoData = Partial<PostoCriacao>;

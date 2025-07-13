@@ -1,8 +1,8 @@
-import { Api } from "@/lib/api/escala-gv-api-client";
-import { HttpError } from "@/lib/errors/errors";
+import {Api} from "@/lib/api/escala-gv-api-client";
+import {HttpError} from "@/lib/errors/errors";
 import {AlocacaoDiaria} from "@/types/alocacao-diaria";
-import {useMutation, useQueryClient } from "@tanstack/react-query";
-import { format } from "date-fns";
+import {useMutation, useQueryClient} from "@tanstack/react-query";
+import {format} from "date-fns";
 
 const salvarEscala = async (novasAlocacoes: AlocacaoDiaria[]): Promise<{ message: string }> => {
     return await Api.post<{ message: string }, AlocacaoDiaria[]>('/api/alocacoes', novasAlocacoes);

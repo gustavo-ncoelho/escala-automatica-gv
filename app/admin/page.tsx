@@ -4,7 +4,8 @@ import {GuardaVidasEscala} from "@/types/guarda-vidas"
 import EscalaMensal from "@/components/admin/escala/escala-mensal";
 import {Calendar, Eye, Grid3X3} from "lucide-react";
 import {
-    anosParaSelecionar, cn,
+    anosParaSelecionar,
+    cn,
     converterListaGVParaListaGVEscala,
     gerarArrayDeDatasDoMes,
     getNomeMes,

@@ -1,5 +1,5 @@
-import { prisma } from '@/lib/prisma';
-import { StatusSolicitacao, TipoSolicitacao } from "@prisma/client";
+import {prisma} from '@/lib/prisma';
+import {StatusSolicitacao} from "@prisma/client";
 import {SolicitacaoCriacao} from "@/types/solicitacao";
 
 export type UpdateSolicitacaoData = {

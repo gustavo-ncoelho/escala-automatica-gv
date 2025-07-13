@@ -6,9 +6,9 @@ import {Progress} from "@/components/ui/progress"
 import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs"
 import {Calendar, Edit} from "lucide-react"
 import Link from "next/link"
-import {notFound, useParams} from "next/navigation"
+import {useParams} from "next/navigation"
 import BackButton from "@/components/utils/back-button";
-import {formatarData, formatarDiaSemana, normalizeDateToLocal, obterNomePosto} from "@/lib/utils";
+import {formatarData, formatarDiaSemana, obterNomePosto} from "@/lib/utils";
 import {useGetGuardaVidasById} from "@/hooks/api/guarda-vidas/use-get-guarda-vidas-by-id";
 import {Badge} from "@/components/ui/badge";
 import {useGetPostos} from "@/hooks/api/postos/use-get-all-postos";
@@ -139,9 +139,8 @@ export default function DetalhesGuardaVidas () {
                                                 <Calendar className="h-5 w-5"/>
                                             </div>
                                             <div>
-                                                <div
-                                                    className="font-medium">{formatarData(dia.data)}</div>
-                                                <div className="text-sm text-muted-foreground">{dia.motivo}</div>
+                                                <div className="font-medium">{formatarData(dia.data)}</div>
+                                                <div className="text-sm text-muted-foreground">{!!dia.motivo ? dia.motivo : "Sem motivo"}</div>
                                             </div>
                                         </div>
                                     ))}

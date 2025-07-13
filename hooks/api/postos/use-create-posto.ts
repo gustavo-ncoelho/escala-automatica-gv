@@ -1,4 +1,4 @@
-import { HttpError } from "@/lib/errors/errors";
+import {HttpError} from "@/lib/errors/errors";
 import {Posto, PostoCriacao} from "@/types/guarda-vidas";
 import {useMutation, useQueryClient} from "@tanstack/react-query";
 import {Api} from "@/lib/api/escala-gv-api-client";

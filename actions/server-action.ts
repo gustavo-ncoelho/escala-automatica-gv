@@ -1,5 +1,5 @@
-import { HttpError, ServerActionError } from "@/lib/errors/errors";
-import { isRedirectError } from "next/dist/client/components/redirect-error";
+import {HttpError, ServerActionError} from "@/lib/errors/errors";
+import {isRedirectError} from "next/dist/client/components/redirect-error";
 
 type ServerAction<TReturn, TArgs extends unknown[] = []> = (...args: TArgs) => Promise<TReturn>;
 

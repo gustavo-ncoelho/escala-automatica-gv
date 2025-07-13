@@ -1,6 +1,6 @@
 "use client";
 
-import React, {createContext, Dispatch, ReactNode, SetStateAction, useContext, useState} from 'react';
+import React, {createContext, Dispatch, ReactNode, SetStateAction, useContext, useEffect, useState} from 'react';
 import {dataAtual} from "@/lib/utils";
 
 type AdminContextType = {
@@ -10,6 +10,7 @@ type AdminContextType = {
     setAnoSelecionado: Dispatch<SetStateAction<number>>;
     mesSelecionado: number;
     setMesSelecionado: Dispatch<SetStateAction<number>>;
+    isDesktop: boolean;
 };
 
 const AdminContext = createContext<AdminContextType | undefined>(undefined);
@@ -18,6 +19,19 @@ export const AdminProvider = ({children}: { children: ReactNode }) => {
     const [adminEscalaMode, setAdminEscalaMode] = useState<string>("mensal");
     const [anoSelecionado, setAnoSelecionado] = useState<number>(dataAtual.getFullYear());
     const [mesSelecionado, setMesSelecionado] = useState<number>(dataAtual.getMonth() + 1);
+    const [isDesktop, setIsDesktop] = useState(false);
+
+    useEffect(() => {
+        const handleResize = () => {
+            setIsDesktop(window.innerWidth >= 1024);
+        };
+
+        handleResize();
+
+        window.addEventListener('resize', handleResize);
+
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
 
     return (
         <AdminContext.Provider value={{
@@ -26,7 +40,8 @@ export const AdminProvider = ({children}: { children: ReactNode }) => {
             anoSelecionado,
             setAnoSelecionado,
             mesSelecionado,
-            setMesSelecionado
+            setMesSelecionado,
+            isDesktop
         }}>
             {children}
         </AdminContext.Provider>

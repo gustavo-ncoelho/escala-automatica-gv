@@ -1,5 +1,5 @@
-import { Api } from "@/lib/api/escala-gv-api-client";
-import { HttpError } from "@/lib/errors/errors";
+import {Api} from "@/lib/api/escala-gv-api-client";
+import {HttpError} from "@/lib/errors/errors";
 import {useMutation, useQueryClient} from "@tanstack/react-query";
 
 const deleteGuardaVidas = async (id: string): Promise<void> => {

@@ -2,7 +2,6 @@ import {Button} from "@/components/ui/button"
 import {Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle} from "@/components/ui/card"
 import {ArrowLeft, Calendar, Check, Clock, X} from "lucide-react"
 import Link from "next/link"
-import {notFound} from "next/navigation"
 import {formatarData, obterNomePosto} from "@/lib/utils";
 import {useGetSolicitacaoById} from "@/hooks/api/solicitacoes/use-get-solicitacao-by-id";
 import {useGetPostos} from "@/hooks/api/postos/use-get-all-postos";

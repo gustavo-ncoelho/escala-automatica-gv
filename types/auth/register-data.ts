@@ -1,4 +1,4 @@
-import { Cargo } from "./usuario";
+import {Cargo} from "./usuario";
 import {DiaDaSemana} from "@prisma/client";
 
 export type RegisterData = {

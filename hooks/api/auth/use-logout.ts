@@ -1,6 +1,6 @@
-import { useMutation, UseMutationResult } from '@tanstack/react-query';
-import { Api } from "@/lib/api/escala-gv-api-client";
-import { HttpError } from "@/lib/errors/errors";
+import {useMutation, UseMutationResult} from '@tanstack/react-query';
+import {Api} from "@/lib/api/escala-gv-api-client";
+import {HttpError} from "@/lib/errors/errors";
 import {useRouter} from "next/navigation";
 
 const logoutUser = async (): Promise<void> => {

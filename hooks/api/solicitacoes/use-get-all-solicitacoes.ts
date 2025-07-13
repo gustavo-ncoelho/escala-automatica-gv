@@ -1,4 +1,4 @@
-import { Solicitacao } from "@/types/solicitacao";
+import {Solicitacao} from "@/types/solicitacao";
 import {Api} from "@/lib/api/escala-gv-api-client";
 import {useQuery} from "@tanstack/react-query";
 import {HttpError} from "@/lib/errors/errors";

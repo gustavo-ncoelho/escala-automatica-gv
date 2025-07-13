@@ -1,8 +1,6 @@
 import axios, {AxiosError, AxiosResponse, isAxiosError} from "axios";
 import axiosRetry from "axios-retry";
-import {isServer} from "@/lib/utils";
-import {redirect} from "next/navigation";
-import {HttpError, UnauthenticatedError} from "@/lib/errors/errors";
+import {HttpError} from "@/lib/errors/errors";
 import {obterSessao} from "@/actions/session-actions/obter-sessao";
 
 export const Api = {

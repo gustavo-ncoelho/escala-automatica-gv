@@ -4,9 +4,9 @@ import {Button} from "@/components/ui/button"
 import {Card} from "@/components/ui/card"
 import {ChevronLeft, ChevronRight, MapPin, MapPinHouse, MapPinOff} from "lucide-react"
 import {useEffect, useState} from "react"
-import {isSameDay, isBefore, startOfToday, format} from "date-fns";
+import {format, isBefore, isSameDay, startOfToday} from "date-fns";
 import {cn, guardaVidaTrabalhaEm, normalizeDateToLocal} from "@/lib/utils";
-import {GuardaVidasEscala, DiaDaSemana} from "@/types/guarda-vidas";
+import {GuardaVidasEscala} from "@/types/guarda-vidas";
 import {AlocacaoDiaria} from "@/types/alocacao-diaria";
 import {useRouter} from "next/navigation"
 

@@ -1,6 +1,6 @@
-import { NextRequest, NextResponse } from "next/server";
-import { getPostos, createPosto } from "@/api/services/postos-service";
-import { getUser } from "@/lib/session/session";
+import {NextRequest, NextResponse} from "next/server";
+import {createPosto, getPostos} from "@/api/services/postos-service";
+import {getUser} from "@/lib/session/session";
 
 export async function GET() {
     try {

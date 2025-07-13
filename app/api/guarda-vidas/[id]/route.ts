@@ -1,7 +1,7 @@
-import { NextRequest, NextResponse } from "next/server";
-import { getUser } from "@/lib/session/session";
+import {NextRequest, NextResponse} from "next/server";
+import {getUser} from "@/lib/session/session";
 import {deleteGuardaVidas, getGuardaVidasById, updateGuardaVidas} from "@/api/services/guarda-vidas-service";
-import { headers } from "next/headers";
+import {headers} from "next/headers";
 
 export const dynamic = 'force-dynamic';
 

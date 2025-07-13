@@ -1,9 +1,9 @@
 "use client";
 
-import { useQuery } from '@tanstack/react-query';
-import { Api } from '@/lib/api/escala-gv-api-client';
-import { Usuario } from '@/types/auth/usuario';
-import { HttpError } from '@/lib/errors/errors';
+import {useQuery} from '@tanstack/react-query';
+import {Api} from '@/lib/api/escala-gv-api-client';
+import {Usuario} from '@/types/auth/usuario';
+import {HttpError} from '@/lib/errors/errors';
 
 const fetchUsuarioLogado = async (): Promise<Usuario> => {
     return await Api.get<Usuario>('/api/auth/me');

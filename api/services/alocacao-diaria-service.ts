@@ -1,6 +1,6 @@
-import { prisma } from '@/lib/prisma';
+import {prisma} from '@/lib/prisma';
 import {AlocacaoDiariaCriacao} from "@/types/alocacao-diaria";
-import {endOfMonth, startOfMonth } from 'date-fns';
+import {endOfMonth, startOfMonth} from 'date-fns';
 
 export async function getAlocacoesPorData(dataAlvo: Date) {
     return prisma.alocacaoDiaria.findMany({

@@ -1,8 +1,8 @@
 "use client";
 
 import React from "react";
-import { ControllerRenderProps } from "react-hook-form";
-import { IMaskInput } from "react-imask";
+import {ControllerRenderProps} from "react-hook-form";
+import {IMaskInput} from "react-imask";
 
 interface PhoneInputProps {
 

@@ -1,9 +1,9 @@
 "use client";
 
 import React from "react";
-import { ControllerRenderProps } from "react-hook-form";
-import { Input } from "@/components/ui/input";
-import { format } from "date-fns";
+import {ControllerRenderProps} from "react-hook-form";
+import {Input} from "@/components/ui/input";
+import {format} from "date-fns";
 
 interface DateInputProps {
     field: ControllerRenderProps<any, any>;

@@ -2,9 +2,8 @@
 
 import {Button} from "@/components/ui/button"
 import {Card, CardContent} from "@/components/ui/card"
-import {Input} from "@/components/ui/input"
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table"
-import {Plus, Search} from "lucide-react"
+import {Plus} from "lucide-react"
 import Link from "next/link"
 import {useGetAllGuardaVidas} from "@/hooks/api/guarda-vidas/use-get-all-guarda-vidas";
 import FullscreenLoader from "@/components/utils/fullscreen-loader";

@@ -1,6 +1,6 @@
 "use client"
 
-import {CalendarDays, ClipboardList, Home, MapPin} from "lucide-react"
+import {ClipboardList, Home} from "lucide-react"
 import Link from "next/link"
 import {usePathname} from "next/navigation"
 import {cn} from "@/lib/utils"

@@ -12,7 +12,7 @@ import BackButton from "@/components/utils/back-button";
 import {PhoneInput} from "@/components/ui/phone-input";
 import {useCadastrarUsuario} from "@/hooks/api/auth/use-cadastrar-usuario";
 import FullscreenLoader from "@/components/utils/fullscreen-loader";
-import { useRouter } from "next/navigation"
+import {useRouter} from "next/navigation"
 
 const formSchema = z.object({
     nome: z.string().min(2, {

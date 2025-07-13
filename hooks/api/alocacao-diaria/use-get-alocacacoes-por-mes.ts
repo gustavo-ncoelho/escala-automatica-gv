@@ -1,10 +1,10 @@
 "use client";
 
-import { useQuery } from '@tanstack/react-query';
-import { Api } from '@/lib/api/escala-gv-api-client';
-import { HttpError } from '@/lib/errors/errors';
-import { AlocacaoDiaria } from "@/types/alocacao-diaria";
-import { normalizeDateToLocal } from "@/lib/utils";
+import {useQuery} from '@tanstack/react-query';
+import {Api} from '@/lib/api/escala-gv-api-client';
+import {HttpError} from '@/lib/errors/errors';
+import {AlocacaoDiaria} from "@/types/alocacao-diaria";
+import {normalizeDateToLocal} from "@/lib/utils";
 
 const fetchAlocacoesPorMes = async (mes: number, ano: number): Promise<AlocacaoDiaria[]> => {
     const queryParams = new Map([

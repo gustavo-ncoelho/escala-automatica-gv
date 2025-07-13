@@ -3,9 +3,8 @@
 import {Button} from "@/components/ui/button"
 import {Card, CardContent, CardFooter, CardHeader} from "@/components/ui/card"
 import type {Solicitacao} from "@/types/solicitacao"
-import {formatarData} from "@/lib/utils"
+import {formatarData, obterNomeGuardaVidas, obterNomePosto} from "@/lib/utils"
 import {BookOpenCheck, Calendar, CalendarArrowDown, Check, Clock, TowerControl, X} from "lucide-react";
-import {obterNomeGuardaVidas, obterNomePosto} from "@/lib/utils";
 import {Usuario} from "@/types/auth/usuario";
 import {Posto} from "@/types/guarda-vidas";
 import {useUpdateSolicitacaoStatus} from "@/hooks/api/solicitacoes/use-update-solicitacao";

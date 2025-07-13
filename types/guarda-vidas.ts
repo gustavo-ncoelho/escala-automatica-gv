@@ -1,5 +1,3 @@
-import {Usuario} from "@/types/auth/usuario";
-
 export type DiaDaSemana = "segunda" | "terca_feira" | "quarta_feira" | "quinta_feira" | "sexta_feira" | "sabado" | "domingo";
 
 export type PreferenciaPosto = {

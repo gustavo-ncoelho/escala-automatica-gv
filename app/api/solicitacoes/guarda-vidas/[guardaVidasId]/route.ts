@@ -1,6 +1,6 @@
-import { NextRequest, NextResponse } from "next/server";
-import { getSolicitacoesByGuardaVidas } from "@/api/services/solicitacoes-service";
-import { getUser } from "@/lib/session/session";
+import {NextRequest, NextResponse} from "next/server";
+import {getSolicitacoesByGuardaVidas} from "@/api/services/solicitacoes-service";
+import {getUser} from "@/lib/session/session";
 
 export async function GET(req: NextRequest, { params }: { params: { guardaVidasId: string } }) {
     try {

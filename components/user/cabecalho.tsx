@@ -1,20 +1,14 @@
 "use client"
 
-import { Button } from "@/components/ui/button"
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
-    DropdownMenuSeparator,
-} from "@/components/ui/dropdown-menu"
-import { User, LifeBuoy, Sun, Moon, SunMoon } from "lucide-react"
+import {Button} from "@/components/ui/button"
+import {DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,} from "@/components/ui/dropdown-menu"
+import {LifeBuoy, Moon, Sun, User} from "lucide-react"
 import Link from "next/link"
-import { useLogout } from "@/hooks/api/auth/use-logout";
-import { useAuthContext } from "@/contexts/auth-context";
-import { useTheme } from "next-themes";
+import {useLogout} from "@/hooks/api/auth/use-logout";
+import {useAuthContext} from "@/contexts/auth-context";
+import {useTheme} from "next-themes";
 import {cn} from "@/lib/utils";
-import {useEffect, useState } from "react"
+import {useEffect, useState} from "react"
 
 export function Cabecalho() {
     const { mutate: handleLogout } = useLogout();
@@ -54,7 +48,7 @@ export function Cabecalho() {
     }
 
     return (
-        <header className="sticky top-0 z-48 flex h-14 items-center gap-4 border-b shadow-md bg-background px-4 sm:h-16">
+        <header className="sticky top-0 z-40 flex h-14 items-center gap-4 border-b shadow-md bg-background px-4 sm:h-16">
             <Link href={usuario?.cargo === 'COMANDANTE' ? '/admin' : '/user'} className="flex items-center gap-2 font-semibold">
                 <LifeBuoy className="h-5 w-5 text-red-500"/>
                 <span>Escala GV</span>

@@ -2,8 +2,6 @@
 
 import {EstatisticasGuardaVidas} from "@/components/admin/estatisticas/estatisticas-guarda-vidas"
 import {useGetRankingDiasTrabalhados} from "@/hooks/api/estatisticas/use-get-ranking-dias-trabalhados";
-import {CardDescription, CardTitle} from "@/components/ui/card";
-import {TrendingUp} from "lucide-react";
 
 export default function PainelPage() {
 

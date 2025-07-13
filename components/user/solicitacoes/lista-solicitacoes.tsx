@@ -2,7 +2,7 @@ import {Badge} from "@/components/ui/badge"
 import type {Solicitacao} from "@/types/solicitacao"
 import {Check, Clock, X} from "lucide-react"
 import Link from "next/link"
-import {cn, formatarData, obterNomePosto} from "@/lib/utils";
+import {formatarData, obterNomePosto} from "@/lib/utils";
 import {useGetPostos} from "@/hooks/api/postos/use-get-all-postos";
 
 interface ListaSolicitacoesProps {

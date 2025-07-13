@@ -1,7 +1,7 @@
-import { NextRequest, NextResponse } from "next/server";
-import { getAlocacoesPorGuardaVidas } from "@/api/services/alocacao-diaria-service";
-import { getUser } from "@/lib/session/session";
-import { headers } from "next/headers";
+import {NextRequest, NextResponse} from "next/server";
+import {getAlocacoesPorGuardaVidas} from "@/api/services/alocacao-diaria-service";
+import {getUser} from "@/lib/session/session";
+import {headers} from "next/headers";
 
 export const dynamic = 'force-dynamic';
 

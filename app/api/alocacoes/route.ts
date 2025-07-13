@@ -1,7 +1,7 @@
-import { NextRequest, NextResponse } from "next/server";
-import { salvarEscalaDiaria, getAlocacoesPorData } from "@/api/services/alocacao-diaria-service";
-import { getUser } from "@/lib/session/session";
-import { parse } from 'date-fns';
+import {NextRequest, NextResponse} from "next/server";
+import {getAlocacoesPorData, salvarEscalaDiaria} from "@/api/services/alocacao-diaria-service";
+import {getUser} from "@/lib/session/session";
+import {parse} from 'date-fns';
 
 export async function GET(req: NextRequest) {
     try {

@@ -1,6 +1,6 @@
 "use client";
 
-import React, {createContext, useContext, useState, useEffect, ReactNode} from 'react';
+import React, {createContext, ReactNode, useContext, useEffect, useState} from 'react';
 import {obterUsuario} from "@/actions/session-actions/obter-usuario";
 import {UsuarioPayload} from "@/types/auth/usuario";
 

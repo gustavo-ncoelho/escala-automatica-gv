@@ -1,7 +1,7 @@
 import React from "react";
 import {Button} from "@/components/ui/button";
 import {cn} from "@/lib/utils";
-import { Trash2 } from "lucide-react";
+import {Trash2} from "lucide-react";
 
 interface ConfirmDeleteModalProps {
     title: string;

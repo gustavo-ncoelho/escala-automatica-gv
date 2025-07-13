@@ -1,8 +1,8 @@
 "use client"
 
 import React from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { GuardaVidasEscala } from "@/types/guarda-vidas";
+import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
+import {GuardaVidasEscala} from "@/types/guarda-vidas";
 import {cn, existeAlocacaoNoDia, guardaVidaTrabalhaEm, verificarSeEHoje, verificarSeJaPassou} from "@/lib/utils";
 import {format} from "date-fns";
 import {useRouter} from "next/navigation";

@@ -1,6 +1,6 @@
-import { NextResponse } from 'next/server'
-import type { NextRequest } from 'next/server'
-import { getUser } from '@/lib/session/session';
+import type {NextRequest} from 'next/server'
+import {NextResponse} from 'next/server'
+import {getUser} from '@/lib/session/session';
 
 export async function middleware(req: NextRequest) {
     const path = req.nextUrl.pathname;

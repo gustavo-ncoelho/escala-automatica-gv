@@ -1,6 +1,6 @@
-import { NextRequest, NextResponse } from "next/server";
-import { getSolicitacoes, createSolicitacao } from "@/api/services/solicitacoes-service";
-import { getUser } from "@/lib/session/session";
+import {NextRequest, NextResponse} from "next/server";
+import {createSolicitacao, getSolicitacoes} from "@/api/services/solicitacoes-service";
+import {getUser} from "@/lib/session/session";
 
 export async function GET() {
     try {

@@ -84,7 +84,7 @@ export default function LoginForm() {
 
                             <button type="submit" className="w-full flex items-center justify-center h-11 mt-3 bg-black text-white rounded-md xl:hover:bg-gray-800">
                                 {!isPending && <p>Entrar</p>}
-                                {isPending && <Loader2 className={cn("animate-spin size-10 stroke-1 text-red-500")}/>}
+                                {isPending && <Loader2 className={cn("animate-spin size-8 stroke-1 text-red-500")}/>}
                             </button>
                         </form>
                     </Form>

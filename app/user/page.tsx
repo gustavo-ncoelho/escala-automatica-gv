@@ -3,7 +3,6 @@
 import {Card, CardContent} from "@/components/ui/card"
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select"
 import {CalendarioMensal} from "@/components/user/calendario/calendario-mensal"
-import {useState} from "react"
 import {useAuthContext} from "@/contexts/auth-context";
 import {useGetGuardaVidasById} from "@/hooks/api/guarda-vidas/use-get-guarda-vidas-by-id";
 import {converterGVParaGVEscala} from "@/lib/utils";

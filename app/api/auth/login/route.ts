@@ -1,6 +1,6 @@
-import { NextRequest, NextResponse } from "next/server";
-import { loginUser } from "@/api/services/auth-service";
-import { createSession } from "@/lib/session/session";
+import {NextRequest, NextResponse} from "next/server";
+import {loginUser} from "@/api/services/auth-service";
+import {createSession} from "@/lib/session/session";
 
 export async function POST(req: NextRequest) {
     try {
