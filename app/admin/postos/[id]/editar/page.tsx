@@ -3,6 +3,7 @@
 import {useParams, useRouter} from "next/navigation"
 import PostosForm from "@/components/admin/postos/postos-form";
 import {useGetPostoById} from "@/hooks/api/postos/use-get-posto-by-id";
+import FullscreenLoader from "@/components/utils/fullscreen-loader";
 
 export default function EditarPostoPage() {
 
@@ -11,7 +12,7 @@ export default function EditarPostoPage() {
     const router = useRouter();
     const {data: posto, isLoading} = useGetPostoById(id);
 
-    if (!posto) {
+    if (!posto && !isLoading) {
         return (
             <div className="container mx-auto p-6">
                 <div className="text-center py-12">
@@ -27,7 +28,9 @@ export default function EditarPostoPage() {
 
     return (
         <>
-            <PostosForm posto={posto} isEditing={true} isLoadingPosto={isLoading}/>
+            {posto && !isLoading && <PostosForm posto={posto} isEditing={true} isLoadingPosto={isLoading}/>}
+
+            {isLoading && <FullscreenLoader/>}
         </>
     )
 }
