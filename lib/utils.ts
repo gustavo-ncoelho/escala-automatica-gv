@@ -208,96 +208,37 @@ export const getGuardaVidasPorPosto = (postoId: string, alocacoes: AlocacaoDiari
     });
 };
 
-export const gerarEscalaDiaria = (listaDePostos: Posto[], listaDeGuardaVidas: GuardaVidasEscala[], dataAlvo: Date): AlocacaoDiaria[] => {
-    console.group("--- INÍCIO DA GERAÇÃO DE ESCALA ---");
-    console.log("Data Alvo:", dataAlvo.toLocaleDateString('pt-BR'));
-
+// Função interna que tenta gerar a escala com um conjunto de postos
+const tentarGerarComPostosAtuais = (postosAtuais: Posto[], gvDisponiveis: GuardaVidasEscala[], dataAlvo: Date): AlocacaoDiaria[] => {
     let escala: AlocacaoDiaria[] = [];
     const gvAlocados: Set<string> = new Set();
-
-    const gvDisponiveis = listaDeGuardaVidas.filter(gv => guardaVidaTrabalhaEm(gv, dataAlvo));
-    const postosAbertos = listaDePostos.filter(p => postoEstaAberto(p, dataAlvo));
-    const postosPriorizados = [...postosAbertos].sort((a, b) => b.movimento - a.movimento);
-
-    console.log(`Encontrados ${gvDisponiveis.length} GVs disponíveis e ${postosAbertos.length} postos abertos.`);
-
     const gvNaoAlocados = () => gvDisponiveis.filter(gv => !gvAlocados.has(gv.id));
 
-    // Fase 1: Alocações Obrigatórias (Prioridade 10)
-    console.group("Fase 1: Alocações Obrigatórias (Prioridade 10)");
+    // Fase 1: Prioridade 10
     gvDisponiveis.forEach(gv => {
         const pref10 = gv.preferenciasPostos?.find(p => p.prioridade === 10);
         if (pref10) {
-            const posto = postosAbertos.find(p => p.id === pref10.postoId);
+            const posto = postosAtuais.find(p => p.id === pref10.postoId);
             if (posto && escala.filter(a => a.postoId === posto.id).length < posto.alocacaoMaxima) {
-                console.log(`Alocando ${gv.nome} no posto ${posto.nome} (Prioridade 10)`);
-                escala.push({id: uuid(), data: dataAlvo, guardaVidasId: gv.id, postoId: posto.id});
+                escala.push({ id: uuid(), data: dataAlvo, guardaVidasId: gv.id, postoId: posto.id });
                 gvAlocados.add(gv.id);
             }
         }
     });
-    console.groupEnd();
 
-    // Fase 2: Garantir o Mínimo de 2 GVs por posto
-    console.group("Fase 2: Garantia do Mínimo de 2 GVs");
-    for (let i = 0; i < 2; i++) { // Duas rodadas obrigatórias
-        console.log(`--- Rodada Obrigatória ${i + 1} ---`);
-        for (const posto of postosPriorizados) {
-            const vagasOcupadas = escala.filter(a => a.postoId === posto.id).length;
-            if (vagasOcupadas < i + 1 && gvNaoAlocados().length > 0) {
-                const candidatos = gvNaoAlocados().map(gv => ({
-                    gv,
-                    score: calcularScore(gv, posto.id)
-                })).sort((a, b) => b.score - a.score);
-                if (candidatos.length > 0) {
-                    const melhorCandidato = candidatos[0].gv;
-                    console.log(`Alocando ${melhorCandidato.nome} no posto ${posto.nome} para garantir o mínimo.`);
-                    escala.push({id: uuid(), data: dataAlvo, guardaVidasId: melhorCandidato.id, postoId: posto.id});
-                    gvAlocados.add(melhorCandidato.id);
-                }
-            }
-        }
-    }
-    console.groupEnd();
-
-    // Fase 3: Consolidação - Remover postos que não atingiram o mínimo de 2
-    console.group("Fase 3: Consolidação (Remover postos com 1 GV)");
-    const contagemPorPosto = escala.reduce((acc, alocacao) => {
-        acc[alocacao.postoId] = (acc[alocacao.postoId] || 0) + 1;
-        return acc;
-    }, {} as Record<string, number>);
-
-    const postosInvalidos = Object.keys(contagemPorPosto).filter(postoId => contagemPorPosto[postoId] === 1);
-
-    if (postosInvalidos.length > 0) {
-        console.log("Postos com apenas 1 GV encontrados:", postosInvalidos);
-        const gvsRemovidos = escala.filter(alocacao => postosInvalidos.includes(alocacao.postoId)).map(a => a.guardaVidasId);
-        gvsRemovidos.forEach(id => gvAlocados.delete(id));
-        escala = escala.filter(alocacao => !postosInvalidos.includes(alocacao.postoId));
-        console.log("GVs devolvidos ao pool:", gvsRemovidos);
-    } else {
-        console.log("Nenhum posto com apenas 1 GV. Nenhum ajuste necessário.");
-    }
-    console.groupEnd();
-
-    // Fase 4: Preencher vagas restantes até o máximo
-    console.group("Fase 4: Preenchimento até a Alocação Máxima");
+    // Fase 2: Alocação em rodadas
+    const postosPriorizados = [...postosAtuais].sort((a, b) => b.movimento - a.movimento);
     let continuarAlocando = true;
     while (continuarAlocando) {
         let alocouAlguemNestaRodada = false;
         if (gvNaoAlocados().length === 0) break;
-
         for (const posto of postosPriorizados) {
             const vagasOcupadas = escala.filter(a => a.postoId === posto.id).length;
-            if (vagasOcupadas < posto.alocacaoMaxima && gvNaoAlocados().length > 0) {
-                const candidatos = gvNaoAlocados().map(gv => ({
-                    gv,
-                    score: calcularScore(gv, posto.id)
-                })).sort((a, b) => b.score - a.score);
+            if (vagasOcupadas < 2 && gvNaoAlocados().length > 0) {
+                const candidatos = gvNaoAlocados().map(gv => ({ gv, score: calcularScore(gv, posto.id) })).sort((a, b) => b.score - a.score);
                 if (candidatos.length > 0) {
                     const melhorCandidato = candidatos[0].gv;
-                    console.log(`Preenchendo vaga em ${posto.nome} com ${melhorCandidato.nome}`);
-                    escala.push({id: uuid(), data: dataAlvo, guardaVidasId: melhorCandidato.id, postoId: posto.id});
+                    escala.push({ id: uuid(), data: dataAlvo, guardaVidasId: melhorCandidato.id, postoId: posto.id });
                     gvAlocados.add(melhorCandidato.id);
                     alocouAlguemNestaRodada = true;
                 }
@@ -305,32 +246,92 @@ export const gerarEscalaDiaria = (listaDePostos: Posto[], listaDeGuardaVidas: Gu
         }
         if (!alocouAlguemNestaRodada) continuarAlocando = false;
     }
-    console.groupEnd();
+    return escala;
+};
 
-    // Fase 5: Alocação de Reforço (Super-Lotação)
-    console.group("Fase 5: Alocação de Reforço (Super-Lotação)");
-    if (gvNaoAlocados().length > 0) {
-        console.log(`Sobraram ${gvNaoAlocados().length} GVs. Iniciando alocação de reforço.`);
-        for (const posto of postosPriorizados) {
-            if (gvNaoAlocados().length === 0) break;
-            const candidatos = gvNaoAlocados().map(gv => ({
-                gv,
-                score: calcularScore(gv, posto.id)
-            })).sort((a, b) => b.score - a.score);
+// Função principal que orquestra as tentativas
+export const gerarEscalaDiaria = (
+    listaDePostos: Posto[],
+    listaDeGuardaVidas: GuardaVidasEscala[],
+    dataAlvo: Date
+): AlocacaoDiaria[] => {
+    console.group("--- INÍCIO DA GERAÇÃO DE ESCALA ---");
+    console.log("Data Alvo:", dataAlvo.toLocaleDateString('pt-BR'));
+
+    const gvDisponiveis = listaDeGuardaVidas.filter(gv => guardaVidaTrabalhaEm(gv, dataAlvo));
+    let postosParaTentar = listaDePostos.filter(p => postoEstaAberto(p, dataAlvo));
+
+    console.log(`Encontrados ${gvDisponiveis.length} GVs disponíveis e ${postosParaTentar.length} postos abertos inicialmente.`);
+
+    let escalaFinal: AlocacaoDiaria[] = [];
+    let tentativa = 1;
+
+    while (postosParaTentar.length > 0) {
+        console.group(`--- Tentativa ${tentativa} com ${postosParaTentar.length} postos ---`);
+
+        const escalaTentativa = tentarGerarComPostosAtuais(postosParaTentar, gvDisponiveis, dataAlvo);
+
+        const contagemPorPosto = escalaTentativa.reduce((acc, alocacao) => {
+            acc[alocacao.postoId] = (acc[alocacao.postoId] || 0) + 1;
+            return acc;
+        }, {} as Record<string, number>);
+
+        // Adiciona os postos que ficaram com 0 GVs na contagem para serem considerados inválidos
+        postosParaTentar.forEach(posto => {
+            if (!contagemPorPosto[posto.id]) {
+                contagemPorPosto[posto.id] = 0;
+            }
+        });
+
+        const postosInvalidos = Object.keys(contagemPorPosto).filter(postoId => contagemPorPosto[postoId] < 2);
+
+        console.log("Contagem da tentativa:", contagemPorPosto);
+
+        if (postosInvalidos.length === 0) {
+            console.log("%cEscala VÁLIDA encontrada! Finalizando processo.", "color: lightgreen; font-weight: bold;");
+            escalaFinal = escalaTentativa;
+            console.groupEnd();
+            break;
+        } else {
+            console.log("%cEscala INVÁLIDA. Postos com menos de 2 GVs:", "color: orange;", postosInvalidos);
+
+            // Se não for possível formar uma escala válida com os postos restantes, para.
+            if (postosParaTentar.length <= postosInvalidos.length) {
+                console.warn("Não é possível formar uma escala válida com os GVs e postos restantes. Interrompendo.");
+                console.groupEnd();
+                break;
+            }
+
+            const postosOrdenados = [...postosParaTentar].sort((a, b) => a.movimento - b.movimento);
+            const postoRemovido = postosOrdenados[0];
+            console.log(`Removendo o posto de menor movimento para a próxima tentativa: "${postoRemovido.nome}"`);
+            postosParaTentar = postosParaTentar.filter(p => p.id !== postoRemovido.id);
+            console.groupEnd();
+        }
+        tentativa++;
+    }
+
+    // Fase final de reforço, se sobrar gente
+    const gvAlocadosFinal = new Set(escalaFinal.map(a => a.guardaVidasId));
+    const gvNaoAlocadosFinal = () => gvDisponiveis.filter(gv => !gvAlocadosFinal.has(gv.id));
+    if (gvNaoAlocadosFinal().length > 0) {
+        console.group("Alocação de Reforço Final");
+        const postosDaEscalaFinal = postosParaTentar.sort((a, b) => b.movimento - a.movimento);
+        for (const posto of postosDaEscalaFinal) {
+            if (gvNaoAlocadosFinal().length === 0) break;
+            const candidatos = gvNaoAlocadosFinal().map(gv => ({ gv, score: calcularScore(gv, posto.id) })).sort((a, b) => b.score - a.score);
             if (candidatos.length > 0) {
                 const melhorCandidato = candidatos[0].gv;
                 console.log(`Alocando REFORÇO ${melhorCandidato.nome} no posto ${posto.nome}`);
-                escala.push({id: uuid(), data: dataAlvo, guardaVidasId: melhorCandidato.id, postoId: posto.id});
-                gvAlocados.add(melhorCandidato.id);
+                escalaFinal.push({ id: uuid(), data: dataAlvo, guardaVidasId: melhorCandidato.id, postoId: posto.id });
+                gvAlocadosFinal.add(melhorCandidato.id);
             }
         }
-    } else {
-        console.log("Nenhum GV sobrando para reforço.");
+        console.groupEnd();
     }
+
+    console.log("--- ESCALA FINAL GERADA ---", escalaFinal);
     console.groupEnd();
 
-    console.log("--- ESCALA FINAL GERADA ---", escala);
-    console.groupEnd();
-
-    return escala;
+    return escalaFinal;
 };

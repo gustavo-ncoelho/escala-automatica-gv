@@ -12,7 +12,7 @@ interface ConfirmDeleteModalProps {
 
 export default function ConfirmDeleteModal ({title, description, cancelFunction, deleteFunction}: ConfirmDeleteModalProps) {
     return (
-        <div onClick={cancelFunction} className={cn("fixed flex justify-center items-center lg:right-0 bottom-0 z-49 w-screen h-screen bg-black/40 dark:bg-black/60")}>
+        <div onClick={cancelFunction} className={cn("fixed flex justify-center items-center lg:right-0 bottom-0 z-50 w-screen h-screen bg-black/40 dark:bg-black/60")}>
             <div onClick={(e) => e.stopPropagation()} className={"p-6 z-50 bg-background border border-border/30 rounded-2xl flex flex-col items-center justify-center space-y-4"}>
                 <div className={"flex w-full justify-start items-center space-x-4"}>
                     <div className={"rounded-full bg-destructive/10 flex items-center justify-center"}>

@@ -22,7 +22,6 @@ export default function TabelaEscalaDiaria ({postos, guardaVidas, dataDoDia, alo
     const {usuario} = useAuthContext();
     const [guardaVidasLogado, setGuardaVidasLogado] = useState<string | undefined>(usuario?.cargo === "GUARDA_VIDAS" ? usuario.nome : undefined);
 
-
     return (
         <div className={cn("grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 px-4 md:px-0", !isAdminView && "pb-16")}>
             {postos.map((posto) => {
