@@ -40,7 +40,7 @@ export function Cabecalho() {
             <div className="flex min-h-16 items-center px-2">
                 <Link href="/admin" className="flex items-center gap-2 font-semibold">
                     <LifeBuoy className="h-6 w-6 text-red-500"/>
-                    <span>Escala GV</span>
+                    <span>Escala Automática GV</span>
                 </Link>
             </div>
             <div className="flex-1"/>
