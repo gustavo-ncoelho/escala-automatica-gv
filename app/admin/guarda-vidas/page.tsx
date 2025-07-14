@@ -55,11 +55,6 @@ export default function GuardaVidasPage() {
                                             Data de Admissã
                                         </div>
                                     </TableHead>
-                                    <TableHead>
-                                        <div className={layout}>
-                                            Dias Trabalhados
-                                        </div>
-                                    </TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
@@ -83,11 +78,6 @@ export default function GuardaVidasPage() {
                                         <TableCell>
                                             <div className={layout}>
                                                 {gv.perfilGuardaVidas?.dataAdmissao ? new Date(gv.perfilGuardaVidas.dataAdmissao).toLocaleDateString("pt-BR") : "--------"}
-                                            </div>
-                                        </TableCell>
-                                        <TableCell>
-                                            <div className={layout}>
-                                                {gv.perfilGuardaVidas?.estatisticas?.diasTrabalhadosNaTemporada ?? "--------"}
                                             </div>
                                         </TableCell>
                                         <TableCell className="text-right">
